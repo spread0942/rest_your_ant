@@ -22,6 +22,44 @@ router.use('/orders', orderRoutes);
 
 /**
  * @openapi
+ * info:
+ *   title: Restaurant Management API
+ *   version: 1.0.0
+ *   description: A comprehensive REST API for restaurant management with TypeScript, Express.js, Sequelize ORM, and PostgreSQL
+ *   contact:
+ *     name: API Support
+ *     email: support@restaurant-api.com
+ *   license:
+ *     name: MIT
+ *     url: https://opensource.org/licenses/MIT
+ * servers:
+ *   - url: http://localhost:3000
+ *     description: Development server
+ * tags:
+ *   - name: Accounts
+ *     description: User account management and authentication
+ *   - name: Restaurants
+ *     description: Restaurant management operations
+ *   - name: Menus
+ *     description: Menu management operations
+ *   - name: Plates
+ *     description: Plate/dish management operations
+ *   - name: Products
+ *     description: Product management operations
+ *   - name: Drinks
+ *     description: Drink management operations
+ *   - name: Tables
+ *     description: Table management operations
+ *   - name: Orders
+ *     description: Order management operations
+ *   - name: System
+ *     description: System health and status endpoints
+ * security:
+ *   - bearerAuth: []
+ */
+
+/**
+ * @openapi
  * /api/health:
  *   get:
  *     tags: [System]
@@ -53,5 +91,37 @@ router.get('/health', (req, res) => {
     timestamp: new Date().toISOString(),
   });
 });
+
+/**
+ * @openapi
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *       description: Enter JWT token obtained from login endpoint
+ *   schemas:
+ *     Error:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: false
+ *         message:
+ *           type: string
+ *           example: Error message
+ *     SuccessResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *           example: true
+ *         data:
+ *           type: object
+ *         message:
+ *           type: string
+ *           example: Operation successful
+ */
 
 export default router;
