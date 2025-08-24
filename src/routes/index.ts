@@ -24,6 +24,7 @@ router.use('/orders', orderRoutes);
  * @openapi
  * /api/health:
  *   get:
+ *     tags: [System]
  *     summary: Health check endpoint
  *     description: Returns the health status of the API.
  *     responses:
