@@ -50,7 +50,7 @@ const startServer = async () => {
     console.log('✅ Database connection established successfully.');
 
     // Sync database models
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {
       await sequelize.sync({ alter: true });
       console.log('✅ Database models synchronized.');
     }

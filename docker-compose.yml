@@ -1,7 +1,7 @@
 services:
   # PostgreSQL Database
   db:
-    image: postgres:15
+    image: postgres:16
     container_name: restaurant_db
     environment:
       POSTGRES_DB: restaurant_db
@@ -13,6 +13,11 @@ services:
       - postgres_data:/var/lib/postgresql/data
     networks:
       - restaurant_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   # Node.js API
   api:
@@ -30,12 +35,14 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
       - /app/node_modules
     networks:
       - restaurant_network
+    restart: unless-stopped
 
 volumes:
   postgres_data:
