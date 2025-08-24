@@ -108,6 +108,9 @@ npm start
 
 ## 📡 API Endpoints
 
+### Documentation
+- GET /api-docs - API Documentation
+
 ### Authentication
 - `POST /api/accounts/login` - User login
 - `POST /api/accounts` - Create new account

@@ -20,7 +20,31 @@ router.use('/drinks', drinkRoutes);
 router.use('/tables', tableRoutes);
 router.use('/orders', orderRoutes);
 
-// Health check route
+/**
+ * @openapi
+ * /api/health:
+ *   get:
+ *     summary: Health check endpoint
+ *     description: Returns the health status of the API.
+ *     responses:
+ *       200:
+ *         description: API is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Restaurant API is running
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                   example: 2023-10-05T14:48:00.000Z
+ */
 router.get('/health', (req, res) => {
   res.json({
     success: true,

@@ -37,9 +37,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - .:/app
-      - /app/node_modules
     networks:
       - restaurant_network
     restart: unless-stopped

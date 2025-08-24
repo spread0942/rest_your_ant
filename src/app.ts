@@ -7,12 +7,16 @@ import sequelize from './config/database';
 import routes from './routes';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import './models'; // Import models to set up associations
+import { setupSwagger } from './config/swagger';
 
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// setup Swagger
+setupSwagger(app);
 
 // Security middleware
 app.use(helmet());
@@ -34,7 +38,7 @@ app.get('/', (req, res) => {
     success: true,
     message: 'Welcome to Restaurant Management API',
     version: '1.0.0',
-    documentation: '/api/health',
+    documentation: '/api-docs',
   });
 });
 
@@ -58,7 +62,7 @@ const startServer = async () => {
     // Start server
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
-      console.log(`📝 API Documentation: http://localhost:${PORT}/api/health`);
+      console.log(`📝 API Documentation: http://localhost:${PORT}/api-docs`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
