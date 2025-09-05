@@ -79,8 +79,8 @@ export default {
             role: 'admin'
           }));
           
-          // Redirect to dashboard
-          this.$router.push('/dashboard');
+          // Redirect to restaurants page
+          this.$router.push('/restaurants');
         } else {
           // Try real API login
           const response = await fetch('http://localhost:3000/api/accounts/login', {
@@ -103,7 +103,7 @@ export default {
               role: data.data.account.role || 'user'
             }));
             
-            this.$router.push('/dashboard');
+            this.$router.push('/restaurants');
           } else {
             throw new Error('Invalid credentials');
           }
@@ -118,7 +118,7 @@ export default {
   mounted() {
     // Check if already logged in
     if (localStorage.getItem('authToken')) {
-      this.$router.push('/dashboard');
+      this.$router.push('/restaurants');
     }
   }
 }

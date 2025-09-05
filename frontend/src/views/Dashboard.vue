@@ -3,10 +3,13 @@
     <!-- Top Navigation Bar -->
     <nav class="dashboard-nav">
       <div class="nav-brand">
-        <h1>🍽️ Restaurant Manager</h1>
+        <h1>🍽️ {{ selectedRestaurant.name || 'Restaurant Manager' }}</h1>
       </div>
       <div class="nav-user">
         <span class="welcome-text">Welcome back, {{ user.firstname || 'User' }}!</span>
+        <button @click="goToRestaurants" class="restaurant-btn">
+          <span>🏪</span> Cambia Ristorante
+        </button>
         <div class="user-avatar">{{ getUserInitial() }}</div>
         <button @click="logout" class="logout-btn">
           <span>🚪</span> Logout
@@ -53,34 +56,34 @@
 
       <!-- Quick Actions -->
       <section class="actions-section">
-        <h2>⚡ Quick Actions</h2>
+        <h2>⚡ Azioni Rapide</h2>
         <div class="actions-grid">
-          <div class="action-card" @click="navigateTo('/orders')">
-            <div class="action-icon">📋</div>
-            <h3>Manage Orders</h3>
-            <p>View and process customer orders</p>
-          </div>
           <div class="action-card" @click="navigateTo('/menu')">
             <div class="action-icon">📖</div>
-            <h3>Update Menu</h3>
-            <p>Edit dishes and pricing</p>
+            <h3>Vedi i Menu</h3>
+            <p>Modifica piatti e prezzi</p>
+          </div>
+          <div class="action-card" @click="navigateTo('/orders')">
+            <div class="action-icon">📋</div>
+            <h3>Gestisci Ordini</h3>
+            <p>Visualizza e gestisci gli ordini dei clienti</p>
           </div>
           <div class="action-card" @click="navigateTo('/tables')">
             <div class="action-icon">🍽️</div>
-            <h3>Table Management</h3>
-            <p>Monitor table status</p>
+            <h3>Gestisci Tavoli</h3>
+            <p>Monitora lo stato dei tavoli</p>
           </div>
           <div class="action-card" @click="navigateTo('/inventory')">
             <div class="action-icon">📦</div>
-            <h3>Inventory</h3>
-            <p>Check stock levels</p>
+            <h3>Gestisci Magazzino</h3>
+            <p>Controlla i livelli di stock</p>
           </div>
         </div>
       </section>
 
       <!-- Recent Orders -->
       <section class="recent-orders">
-        <h2>🕒 Recent Orders</h2>
+        <h2>🕒 Ordini Recenti</h2>
         <div class="orders-list">
           <div v-for="order in recentOrders" :key="order.id" class="order-item">
             <div class="order-info">
@@ -109,6 +112,12 @@ export default {
         lastname: '',
         email: '',
         role: ''
+      },
+      selectedRestaurant: {
+        id: null,
+        name: '',
+        address: '',
+        phone: ''
       },
       stats: {
         todayOrders: 47,
@@ -173,10 +182,28 @@ export default {
         };
       }
     },
+    loadRestaurantData() {
+      try {
+        const restaurantData = localStorage.getItem('selectedRestaurant');
+        if (restaurantData) {
+          this.selectedRestaurant = JSON.parse(restaurantData);
+        } else {
+          // No restaurant selected, redirect to restaurants page
+          this.$router.push('/restaurants');
+        }
+      } catch (error) {
+        console.error('Error loading restaurant data:', error);
+        this.$router.push('/restaurants');
+      }
+    },
+    goToRestaurants() {
+      this.$router.push('/restaurants');
+    },
     logout() {
       // Clear authentication and redirect to login
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
+      localStorage.removeItem('selectedRestaurant');
       this.$router.push('/login');
     },
     navigateTo(path) {
@@ -205,6 +232,9 @@ export default {
   async mounted() {
     // Load user data from localStorage
     this.loadUserData();
+    
+    // Load restaurant data from localStorage
+    this.loadRestaurantData();
     
     // Load dashboard data
     await this.loadDashboardData();
@@ -275,6 +305,24 @@ export default {
 
 .logout-btn:hover {
   background: #c82333;
+}
+
+.restaurant-btn {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.3s ease;
+  margin-right: 1rem;
+}
+
+.restaurant-btn:hover {
+  background: #0056b3;
 }
 
 /* Main Content */

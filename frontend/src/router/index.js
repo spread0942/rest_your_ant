@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../views/Login.vue'
-import Dashboard from '../views/Dashboard.vue'
+import LoginView from '../views/Login.vue'
+import DashboardView from '../views/Dashboard.vue'
+import MenuView from '../views/Menu.vue'
+import RestaurantsView from '../views/Restaurants.vue'
 
 const routes = [
   {
@@ -10,13 +12,25 @@ const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: Login
+    component: LoginView
+  },
+  {
+    path: '/restaurants',
+    name: 'Restaurants',
+    component: RestaurantsView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: Dashboard,
-    meta: { requiresAuth: true }
+    component: DashboardView,
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/menu',
+    name: 'Menu',
+    component: MenuView,
+    meta: { requiresAuth: true, requiresRestaurant: true }
   }
 ]
 
@@ -28,13 +42,17 @@ const router = createRouter({
 // Navigation guard for authentication
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('authToken')
+  const selectedRestaurant = localStorage.getItem('selectedRestaurant')
   
   if (to.meta.requiresAuth && !token) {
     // Route requires auth but user is not authenticated
     next('/login')
+  } else if (to.meta.requiresRestaurant && !selectedRestaurant) {
+    // Route requires restaurant selection but none is selected
+    next('/restaurants')
   } else if (to.path === '/login' && token) {
     // User is authenticated but trying to access login page
-    next('/dashboard')
+    next('/restaurants')
   } else {
     // Allow navigation
     next()
