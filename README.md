@@ -1,9 +1,10 @@
-# Restaurant Management API
+# Restaurant Management System
 
-A comprehensive backend API built with TypeScript, Express, Sequelize, and PostgreSQL for managing restaurant operations including menus, orders, tables, and more.
+A full-stack restaurant management system with a REST API backend and Vue.js frontend, built with TypeScript, Express, Sequelize, and PostgreSQL.
 
 ## 🚀 Features
 
+### Backend API
 - **User Management**: Account creation, authentication, and role-based authorization
 - **Restaurant Management**: Complete restaurant information handling
 - **Menu Management**: Dynamic menu creation with plates and drinks
@@ -14,13 +15,28 @@ A comprehensive backend API built with TypeScript, Express, Sequelize, and Postg
 - **Role-Based Access**: Admin and user roles with different permissions
 - **Database Relationships**: Complex many-to-many relationships between entities
 - **Error Handling**: Comprehensive error handling and validation
-- **Containerized**: Docker and Docker Compose support
+- **API Documentation**: Swagger/OpenAPI documentation
+
+### Frontend Application
+- **Vue.js 3**: Modern reactive frontend framework
+- **Responsive Design**: Mobile-first responsive interface
+- **API Integration**: Seamless backend connectivity
+- **Real-time Status**: API health checking functionality
+- **Docker Ready**: Containerized for easy deployment
 
 ## 🏗️ Project Structure
 
 ```
-restaurant-api/
-├── src/
+rest-your-ant/
+├── frontend/           # Vue.js Frontend Application
+│   ├── src/
+│   │   ├── App.vue     # Main application component
+│   │   └── main.js     # Application entry point
+│   ├── public/         # Static assets
+│   ├── Dockerfile      # Frontend container configuration
+│   ├── package.json    # Frontend dependencies
+│   └── README.md       # Frontend documentation
+├── src/                # Backend API Source Code
 │   ├── config/         # Database connection, environment
 │   ├── models/         # Sequelize models and associations
 │   ├── controllers/    # Business logic and API controllers
@@ -28,9 +44,9 @@ restaurant-api/
 │   ├── middleware/     # Authentication, error handling
 │   ├── utils/          # Helper functions and utilities
 │   └── app.ts          # Express application setup
-├── docker-compose.yml  # Multi-container Docker setup
-├── Dockerfile          # API container configuration
-├── package.json        # Dependencies and scripts
+├── docker-compose.yml  # Multi-container setup (API + Frontend + DB)
+├── Dockerfile          # Backend API container configuration
+├── package.json        # Backend dependencies and scripts
 ├── tsconfig.json       # TypeScript configuration
 └── README.md          # Project documentation
 ```
@@ -77,8 +93,16 @@ vim .env
 
 ### 3. Using Docker Compose (Recommended)
 ```bash
-# Start all services (API + PostgreSQL)
+# Start all services (Backend API + Frontend + PostgreSQL)
 docker-compose up -d
+
+# Start only specific services
+docker-compose up api          # Backend API only
+docker-compose up frontend     # Frontend only
+docker-compose up db          # Database only
+
+# Build and start with latest changes
+docker-compose up --build
 
 # View logs
 docker-compose logs -f
@@ -87,7 +111,17 @@ docker-compose logs -f
 docker-compose down
 ```
 
+#### 🌐 Available Services
+After running `docker-compose up -d`, the following services will be available:
+
+- **Frontend**: http://localhost:8080 - Vue.js application
+- **Backend API**: http://localhost:3000 - REST API endpoints
+- **API Documentation**: http://localhost:3000/api-docs - Swagger documentation
+- **Database**: localhost:5432 - PostgreSQL database
+
 ### 4. Local Development Setup
+
+#### Backend API
 ```bash
 # Install dependencies
 npm install
@@ -104,6 +138,21 @@ npm run dev
 # Or build and start production server
 npm run build
 npm start
+```
+
+#### Frontend Application
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run serve
+
+# Build for production
+npm run build
 ```
 
 ## 📡 API Endpoints

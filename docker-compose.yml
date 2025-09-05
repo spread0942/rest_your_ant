@@ -21,7 +21,9 @@ services:
 
   # Node.js API
   api:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     container_name: restaurant_api
     environment:
       DB_HOST: db
@@ -40,6 +42,21 @@ services:
     networks:
       - restaurant_network
     restart: unless-stopped
+
+  # Vue.js Frontend
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: restaurant_frontend
+    ports:
+      - "8080:8080"
+    networks:
+      - restaurant_network
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
 
 volumes:
   postgres_data:
