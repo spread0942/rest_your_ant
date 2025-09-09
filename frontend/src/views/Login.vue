@@ -25,7 +25,7 @@
               <div class="form-group">
                 <label for="email" class="field-label">Email</label>
                 <div class="input-container">
-                  <i class="fi fi-sr-envelope input-icon"></i>
+                  <i class="fi fi-rr-envelope input-icon"></i>
                   <input 
                     type="email" 
                     id="email" 
@@ -41,7 +41,7 @@
               <div class="form-group">
                 <label for="password" class="field-label">Password</label>
                 <div class="input-container">
-                  <i class="fi fi-sr-lock input-icon"></i>
+                  <i class="fi fi-rr-lock input-icon"></i>
                   <input 
                     type="password" 
                     id="password" 

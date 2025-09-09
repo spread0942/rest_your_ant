@@ -40,21 +40,21 @@
           @click="handleNavClick"
         >
           <div class="nav-item-content">
-            <i class="fi fi-sr-menu-burger nav-icon"></i>
+            <i class="fi fi-rr-book-alt nav-icon"></i>
             <span>Menù</span>
           </div>
         </router-link>
 
         <div class="nav-item" @click="navigateTo('/tables')">
           <div class="nav-item-content">
-            <i class="fi fi-sr-table nav-icon"></i>
+            <i class="fi fi-rr-reservation-table nav-icon"></i>
             <span>Aree Tavoli</span>
           </div>
         </div>
 
         <div class="nav-item" @click="navigateTo('/orders')">
           <div class="nav-item-content">
-            <i class="fi fi-sr-ballot-check nav-icon"></i>
+            <i class="fi fi-rr-poll-h nav-icon"></i>
             <span>Ordini</span>
           </div>
         </div>
