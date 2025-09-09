@@ -1,91 +1,91 @@
 <template>
   <div class="restaurants-container">
-    <!-- Header -->
-    <header class="page-header">
+    <!-- Header with Neumorphism -->
+    <header class="header-section">
       <div class="header-content">
-        <div class="header-left">
-          <h1 class="page-title">I miei Ristoranti</h1>
-          <p class="page-subtitle">Gestisci i tuoi ristoranti e creane di nuovi</p>
+        <div class="welcome-section">
+          <h1 class="welcome-title">Bentornato {{ user.firstname || 'Mario' }}!</h1>
+          <p class="welcome-subtitle">Gestisci i tuoi ristoranti e creane di nuovi</p>
         </div>
-        <div class="header-right">
-          <div class="user-info">
-            <span class="welcome-text">Ciao, {{ user.firstname || 'User' }}!</span>
-            <div class="user-avatar">{{ getUserInitial() }}</div>
-            <button @click="logout" class="logout-btn">
-              <span>🚪</span> Esci
-            </button>
-          </div>
+        <div class="header-buttons">
+          <button class="neomorph-btn settings-btn" @click="openSettings">
+           <i class="fi fi-sr-settings"></i>
+          </button>
+          <button class="neomorph-btn exit-btn" @click="logout">
+            <i class="fi fi-sr-exit"></i>
+          </button>
         </div>
       </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-      <!-- Create New Restaurant Card -->
-      <div class="create-restaurant-card">
-        <div class="create-card-content">
-          <div class="create-icon">🏪</div>
-          <h3>Crea un nuovo ristorante</h3>
-          <p>Inizia a gestire un nuovo ristorante aggiungendolo al tuo account</p>
-          <button @click="showCreateForm = true" class="create-btn">
-            <span>➕</span> Nuovo Ristorante
+    <!-- Create Restaurant Section -->
+    <section class="create-section">
+      <div class="create-card">
+        <div class="create-content">
+          <!-- Chef Icon -->
+          <div class="chef-icon">
+            <i class="fi fi-sr-hat-chef"></i>
+          </div>
+          
+          <h2 class="create-title">Crea un nuovo ristorante</h2>
+          <p class="create-description">Inizia a gestire un nuovo ristorante aggiungendolo al tuo account</p>
+          
+          <button @click="showCreateForm = true" class="add-restaurant-btn">
+            Aggiungi nuovo locale
           </button>
         </div>
       </div>
+    </section>
 
-      <!-- Restaurants Grid -->
-      <div class="restaurants-section">
-        <h2 class="section-title">I tuoi ristoranti</h2>
-        
-        <div v-if="loading" class="loading-state">
-          <div class="spinner"></div>
-          <p>Caricamento ristoranti...</p>
-        </div>
+    <!-- Restaurants Section -->
+    <section class="restaurants-section">
+      <div v-if="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Caricamento ristoranti...</p>
+      </div>
 
-        <div v-else-if="restaurants.length === 0" class="empty-state">
-          <div class="empty-icon">🍽️</div>
-          <h3>Nessun ristorante trovato</h3>
-          <p>Crea il tuo primo ristorante per iniziare</p>
-        </div>
+      <div v-else-if="restaurants.length === 0" class="empty-state">
+        <div class="empty-icon">🍽️</div>
+        <h3>Nessun ristorante trovato</h3>
+        <p>Crea il tuo primo ristorante per iniziare</p>
+      </div>
 
-        <div v-else class="restaurants-grid">
-          <div 
-            v-for="restaurant in restaurants" 
-            :key="restaurant.id"
-            class="restaurant-card"
-            @click="selectRestaurant(restaurant)"
-          >
-            <div class="restaurant-image">
-              <div class="restaurant-avatar">{{ getRestaurantInitial(restaurant.name) }}</div>
-            </div>
-            
-            <div class="restaurant-info">
-              <h3 class="restaurant-name">{{ restaurant.name }}</h3>
-              <p class="restaurant-address">{{ restaurant.address || 'Indirizzo non specificato' }}</p>
-              <div class="restaurant-stats">
-                <span class="stat">
-                  <span class="stat-icon">📋</span>
-                  {{ restaurant.menuCount || 0 }} Menù
-                </span>
-                <span class="stat">
-                  <span class="stat-icon">🪑</span>
-                  {{ restaurant.tableCount || 0 }} Tavoli
-                </span>
+      <div v-else class="restaurants-grid">
+        <div 
+          v-for="restaurant in restaurants" 
+          :key="restaurant.id"
+          class="restaurant-card"
+          @click="selectRestaurant(restaurant)"
+        >
+          <!-- Restaurant Logo -->
+          <div class="restaurant-logo">
+            <div class="logo-circle">
+              <div class="logo-placeholder">
+                <span>{{ getRestaurantInitial(restaurant.name) }}</span>
               </div>
             </div>
+          </div>
+          
+          <!-- Restaurant Info -->
+          <div class="restaurant-info">
+            <h3 class="restaurant-name">{{ restaurant.name }}</h3>
+            <p class="restaurant-address">{{ restaurant.address || 'Indirizzo non specificato' }}</p>
+          </div>
 
-            <div class="restaurant-actions">
-              <button @click.stop="editRestaurant(restaurant)" class="edit-btn">
-                <span>✏️</span>
-              </button>
-              <button @click.stop="deleteRestaurant(restaurant)" class="delete-btn">
-                <span>🗑️</span>
-              </button>
+          <!-- Restaurant Stats -->
+          <div class="restaurant-stats">
+            <div class="stat-item">
+<i class="fi fi-rr-book-alt"></i>
+              <span>{{ restaurant.menuCount || 0 }} Menù</span>
+            </div>
+            <div class="stat-item">
+              <i class="fi fi-rr-chair"></i>
+              <span>{{ restaurant.tableCount || 0 }} tavoli</span>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </section>
 
     <!-- Create Restaurant Modal -->
     <div v-if="showCreateForm" class="modal-overlay" @click="showCreateForm = false">
@@ -292,6 +292,11 @@ export default {
       return name ? name.charAt(0).toUpperCase() : 'R'
     },
 
+    openSettings() {
+      // TODO: Implementare apertura impostazioni
+      console.log('Apertura impostazioni')
+    },
+
     logout() {
       localStorage.removeItem('user')
       localStorage.removeItem('authToken')
@@ -303,175 +308,316 @@ export default {
 </script>
 
 <style scoped>
+/* Neumorphism Restaurant Page */
 .restaurants-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #f0f0f0;
+  font-family: 'Urbanist', sans-serif;
+  padding: 25px 49px;
 }
 
-/* Header */
-.page-header {
-  background: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  padding: 1.5rem 2rem;
+/* Header Section with Neumorphism */
+.header-section {
+  margin-bottom: 36px;
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
+  background: #f0f0f0;
+  border-radius: 8px;
+  padding: 18px 24px;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
+  box-shadow: -12px -12px 24px 0px #ffffff, 12px 12px 24px 0px #fdeff3;
+  height: 98px;
+  box-sizing: border-box;
 }
 
-.page-title {
-  font-size: 2rem;
-  font-weight: 600;
-  color: #2d3748;
+.welcome-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.welcome-title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+  color: #140003;
   margin: 0;
+  line-height: normal;
 }
 
-.page-subtitle {
-  color: #718096;
-  margin: 0.5rem 0 0 0;
-  font-size: 1rem;
+.welcome-subtitle {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 18px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  line-height: normal;
 }
 
-.user-info {
+.header-buttons {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 24px;
 }
 
-.welcome-text {
-  color: #4a5568;
-  font-weight: 500;
+.neomorph-btn {
+  width: 30px;
+  height: 30px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: -6px -6px 12px 0px #ffffff, 6px 6px 12px 0px #c5c5c5;
+  transition: all 0.2s ease;
 }
 
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.neomorph-btn i {
+  font-size: 16px;
+  color: #666;
+}
+
+.neomorph-btn:hover {
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #c5c5c5;
+}
+
+.neomorph-btn:active {
+  box-shadow: inset -2px -2px 4px 0px #ffffff, inset 2px 2px 4px 0px #c5c5c5;
+}
+
+/* Create Section */
+.create-section {
+  margin-bottom: 52px;
+}
+
+.create-card {
+  background: #f0f0f0;
+  border-radius: 8px;
+  height: 338px;
+  position: relative;
+  box-shadow: -12px -12px 24px 0px #ffffff, 12px 12px 24px 0px #fdeff3;
+  border: 1px dashed #d41e51;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.create-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  max-width: 516px;
+}
+
+.chef-icon {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chef-icon i {
+  font-size: 55px;
+  color: #d41e51;
+}
+
+.create-title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 48px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  line-height: normal;
+  text-align: center;
+}
+
+.create-description {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  line-height: normal;
+  text-align: center;
+}
+
+.add-restaurant-btn {
+  background: #d41e51;
+  color: #fcfbf8;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 26px;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  box-shadow: -6px -6px 12px 0px #ffffff, 6px 6px 12px 0px #f2abbf;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-restaurant-btn:hover {
+  background: #c11d4a;
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #f2abbf;
+}
+
+.add-restaurant-btn:active {
+  box-shadow: inset -2px -2px 4px 0px #ffffff, inset 2px 2px 4px 0px #f2abbf;
+}
+
+/* Restaurants Section */
+.restaurants-section {
+  margin-top: 52px;
+}
+
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+  justify-content: center;
+}
+
+.restaurant-card {
+  background: #f0f0f0;
+  border-radius: 8px;
+  border: 1px solid #cfcfcf;
+  width: 100%;
+  height: 300px;
+  padding: 24px;
+  box-sizing: border-box;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+   position: relative ;
+  box-shadow: 10px 10px 20px #bebebe,
+              -10px -10px 20px #ffffff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.restaurant-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 10px 10px 20px #bebebe,
+              inset -10px -10px 20px #ffffff;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.restaurant-card:hover {
+transform: translateY(2px); /* leggero movimento verso il basso */
+  box-shadow: 6px 6px 12px #bebebe,
+              -6px -6px 12px #ffffff;
+}
+.restaurant-card:hover::after {
+  opacity: 1; /* attiva ombre interne */
+}
+
+.restaurant-logo {
+  position: relative;
+  width: 92px;
+  height: 92px;
+}
+
+.logo-circle {
+  width: 92px;
+  height: 92px;
+  background: #e0e0e0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: -6px -6px 12px 0px #ffffff, 6px 6px 12px 0px #c5c5c5;
+}
+
+.logo-placeholder {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  font-size: 24px;
   font-weight: 600;
 }
 
-.logout-btn {
-  background: #e53e3e;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  transition: background-color 0.2s;
-}
-
-.logout-btn:hover {
-  background: #c53030;
-}
-
-/* Main Content */
-.main-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
+.restaurant-info {
+  text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 8px;
+  width: 100%;
 }
 
-/* Create Restaurant Card */
-.create-restaurant-card {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  border: 2px dashed #e2e8f0;
-  transition: all 0.3s ease;
+.restaurant-name {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+  color: #140003;
+  margin: 0;
+  line-height: normal;
 }
 
-.create-restaurant-card:hover {
-  border-color: #4299e1;
-  transform: translateY(-2px);
+.restaurant-address {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #979ea5;
+  margin: 0;
+  line-height: normal;
 }
 
-.create-card-content {
-  text-align: center;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-.create-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.create-card-content h3 {
-  font-size: 1.5rem;
-  color: #2d3748;
-  margin: 0 0 0.5rem 0;
-}
-
-.create-card-content p {
-  color: #718096;
-  margin: 0 0 1.5rem 0;
-  line-height: 1.5;
-}
-
-.create-btn {
-  background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
+.restaurant-stats {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0 auto;
-  transition: transform 0.2s;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 8px;
 }
 
-.create-btn:hover {
-  transform: translateY(-1px);
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #000000;
 }
 
-/* Restaurants Section */
-.restaurants-section {
-  background: white;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.section-title {
-  font-size: 1.5rem;
-  color: #2d3748;
-  margin: 0 0 1.5rem 0;
-  font-weight: 600;
+.stat-item i {
+  flex-shrink: 0;
+  font-size: 17px;
+  color: #F92561;
 }
 
 /* Loading and Empty States */
 .loading-state, .empty-state {
   text-align: center;
   padding: 3rem 1rem;
+  color: #666;
+  font-family: 'Urbanist', sans-serif;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
   border: 4px solid #e2e8f0;
-  border-top: 4px solid #4299e1;
+  border-top: 4px solid #d41e51;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 1rem;
@@ -487,140 +633,7 @@ export default {
   margin-bottom: 1rem;
 }
 
-.empty-state h3 {
-  color: #4a5568;
-  margin: 0 0 0.5rem 0;
-}
-
-.empty-state p {
-  color: #718096;
-  margin: 0;
-}
-
-/* Restaurants Grid */
-.restaurants-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 1.5rem;
-}
-
-.restaurant-card {
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1.5rem;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.restaurant-card:hover {
-  border-color: #4299e1;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.restaurant-image {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 1rem;
-}
-
-.restaurant-avatar {
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #38b2ac 0%, #319795 100%);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 600;
-}
-
-.restaurant-info {
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-.restaurant-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #2d3748;
-  margin: 0 0 0.5rem 0;
-}
-
-.restaurant-address {
-  color: #718096;
-  font-size: 0.9rem;
-  margin: 0 0 1rem 0;
-}
-
-.restaurant-stats {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.stat {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-  color: #4a5568;
-}
-
-.stat-icon {
-  font-size: 1rem;
-}
-
-.restaurant-actions {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  display: flex;
-  gap: 0.5rem;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.restaurant-card:hover .restaurant-actions {
-  opacity: 1;
-}
-
-.edit-btn, .delete-btn {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  transition: background-color 0.2s;
-}
-
-.edit-btn {
-  background: #edf2f7;
-  color: #4a5568;
-}
-
-.edit-btn:hover {
-  background: #e2e8f0;
-}
-
-.delete-btn {
-  background: #fed7d7;
-  color: #e53e3e;
-}
-
-.delete-btn:hover {
-  background: #feb2b2;
-}
-
-/* Modal */
+/* Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -636,7 +649,7 @@ export default {
 }
 
 .modal-content {
-  background: white;
+  background: #fcfbf8;
   border-radius: 16px;
   width: 100%;
   max-width: 500px;
@@ -656,8 +669,9 @@ export default {
 .modal-header h3 {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #2d3748;
+  color: #140003;
   margin: 0;
+  font-family: 'Urbanist', sans-serif;
 }
 
 .close-btn {
@@ -673,13 +687,13 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 4px;
+  transition: background 0.2s;
 }
 
 .close-btn:hover {
-  background: #edf2f7;
+  background: #f0f0f0;
 }
 
-/* Form */
 .create-form {
   padding: 0 1.5rem 1.5rem;
 }
@@ -691,8 +705,9 @@ export default {
 .form-group label {
   display: block;
   font-weight: 500;
-  color: #2d3748;
+  color: #140003;
   margin-bottom: 0.5rem;
+  font-family: 'Urbanist', sans-serif;
 }
 
 .form-group input,
@@ -702,15 +717,18 @@ export default {
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  font-family: 'Urbanist', sans-serif;
+  transition: all 0.2s;
   box-sizing: border-box;
+  background: #f8f9fa;
+  box-shadow: inset -2px -2px 4px 0px #ffffff, inset 2px 2px 4px 0px #e0e0e0;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #4299e1;
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+  border-color: #d41e51;
+  box-shadow: inset -2px -2px 4px 0px #ffffff, inset 2px 2px 4px 0px #e0e0e0, 0 0 0 3px rgba(212, 30, 81, 0.1);
 }
 
 .form-group textarea {
@@ -726,30 +744,39 @@ export default {
 }
 
 .cancel-btn {
-  background: #edf2f7;
+  background: #f0f0f0;
   color: #4a5568;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-size: 1rem;
+  font-family: 'Urbanist', sans-serif;
   cursor: pointer;
-  transition: background-color 0.2s;
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #c5c5c5;
+  transition: all 0.2s ease;
 }
 
 .cancel-btn:hover {
-  background: #e2e8f0;
+  box-shadow: -2px -2px 4px 0px #ffffff, 2px 2px 4px 0px #c5c5c5;
 }
 
 .submit-btn {
-  background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
-  color: white;
+  background: #d41e51;
+  color: #fcfbf8;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 8px;
   font-size: 1rem;
+  font-family: 'Urbanist', sans-serif;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.2s;
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #f2abbf;
+  transition: all 0.2s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #c11d4a;
+  box-shadow: -2px -2px 4px 0px #ffffff, 2px 2px 4px 0px #f2abbf;
 }
 
 .submit-btn:disabled {
@@ -757,27 +784,58 @@ export default {
   cursor: not-allowed;
 }
 
-/* Responsive */
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .restaurants-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
 @media (max-width: 768px) {
+  .restaurants-container {
+    padding: 15px 25px;
+  }
+
   .header-content {
     flex-direction: column;
     gap: 1rem;
     text-align: center;
+    height: auto;
+    padding: 24px;
   }
 
-  .main-content {
-    padding: 1rem;
+  .welcome-title {
+    font-size: 24px;
+  }
+
+  .welcome-subtitle {
+    font-size: 16px;
+  }
+
+  .create-title {
+    font-size: 32px;
   }
 
   .restaurants-grid {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 
-  .restaurant-actions {
-    position: static;
-    opacity: 1;
-    justify-content: center;
-    margin-top: 1rem;
+  .restaurant-card {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-title {
+    font-size: 24px;
+  }
+  
+  .restaurant-stats {
+    flex-direction: column;
+    gap: 12px;
   }
 }
 </style>
