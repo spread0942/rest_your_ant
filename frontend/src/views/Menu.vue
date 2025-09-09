@@ -1,180 +1,111 @@
 <template>
   <div class="menu-container">
+    <!-- Mobile Menu Overlay -->
+    <div 
+      v-if="showMobileMenu" 
+      class="mobile-overlay" 
+      @click="closeMobileMenu"
+    ></div>
+
+    <!-- Mobile Menu Toggle -->
+    <button 
+      v-if="isMobile" 
+      class="mobile-menu-toggle" 
+      @click="toggleMobileMenu"
+    >
+      <i class="fi fi-sr-menu-burger"></i>
+    </button>
+
     <!-- Sidebar -->
-    <div class="sidebar">
-      <!-- Restaurant Info -->
-      <div class="restaurant-info">
-        <div class="restaurant-header">
-          <div class="restaurant-icon">🏪</div>
-          <div class="restaurant-name">
-            <p>Fabbrica in Pedavena</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Navigation -->
-      <div class="navigation">
-        <!-- Generale Section -->
-        <div class="nav-section">
-          <p class="section-title">Generale</p>
-          
-          <router-link 
-            to="/dashboard"
-            class="nav-item"
-          >
-            <div class="nav-icon">📊</div>
-            <span>Dashboard</span>
-          </router-link>
-
-          <div class="nav-item active">
-            <div class="nav-icon">📋</div>
-            <span>Menù</span>
-          </div>
-
-          <div class="nav-item">
-            <div class="nav-icon">📝</div>
-            <span>Aree Tavoli</span>
-          </div>
-
-          <div class="nav-item">
-            <div class="nav-icon">📋</div>
-            <span>Ordini</span>
-          </div>
-        </div>
-
-        <!-- Impostazioni Section -->
-        <div class="nav-section settings">
-          <p class="section-title">Impostazioni</p>
-          
-          <div class="nav-item">
-            <div class="nav-icon">⚙️</div>
-            <span>Impostazioni</span>
-          </div>
-
-          <div class="nav-item" @click="logout">
-            <div class="nav-icon">🚪</div>
-            <span>Esci</span>
-          </div>
-        </div>
-      </div>
+    <div class="sidebar-container">
+      <SidebarComponent 
+        :selectedRestaurant="selectedRestaurant"
+        :isMobile="showMobileMenu && isMobile"
+        @close="closeMobileMenu"
+        @logout="handleLogout"
+      />
     </div>
 
     <!-- Main Content -->
     <div class="main-content">
-      <!-- Header -->
-      <div class="content-header">
+      <!-- Page Header -->
+      <div class="page-header">
         <div class="header-left">
-          <h1 class="page-title">Menù</h1>
-          <button class="create-menu-btn" @click="createNewMenu">
-            Crea nuovo menù
-          </button>
+          <h1>Menù</h1>
+          <p class="subtitle">Gestisci i menu da un un'unica schermata</p>
         </div>
-        
-        <!-- Restaurant Selector -->
-        <div class="restaurant-selector">
-          <div class="selector-content">
-            <span>Fabbrica in Pedavena</span>
-            <div class="dropdown-arrow">
-              <svg width="8" height="13" viewBox="0 0 8 13" fill="none">
-                <path d="M1 1L7 6.5L1 12" stroke="currentColor" stroke-width="1.5"/>
-              </svg>
-            </div>
-          </div>
-        </div>
+        <button class="add-menu-btn">+ Aggiungi Menù</button>
       </div>
 
-      <!-- Menu Categories -->
-      <div class="categories-container">
-        <div class="categories-grid">
-          <!-- Antipasti Card -->
-          <div class="category-card">
+      <!-- Categories Section -->
+      <div class="categories-grid">
+        <!-- Antipasti Card -->
+        <div class="category-card" @click="navigateToCategory(categories[0])">
+          <div class="card-content">
             <div class="card-header">
-              <div class="category-title-section">
+              <div class="title-section">
                 <h3 class="category-title">Antipasti</h3>
+                <div class="dish-count">
+                  <span>4 piatti</span>
+                </div>
               </div>
-              <div class="dish-count">
-                <span>4 piatti</span>
-              </div>
+              <p class="category-description">Stuzzichini e antipasti per iniziare il pasto</p>
             </div>
-            
-            <p class="category-description">Stuzzichini e antipasti per iniziare il pasto</p>
-            
             <div class="card-actions">
-              <button class="primary-btn" @click="viewDishes(1)">
-                Visualizza i piatti
+              <button class="view-btn">Visualizza i piatti</button>
+              <button class="action-btn">
+                <i class="fi fi-sr-pencil"></i>
               </button>
-              <button class="icon-btn" @click="addDish(1)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-                </svg>
-              </button>
-              <button class="icon-btn" @click="editCategory(1)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                  <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-                </svg>
+              <button class="action-btn">
+                <i class="fi fi-sr-trash"></i>
               </button>
             </div>
           </div>
+        </div>
 
-          <!-- Primi Piatti Card -->
-          <div class="category-card">
+        <!-- Primi Piatti Card -->
+        <div class="category-card" @click="navigateToCategory(categories[1])">
+          <div class="card-content">
             <div class="card-header">
-              <div class="category-title-section">
+              <div class="title-section">
                 <h3 class="category-title">Primi Piatti</h3>
+                <div class="dish-count">
+                  <span>19 piatti</span>
+                </div>
               </div>
-              <div class="dish-count">
-                <span>19 piatti</span>
-              </div>
+              <p class="category-description">Pasta, risotti e zuppe della tradizione</p>
             </div>
-            
-            <p class="category-description">Pasta, risotti e zuppe della tradizione</p>
-            
             <div class="card-actions">
-              <button class="primary-btn" @click="viewDishes(2)">
-                Visualizza i piatti
+              <button class="view-btn">Visualizza i piatti</button>
+              <button class="action-btn">
+                <i class="fi fi-sr-pencil"></i>
               </button>
-              <button class="icon-btn" @click="addDish(2)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-                </svg>
-              </button>
-              <button class="icon-btn" @click="editCategory(2)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                  <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-                </svg>
+              <button class="action-btn">
+                <i class="fi fi-sr-trash"></i>
               </button>
             </div>
           </div>
+        </div>
 
-          <!-- Secondi Piatti Card -->
-          <div class="category-card">
+        <!-- Secondi Piatti Card -->
+        <div class="category-card" @click="navigateToCategory(categories[2])">
+          <div class="card-content">
             <div class="card-header">
-              <div class="category-title-section">
+              <div class="title-section">
                 <h3 class="category-title">Secondi Piatti</h3>
+                <div class="dish-count">
+                  <span>4 piatti</span>
+                </div>
               </div>
-              <div class="dish-count">
-                <span>4 piatti</span>
-              </div>
+              <p class="category-description">Carne, pesce e piatti vegetariani</p>
             </div>
-            
-            <p class="category-description">Carne, pesce e piatti vegetariani</p>
-            
             <div class="card-actions">
-              <button class="primary-btn" @click="viewDishes(3)">
-                Visualizza i piatti
+              <button class="view-btn">Visualizza i piatti</button>
+              <button class="action-btn">
+                <i class="fi fi-sr-pencil"></i>
               </button>
-              <button class="icon-btn" @click="addDish(3)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"/>
-                </svg>
-              </button>
-              <button class="icon-btn" @click="editCategory(3)">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                  <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 4.995z"/>
-                </svg>
+              <button class="action-btn">
+                <i class="fi fi-sr-trash"></i>
               </button>
             </div>
           </div>
@@ -185,8 +116,13 @@
 </template>
 
 <script>
+import SidebarComponent from '@/components/SidebarComponent.vue'
+
 export default {
   name: 'MenuView',
+  components: {
+    SidebarComponent
+  },
   data() {
     return {
       categories: [
@@ -208,277 +144,293 @@ export default {
           count: 4,
           description: 'Carne, pesce e piatti vegetariani'
         }
-      ]
+      ],
+      showMobileMenu: false,
+      isMobile: false,
+      selectedRestaurant: {
+        name: 'Fabbrica in Pedavena'
+      }
     }
   },
+  mounted() {
+    this.checkMobile()
+    window.addEventListener('resize', this.checkMobile)
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.checkMobile)
+  },
   methods: {
-    viewDishes(categoryId) {
-      // Naviga alla vista dei piatti per la categoria specifica
-      console.log(`Visualizza piatti per categoria ${categoryId}`)
+    checkMobile() {
+      this.isMobile = window.innerWidth <= 768
     },
-    addDish(categoryId) {
-      // Aggiungi nuovo piatto alla categoria
-      console.log(`Aggiungi piatto alla categoria ${categoryId}`)
+    
+    toggleMobileMenu() {
+      this.showMobileMenu = !this.showMobileMenu
     },
-    editCategory(categoryId) {
-      // Modifica categoria
-      console.log(`Modifica categoria ${categoryId}`)
+    
+    closeMobileMenu() {
+      this.showMobileMenu = false
     },
-    createNewMenu() {
-      // Crea nuovo menu
-      console.log('Crea nuovo menu')
-    },
-    logout() {
-      // Logout functionality
-      localStorage.removeItem('user')
+    
+    handleLogout() {
+      localStorage.removeItem('auth')
       this.$router.push('/login')
+    },
+    
+    viewDishes(categoryId) {
+      console.log('View dishes for category:', categoryId)
+      // TODO: Navigate to dishes view
+    },
+    
+    navigateToCategory(category) {
+      console.log('Navigate to category:', category)
+      // TODO: Navigate to category page
     }
   }
 }
 </script>
 
 <style scoped>
-/* Container principale */
+/* Main Container */
 .menu-container {
-  min-height: 100vh;
-  background-color: #f8f9fa;
+  width: 100%;
+  height: 100vh;
+  background: #f3f4f6;
   display: flex;
   font-family: 'Urbanist', sans-serif;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 204px;
-  background-color: #e9ecef;
-  padding: 16px;
-  border-radius: 8px;
-  margin: 40px 0 40px 20px;
-  height: fit-content;
   position: relative;
 }
 
-.restaurant-info {
-  margin-bottom: 32px;
+/* Mobile Overlay */
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
 }
 
-.restaurant-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+@media (max-width: 768px) {
+  .mobile-overlay {
+    display: block;
+  }
 }
 
-.restaurant-icon {
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-}
-
-.restaurant-name p {
-  font-size: 14px;
-  color: #140003;
-  margin: 0;
-  font-weight: normal;
-}
-
-/* Navigation */
-.navigation {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.nav-section {
-  margin-bottom: 16px;
-}
-
-.nav-section.settings {
-  margin-top: auto;
-  padding-top: 32px;
-}
-
-.section-title {
-  font-size: 14px;
-  color: #140003;
-  margin: 0 0 8px 0;
-  padding: 4px 12px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  border-radius: 12px;
-  text-decoration: none;
-  color: #140003;
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  box-shadow: -8px -8px 16px 0px #ffffff, 8px 8px 16px 0px #acacac;
 }
 
-.nav-item:hover {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-.nav-item.active {
-  background-color: rgba(0, 0, 0, 0.04);
-}
-
-.nav-icon {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-}
-
-.nav-item span {
-  font-size: 14px;
+.mobile-menu-toggle i {
+  font-size: 20px;
   color: #140003;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
+}
+
+/* Sidebar Container */
+.sidebar-container {
+  flex-shrink: 0;
+  padding: 40px 0 40px 20px;
+}
+
+@media (max-width: 768px) {
+  .sidebar-container {
+    display: none;
+  }
 }
 
 /* Main Content */
 .main-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: 40px;
 }
 
-/* Header */
-.content-header {
+@media (max-width: 768px) {
+  .main-content {
+    padding: 80px 20px 20px 20px;
+  }
+}
+
+/* Page Header */
+.page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 32px;
+  align-items: flex-end;
+  margin-bottom: 48px;
 }
 
-.header-left {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.page-title {
+.header-left h1 {
+  font-family: 'Urbanist', sans-serif;
   font-size: 48px;
+  font-weight: 400;
+  color: #140003;
+  margin: 0 0 8px 0;
+  line-height: normal;
+}
+
+.subtitle {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
   color: #140003;
   margin: 0;
-  font-weight: normal;
-  line-height: 1;
+  line-height: normal;
 }
 
-.create-menu-btn {
-  background-color: #140003;
-  color: #f8f9fa;
-  padding: 8px 16px;
-  border-radius: 16px;
+.add-menu-btn {
+  background: #d41e51;
+  color: #f3f4f6;
   border: none;
-  font-size: 16px;
-  cursor: pointer;
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.04);
-  transition: background-color 0.2s;
-}
-
-.create-menu-btn:hover {
-  background-color: #2a2a2a;
-}
-
-/* Restaurant Selector */
-.restaurant-selector {
-  background-color: #e9ecef;
-  padding: 8px;
   border-radius: 8px;
-  box-shadow: 5px 6px 27px rgba(0, 0, 0, 0.05);
-}
-
-.selector-content {
+  padding: 8px 26px;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px;
-  gap: 16px;
+  box-shadow: -6px -6px 12px 0px #ffffff, 6px 6px 12px 0px #f2abbf;
+  transition: all 0.2s ease;
 }
 
-.selector-content span {
-  font-size: 14px;
-  color: #140003;
-  white-space: nowrap;
+.add-menu-btn:hover {
+  background: #c11a47;
 }
 
-.dropdown-arrow {
-  transform: rotate(90deg);
-  width: 8px;
-  height: 13px;
-  color: #140003;
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  
+  .header-left h1 {
+    font-size: 32px;
+  }
 }
 
-/* Categories Container */
-.categories-container {
-  background-color: #e9ecef;
-  border-radius: 8px;
-  padding: 32px;
-  min-height: 778px;
-}
-
+/* Categories Grid */
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+  gap: 45px;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+@media (max-width: 1200px) {
+  .categories-grid {
+    flex-wrap: wrap;
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .categories-grid {
+    flex-direction: column;
+    gap: 16px;
+  }
 }
 
 /* Category Cards */
 .category-card {
-  background-color: #f8f9fa;
-  border-radius: 8px;
-  padding: 24px;
+  background: #f0f0f0;
   border: 0.5px solid #adb5bd;
-  box-shadow: 0px 5px 9px -1px rgba(20, 0, 3, 0.2);
+  border-radius: 8px;
   height: 200px;
+  padding: 17px;
+  box-shadow: -8px -8px 16px 0px #ffffff, 8px 8px 16px 0px #acacac;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .category-card {
+    width: 100%;
+    height: auto;
+    min-height: 180px;
+  }
+}
+
+.card-content {
   display: flex;
   flex-direction: column;
+  height: 100%;
+
 }
 
 .card-header {
+  flex: 1;
   margin-bottom: 24px;
 }
 
-.category-title-section {
-  margin-bottom: 8px;
+.title-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
 }
 
 .category-title {
+  font-family: 'Urbanist', sans-serif;
   font-size: 24px;
+  font-weight: 700;
   color: #140003;
   margin: 0;
-  font-weight: bold;
-  line-height: 1;
+  line-height: normal;
 }
 
 .dish-count {
-  background-color: #d9d9d9;
-  padding: 2px 15px;
+  background: #f0f0f0;
   border-radius: 16px;
-  display: inline-block;
+  padding: 2px 15px;
   height: 21px;
   display: flex;
   align-items: center;
   justify-content: center;
   width: fit-content;
+  box-shadow: -2px -2px 4px 0px #ffffff, 2px 2px 4px 0px #acacac;
 }
 
 .dish-count span {
+  font-family: 'Urbanist', sans-serif;
   font-size: 14px;
+  font-weight: 400;
   color: #140003;
-  white-space: nowrap;
 }
 
 .category-description {
+  font-family: 'Urbanist', sans-serif;
   font-size: 16px;
+  font-weight: 400;
   color: #212529;
-  margin: 0 0 24px 0;
-  line-height: 1.2;
-  flex: 1;
+  line-height: normal;
+  margin: 0;
 }
 
 /* Card Actions */
@@ -486,79 +438,49 @@ export default {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: auto;
 }
 
-.primary-btn {
-  background-color: #140003;
-  color: #f8f9fa;
-  padding: 8px 16px;
-  border-radius: 16px;
+.view-btn {
+  background: #f92561;
+  color: #f3f4f6;
   border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-family: 'Urbanist', sans-serif;
   font-size: 16px;
+  font-weight: 400;
   cursor: pointer;
   flex: 1;
-  box-shadow: 0px 4px 16px rgba(0, 0, 0, 0.04);
-  transition: background-color 0.2s;
+  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
 }
 
-.primary-btn:hover {
-  background-color: #2a2a2a;
+.view-btn:hover {
+  background: #e91e5a;
 }
 
-.icon-btn {
-  background-color: #e9ecef;
+.action-btn {
+  background: #f0f0f0;
   border: none;
-  padding: 8px;
   border-radius: 4px;
-  cursor: pointer;
+  padding: 9px;
   width: 35px;
   height: 35px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background-color 0.2s;
+  cursor: pointer;
+  box-shadow: -2px -2px 4px 0px #ffffff, 2px 2px 4px 0px #acacac;
+  transition: all 0.2s ease;
 }
 
-.icon-btn:hover {
-  background-color: #d6d9dc;
+.action-btn:hover {
+  background: #e9ecef;
 }
 
-.icon-btn svg {
-  width: 16px;
-  height: 16px;
+.action-btn i {
+  font-size: 16px;
   color: #140003;
-}
-
-/* Responsive */
-@media (max-width: 1200px) {
-  .categories-grid {
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .menu-container {
-    flex-direction: column;
-  }
-  
-  .sidebar {
-    width: 100%;
-    margin: 20px;
-    margin-bottom: 0;
-  }
-  
-  .main-content {
-    padding: 20px;
-  }
-  
-  .content-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  
-  .categories-grid {
-    grid-template-columns: 1fr;
-  }
 }
 </style>
