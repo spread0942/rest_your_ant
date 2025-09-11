@@ -11,6 +11,7 @@ const options: swaggerJsdoc.Options = {
             version: '1.0.0',
             description: 'API docs using Swagger in Express + TypeScript',
         },
+        servers: [{ url: '/' },{ url: '/api' }],
     },
     apis: [path.join(__dirname, '../routes/*.{ts,js}')],
 };
@@ -18,6 +19,6 @@ const options: swaggerJsdoc.Options = {
 const swaggerSpec = swaggerJsdoc(options);
 
 export function setupSwagger(app: Express) {
-    console.log('✅ Swagger route registered at /api-docs');
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+    console.log('✅ Swagger route registered at /docs');
+    app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 }

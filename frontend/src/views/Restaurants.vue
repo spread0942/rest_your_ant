@@ -153,6 +153,8 @@
 </template>
 
 <script>
+import apiConfig from '@/config/api.js'
+
 export default {
   name: 'RestaurantsView',
   data() {
@@ -224,34 +226,24 @@ export default {
       try {
         this.creating = true
 
-        // TODO: Implementare chiamata API per creare ristorante
-        const restaurantData = {
-          ...this.newRestaurant,
-          accountId: this.user.id,
-          menuCount: 0,
-          tableCount: 0
-        }
-
-        // Simulazione API call
-        await new Promise(resolve => setTimeout(resolve, 1500))
-
-        // Mock: aggiungi alla lista locale
-        const newId = Math.max(...this.restaurants.map(r => r.id), 0) + 1
-        this.restaurants.push({
-          id: newId,
-          ...restaurantData
-        })
-
-        // Reset form
-        this.newRestaurant = {
-          name: '',
-          address: '',
-          phone: '',
-          description: ''
+        const response = await fetch(`${apiConfig.apiEndpoint}/restaurants`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            },
+            body: JSON.stringify(this.newRestaurant)
+          });
+          
+        if (response.ok) {
+          const data = await response.json();
+          this.restaurants.push(data.data.restaurant);
+        console.log('Ristorante creato:', data.data.restaurant)
+        } else {
+          throw new Error('Invalid credentials');
         }
         this.showCreateForm = false
 
-        console.log('Ristorante creato:', restaurantData)
       } catch (error) {
         console.error('Errore nella creazione del ristorante:', error)
         alert('Errore nella creazione del ristorante. Riprova.')

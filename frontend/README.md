@@ -21,7 +21,7 @@ The frontend runs automatically when you start the docker-compose services:
 docker-compose up -d
 ```
 
-The frontend will be available at: http://localhost:8080
+The frontend will be available at: http://localhost:8000
 
 ### Manual Development
 
@@ -52,7 +52,7 @@ The frontend includes a health check feature that tests connectivity to the back
 
 ## Development
 
-- **Port**: 8080
+- **Port**: 8000
 - **Hot Reload**: Enabled in development mode
 - **API URL**: http://localhost:3000/api
 

@@ -48,6 +48,8 @@
 </template>
 
 <script>
+import apiConfig from '@/config/api.js'
+
 export default {
   name: 'LoginView',
   data() {
@@ -83,7 +85,7 @@ export default {
           this.$router.push('/restaurants');
         } else {
           // Try real API login
-          const response = await fetch('http://localhost:3000/api/accounts/login', {
+          const response = await fetch(`${apiConfig.apiEndpoint}/accounts/login`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'

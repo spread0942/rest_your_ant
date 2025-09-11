@@ -114,9 +114,9 @@ docker-compose down
 #### 🌐 Available Services
 After running `docker-compose up -d`, the following services will be available:
 
-- **Frontend**: http://localhost:8080 - Vue.js application
+- **Frontend**: http://localhost:8000 - Vue.js application
 - **Backend API**: http://localhost:3000 - REST API endpoints
-- **API Documentation**: http://localhost:3000/api-docs - Swagger documentation
+- **API Documentation**: http://localhost:3000/docs - Swagger documentation
 - **Database**: localhost:5432 - PostgreSQL database
 
 ### 4. Local Development Setup
@@ -158,7 +158,7 @@ npm run build
 ## 📡 API Endpoints
 
 ### Documentation
-- GET /api-docs - API Documentation
+- GET /docs - API Documentation
 
 ### Authentication
 - `POST /api/accounts/login` - User login

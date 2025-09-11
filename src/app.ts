@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
     success: true,
     message: 'Welcome to Restaurant Management API',
     version: '1.0.0',
-    documentation: '/api-docs',
+    documentation: '/docs',
   });
 });
 
@@ -62,7 +62,7 @@ const startServer = async () => {
     // Start server
     app.listen(PORT, () => {
       console.log(`🚀 Server is running on port ${PORT}`);
-      console.log(`📝 API Documentation: http://localhost:${PORT}/api-docs`);
+      console.log(`📝 API Documentation: http://localhost:${PORT}/docs`);
       console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {
