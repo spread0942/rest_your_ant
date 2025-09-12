@@ -287,27 +287,33 @@ export default {
 </script>
 
 <style scoped>
+/* Main Container */
 .settings-container {
-  display: flex;
-  min-height: 100vh;
+  width: 100%;
+  height: 100vh;
   background: #f3f4f6;
+  display: flex;
+  font-family: 'Urbanist', sans-serif;
+  padding: 40px 20px;
+  gap: 26px;
 }
 
+/* Sidebar */
+.sidebar-wrapper {
+  flex-shrink: 0;
+}
+
+/* Main Content */
 .main-content {
   flex: 1;
-  margin-left: 224px;
-  padding: 40px;
-}
-
-@media (max-width: 768px) {
-  .main-content {
-    margin-left: 0;
-    padding: 20px;
-  }
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  gap: 32px;
 }
 
 .header {
-  margin-bottom: 40px;
+  width: 100%;
 }
 
 .title {
@@ -324,7 +330,23 @@ export default {
   gap: 48px;
 }
 
+/* Mobile Responsive */
 @media (max-width: 768px) {
+  .settings-container {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .sidebar-wrapper {
+    width: 100%;
+  }
+  
+  .main-content {
+    padding: 0;
+    width: 100%;
+  }
+  
   .content-wrapper {
     flex-direction: column;
     gap: 24px;

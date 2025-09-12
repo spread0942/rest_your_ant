@@ -448,6 +448,8 @@ export default {
   box-shadow: -6px -6px 12px 0px #ffffff, 6px 6px 12px 0px #f2abbf;
   transition: all 0.2s ease;
   min-width: 107px;
+  position: relative;
+  z-index: 1001;
 }
 
 .save-button:hover {
