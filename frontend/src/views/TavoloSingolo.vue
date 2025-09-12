@@ -39,7 +39,7 @@
           </div>
           <button class="download-button" @click="downloadQRCode">
             <span>Scarica il QR Code</span>
-            <span class="download-icon">📥</span>
+            <span class="download-icon"><i class="fi fi-rr-download"></i></span>
           </button>
         </div>
 
@@ -374,7 +374,6 @@ export default {
 
 .download-icon {
   font-size: 18px;
-  transform: rotate(270deg);
 }
 
 /* Form Section */

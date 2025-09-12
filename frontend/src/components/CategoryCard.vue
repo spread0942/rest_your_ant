@@ -15,10 +15,10 @@
           Visualizza i piatti
         </button>
         <button class="action-btn edit" @click.stop="$emit('edit', category)">
-          <span class="action-icon">✏️</span>
+          <span class="action-icon"><i class="fi fi-rr-pencil"></i></span>
         </button>
         <button class="action-btn delete" @click.stop="$emit('delete', category)">
-          <span class="action-icon">🗑️</span>
+          <span class="action-icon"><i class="fi fi-rr-trash"></i></span>
         </button>
       </div>
     </div>

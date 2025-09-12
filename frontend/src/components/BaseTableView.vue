@@ -58,14 +58,14 @@
                   @click.stop="$emit('edit', item)"
                   :title="editLabel"
                 >
-                  ✏️
+                  <i class="fi fi-rr-pencil"></i>
                 </button>
                 <button 
                   class="action-button delete-button"
                   @click.stop="$emit('delete', item)"
                   :title="deleteLabel"
                 >
-                  🗑️
+                  <i class="fi fi-rr-trash"></i>
                 </button>
               </div>
               <!-- Regular content -->

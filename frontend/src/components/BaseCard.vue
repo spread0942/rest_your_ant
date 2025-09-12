@@ -23,14 +23,14 @@
           @click.stop="$emit('edit', item)"
           :title="editLabel"
         >
-          <span class="action-icon">✏️</span>
+          <span class="action-icon"><i class="fi fi-rr-pencil"></i></span>
         </button>
         <button 
           class="action-btn" 
           @click.stop="$emit('delete', item)"
           :title="deleteLabel"
         >
-          <span class="action-icon">🗑️</span>
+          <span class="action-icon"><i class="fi fi-rr-trash"></i></span>
         </button>
       </div>
     </div>
