@@ -2,16 +2,38 @@
   <div class="sidebar" :class="{ 'mobile-sidebar': isMobile }">
     <!-- Restaurant Selector -->
     <div class="restaurant-selector">
-      <div class="restaurant-content">
+      <div class="restaurant-content" @click="toggleRestaurantSelector">
         <div class="restaurant-avatar">
-          <img src="/restaurant-logo.png" alt="Restaurant" class="restaurant-image" @error="setDefaultImage">
+          <img :src="currentRestaurant.avatar" :alt="currentRestaurant.name" class="restaurant-image" @error="setDefaultImage">
         </div>
         <div class="restaurant-info">
-          <p class="restaurant-name">{{ selectedRestaurant?.name || 'Fabbrica in Pedavena' }}</p>
+          <p class="restaurant-name">{{ currentRestaurant.name }}</p>
         </div>
-        <button class="restaurant-dropdown" @click="toggleRestaurantSelector">
+        <button class="restaurant-dropdown" :class="{ 'dropdown-open': showDropdown }">
           <i class="fi fi-sr-angle-down"></i>
         </button>
+      </div>
+      
+      <!-- Dropdown Menu -->
+      <div v-if="showDropdown" class="restaurant-dropdown-menu">
+        <div 
+          v-for="restaurant in restaurants" 
+          :key="restaurant.id"
+          class="restaurant-dropdown-item"
+          :class="{ 'active': restaurant.id === currentRestaurant.id }"
+          @click="selectRestaurant(restaurant)"
+        >
+          <div class="dropdown-item-avatar">
+            <img :src="restaurant.avatar" :alt="restaurant.name" class="dropdown-item-image" @error="setDefaultImage">
+          </div>
+          <div class="dropdown-item-info">
+            <p class="dropdown-item-name">{{ restaurant.name }}</p>
+            <p class="dropdown-item-address">{{ restaurant.address }}</p>
+          </div>
+          <div v-if="restaurant.id === currentRestaurant.id" class="dropdown-item-check">
+            <i class="fi fi-sr-check"></i>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -105,7 +127,55 @@ export default {
       default: false
     }
   },
-  emits: ['close', 'logout'],
+  emits: ['close', 'logout', 'restaurant-changed'],
+  data() {
+    return {
+      showDropdown: false,
+      restaurants: [
+        {
+          id: 1,
+          name: 'Fabbrica in Pedavena',
+          address: 'Via Roma, 123 - Pedavena',
+          avatar: '/restaurant-logo-1.png'
+        },
+        {
+          id: 2,
+          name: 'Osteria del Centro',
+          address: 'Piazza Centrale, 45 - Belluno',
+          avatar: '/restaurant-logo-2.png'
+        },
+        {
+          id: 3,
+          name: 'Rifugio Alpino',
+          address: 'Monte Grappa, 1 - Feltre',
+          avatar: '/restaurant-logo-3.png'
+        }
+      ],
+      currentRestaurant: {
+        id: 1,
+        name: 'Fabbrica in Pedavena',
+        address: 'Via Roma, 123 - Pedavena',
+        avatar: '/restaurant-logo-1.png'
+      }
+    }
+  },
+  mounted() {
+    // Load saved restaurant from localStorage
+    const savedRestaurant = localStorage.getItem('selectedRestaurant')
+    if (savedRestaurant) {
+      try {
+        this.currentRestaurant = JSON.parse(savedRestaurant)
+      } catch (e) {
+        console.warn('Error parsing saved restaurant:', e)
+      }
+    }
+    
+    // Add click outside listener
+    document.addEventListener('click', this.handleClickOutside)
+  },
+  beforeUnmount() {
+    document.removeEventListener('click', this.handleClickOutside)
+  },
   methods: {
     handleNavClick() {
       if (this.isMobile) {
@@ -125,8 +195,25 @@ export default {
     },
     
     toggleRestaurantSelector() {
-      // TODO: Implementare il selettore di ristoranti
-      console.log('Toggle restaurant selector')
+      this.showDropdown = !this.showDropdown
+    },
+    
+    selectRestaurant(restaurant) {
+      this.currentRestaurant = restaurant
+      this.showDropdown = false
+      
+      // Save to localStorage
+      localStorage.setItem('selectedRestaurant', JSON.stringify(restaurant))
+      
+      // Emit event to parent components
+      this.$emit('restaurant-changed', restaurant)
+    },
+    
+    handleClickOutside(event) {
+      const restaurantSelector = this.$el.querySelector('.restaurant-selector')
+      if (restaurantSelector && !restaurantSelector.contains(event.target)) {
+        this.showDropdown = false
+      }
     },
     
     setDefaultImage(event) {
@@ -170,6 +257,7 @@ export default {
   background: rgba(0, 0, 0, 0.04);
   border-radius: 8px;
   box-shadow: -2px -2px 4px 0px #ffffff, 2px 2px 4px 0px #acacac;
+  position: relative;
 }
 
 .restaurant-content {
@@ -177,6 +265,13 @@ export default {
   align-items: center;
   gap: 8px;
   padding: 8px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.restaurant-content:hover {
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .restaurant-avatar {
@@ -226,11 +321,93 @@ export default {
   align-items: center;
   justify-content: center;
   transform: rotate(90deg);
+  transition: transform 0.2s ease;
+}
+
+.restaurant-dropdown.dropdown-open {
+  transform: rotate(270deg);
 }
 
 .restaurant-dropdown i {
   font-size: 12px;
   color: #140003;
+}
+
+/* Dropdown Menu */
+.restaurant-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #f3f4f6;
+  border-radius: 8px;
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #acacac;
+  z-index: 1002;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.restaurant-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 6px;
+  margin: 4px;
+}
+
+.restaurant-dropdown-item:hover {
+  background: rgba(0, 0, 0, 0.04);
+  box-shadow: -1px -1px 2px 0px #ffffff, 1px 1px 2px 0px #acacac;
+}
+
+.restaurant-dropdown-item.active {
+  background: rgba(0, 0, 0, 0.06);
+  box-shadow: -2px -2px 4px 0px #ffffff, 2px 2px 4px 0px #acacac;
+}
+
+.dropdown-item-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.dropdown-item-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dropdown-item-info {
+  flex: 1;
+}
+
+.dropdown-item-name {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: #140003;
+  margin: 0 0 2px 0;
+  line-height: normal;
+}
+
+.dropdown-item-address {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  color: #666;
+  margin: 0;
+  line-height: normal;
+}
+
+.dropdown-item-check {
+  color: #28a745;
+  font-size: 14px;
 }
 
 /* Navigation */

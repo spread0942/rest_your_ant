@@ -1,7 +1,9 @@
 <template>
   <div class="settings-container">
     <!-- Sidebar -->
-    <SidebarComponent />
+    <div class="sidebar-wrapper">
+      <SidebarComponent @restaurant-changed="handleRestaurantChanged" />
+    </div>
     
     <!-- Main Content -->
     <div class="main-content">
@@ -259,6 +261,10 @@ export default {
     }
   },
   methods: {
+    handleRestaurantChanged(restaurant) {
+      // Handle restaurant change if needed
+      console.log('Restaurant changed in Impostazioni:', restaurant)
+    },
     testPrinter(printerId) {
       console.log('Testing printer:', printerId)
       // Simulate printer test
@@ -287,7 +293,6 @@ export default {
 </script>
 
 <style scoped>
-/* Main Container */
 .settings-container {
   width: 100%;
   height: 100vh;
@@ -298,12 +303,10 @@ export default {
   gap: 26px;
 }
 
-/* Sidebar */
 .sidebar-wrapper {
   flex-shrink: 0;
 }
 
-/* Main Content */
 .main-content {
   flex: 1;
   display: flex;
@@ -313,7 +316,7 @@ export default {
 }
 
 .header {
-  width: 100%;
+  margin-bottom: 40px;
 }
 
 .title {
@@ -330,7 +333,6 @@ export default {
   gap: 48px;
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
   .settings-container {
     flex-direction: column;

@@ -2,7 +2,7 @@
   <div class="base-table-container">
     <!-- Sidebar -->
     <div class="sidebar-wrapper">
-      <SidebarComponent />
+      <SidebarComponent @restaurant-changed="$emit('restaurant-changed', $event)" />
     </div>
 
     <!-- Main Content -->
@@ -120,7 +120,7 @@ export default {
       default: 'Elimina'
     }
   },
-  emits: ['add', 'edit', 'delete', 'rowClick'],
+  emits: ['add', 'edit', 'delete', 'rowClick', 'restaurant-changed'],
   methods: {
     getColumnValue(item, column) {
       if (column.formatter) {
@@ -133,7 +133,6 @@ export default {
 </script>
 
 <style scoped>
-/* Main Container */
 .base-table-container {
   width: 100%;
   height: 100vh;
@@ -144,12 +143,10 @@ export default {
   gap: 26px;
 }
 
-/* Sidebar */
 .sidebar-wrapper {
   flex-shrink: 0;
 }
 
-/* Main Content */
 .main-content {
   flex: 1;
   display: flex;
@@ -163,26 +160,10 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  width: 100%;
+  margin-bottom: 40px;
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
-  .base-table-container {
-    flex-direction: column;
-    padding: 20px;
-    gap: 20px;
-  }
-  
-  .sidebar-wrapper {
-    width: 100%;
-  }
-  
-  .main-content {
-    padding: 0;
-    width: 100%;
-  }
-  
   .header-section {
     flex-direction: column;
     align-items: flex-start;
@@ -225,7 +206,6 @@ export default {
   box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
   height: 30px;
-  position: relative;
   z-index: 1001;
 }
 
@@ -342,5 +322,22 @@ export default {
 
 .delete-button {
   color: #dc3545;
+}
+
+@media (max-width: 768px) {
+  .base-table-container {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .sidebar-wrapper {
+    width: 100%;
+  }
+  
+  .main-content {
+    padding: 0;
+    width: 100%;
+  }
 }
 </style>

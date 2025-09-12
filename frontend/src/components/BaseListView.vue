@@ -1,7 +1,9 @@
 <template>
   <div class="base-list-container">
     <!-- Sidebar -->
-    <SidebarComponent />
+    <div class="sidebar-wrapper">
+      <SidebarComponent @restaurant-changed="$emit('restaurant-changed', $event)" />
+    </div>
     
     <!-- Main Content -->
     <div class="main-content">
@@ -94,12 +96,11 @@ export default {
       default: 'Crea nuovo'
     }
   },
-  emits: ['create', 'navigate', 'view', 'edit', 'delete']
+  emits: ['create', 'navigate', 'view', 'edit', 'delete', 'restaurant-changed']
 }
 </script>
 
 <style scoped>
-/* Main Container */
 .base-list-container {
   width: 100%;
   height: 100vh;
@@ -115,7 +116,6 @@ export default {
   flex-shrink: 0;
 }
 
-/* Main Content */
 .main-content {
   flex: 1;
   display: flex;
@@ -133,26 +133,11 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  margin-bottom: 48px;
   width: 100%;
 }
 
-/* Mobile Responsive */
 @media (max-width: 768px) {
-  .base-list-container {
-    flex-direction: column;
-    padding: 20px;
-    gap: 20px;
-  }
-  
-  .sidebar-wrapper {
-    width: 100%;
-  }
-  
-  .main-content {
-    padding: 0;
-    width: 100%;
-  }
-  
   .page-header {
     flex-direction: column;
     align-items: flex-start;
@@ -198,7 +183,6 @@ export default {
   box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
   height: 30px;
-  position: relative;
   z-index: 1001;
 }
 
@@ -242,6 +226,21 @@ export default {
 }
 
 @media (max-width: 768px) {
+  .base-list-container {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .sidebar-wrapper {
+    width: 100%;
+  }
+  
+  .main-content {
+    padding: 0;
+    width: 100%;
+  }
+  
   .items-grid {
     grid-template-columns: 1fr;
     gap: 16px;
