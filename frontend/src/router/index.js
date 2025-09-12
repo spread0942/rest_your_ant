@@ -40,6 +40,24 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/aree-tavoli',
+    name: 'AreeTavoli',
+    component: () => import('../views/AreeTavoli.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/tavoli/:area',
+    name: 'Tavoli',
+    component: () => import('../views/Tavoli.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/tavolo/:id',
+    name: 'TavoloSingolo',
+    component: () => import('../views/TavoloSingolo.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/impostazioni',
     name: 'Impostazioni',
     component: () => import('../views/Impostazioni.vue'),

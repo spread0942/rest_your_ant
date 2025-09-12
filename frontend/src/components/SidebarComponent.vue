@@ -45,12 +45,17 @@
           </div>
         </router-link>
 
-        <div class="nav-item" @click="navigateTo('/tables')">
+        <router-link 
+          to="/aree-tavoli"
+          class="nav-item"
+          :class="{ active: $route.path === '/aree-tavoli' }"
+          @click="handleNavClick"
+        >
           <div class="nav-item-content">
             <i class="fi fi-rr-reservation-table nav-icon"></i>
             <span>Aree Tavoli</span>
           </div>
-        </div>
+        </router-link>
 
         <div class="nav-item" @click="navigateTo('/orders')">
           <div class="nav-item-content">
