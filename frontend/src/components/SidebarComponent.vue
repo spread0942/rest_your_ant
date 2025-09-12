@@ -64,7 +64,7 @@
       <div class="nav-section settings-section">
         <h3 class="section-title">Impostazioni</h3>
         
-        <div class="nav-item" @click="navigateTo('/settings')">
+        <div class="nav-item" @click="navigateTo('/impostazioni')">
           <div class="nav-item-content">
             <i class="fi fi-sr-settings nav-icon"></i>
             <span>Impostazioni</span>
@@ -268,6 +268,10 @@ export default {
 
 .nav-item:hover {
   background: rgba(0, 0, 0, 0.04);
+}
+.nav-item.active:hover {
+box-shadow: -1px -1px 2px 0 #FFF;
+    transform: translateY(1px) 
 }
 
 .nav-item.active {

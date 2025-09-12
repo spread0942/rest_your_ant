@@ -3,6 +3,7 @@ import LoginView from '../views/Login.vue'
 import DashboardView from '../views/Dashboard.vue'
 import MenuView from '../views/Menu.vue'
 import RestaurantsView from '../views/Restaurants.vue'
+import PiattiView from '../views/Piatti.vue'
 
 const routes = [
   {
@@ -31,6 +32,18 @@ const routes = [
     name: 'Menu',
     component: MenuView,
     meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/piatti/:category',
+    name: 'Piatti',
+    component: () => import('../views/Piatti.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/impostazioni',
+    name: 'Impostazioni',
+    component: () => import('../views/Impostazioni.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

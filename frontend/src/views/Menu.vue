@@ -13,7 +13,7 @@
       class="mobile-menu-toggle" 
       @click="toggleMobileMenu"
     >
-      <i class="fi fi-sr-menu-burger"></i>
+      <span style="font-size: 20px; color: #140003;">☰</span>
     </button>
 
     <!-- Sidebar -->
@@ -34,82 +34,23 @@
           <h1>Menù</h1>
           <p class="subtitle">Gestisci i menu da un un'unica schermata</p>
         </div>
-        <button class="add-menu-btn">+ Aggiungi Menù</button>
+        <button class="btn-primary">+ Aggiungi Menù</button>
       </div>
 
       <!-- Categories Section -->
       <div class="categories-grid">
-        <!-- Antipasti Card -->
-        <div class="category-card" @click="navigateToCategory(categories[0])">
-          <div class="card-content">
-            <div class="card-header">
-              <div class="title-section">
-                <h3 class="category-title">Antipasti</h3>
-                <div class="dish-count">
-                  <span>4 piatti</span>
-                </div>
-              </div>
-              <p class="category-description">Stuzzichini e antipasti per iniziare il pasto</p>
-            </div>
-            <div class="card-actions">
-              <button class="view-btn">Visualizza i piatti</button>
-              <button class="action-btn">
-                <i class="fi fi-sr-pencil"></i>
-              </button>
-              <button class="action-btn">
-                <i class="fi fi-sr-trash"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Primi Piatti Card -->
-        <div class="category-card" @click="navigateToCategory(categories[1])">
-          <div class="card-content">
-            <div class="card-header">
-              <div class="title-section">
-                <h3 class="category-title">Primi Piatti</h3>
-                <div class="dish-count">
-                  <span>19 piatti</span>
-                </div>
-              </div>
-              <p class="category-description">Pasta, risotti e zuppe della tradizione</p>
-            </div>
-            <div class="card-actions">
-              <button class="view-btn">Visualizza i piatti</button>
-              <button class="action-btn">
-                <i class="fi fi-sr-pencil"></i>
-              </button>
-              <button class="action-btn">
-                <i class="fi fi-sr-trash"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Secondi Piatti Card -->
-        <div class="category-card" @click="navigateToCategory(categories[2])">
-          <div class="card-content">
-            <div class="card-header">
-              <div class="title-section">
-                <h3 class="category-title">Secondi Piatti</h3>
-                <div class="dish-count">
-                  <span>4 piatti</span>
-                </div>
-              </div>
-              <p class="category-description">Carne, pesce e piatti vegetariani</p>
-            </div>
-            <div class="card-actions">
-              <button class="view-btn">Visualizza i piatti</button>
-              <button class="action-btn">
-                <i class="fi fi-sr-pencil"></i>
-              </button>
-              <button class="action-btn">
-                <i class="fi fi-sr-trash"></i>
-              </button>
-            </div>
-          </div>
-        </div>
+        <CategoryCard
+          v-for="category in categories"
+          :key="category.id"
+          :title="category.name"
+          :description="category.description"
+          :dishCount="category.count"
+          :category="category"
+          @navigate="navigateToCategory"
+          @view="viewDishes"
+          @edit="editCategory"
+          @delete="deleteCategory"
+        />
       </div>
     </div>
   </div>
@@ -117,11 +58,13 @@
 
 <script>
 import SidebarComponent from '@/components/SidebarComponent.vue'
+import CategoryCard from '@/components/CategoryCard.vue'
 
 export default {
   name: 'MenuView',
   components: {
-    SidebarComponent
+    SidebarComponent,
+    CategoryCard
   },
   data() {
     return {
@@ -177,14 +120,27 @@ export default {
       this.$router.push('/login')
     },
     
-    viewDishes(categoryId) {
-      console.log('View dishes for category:', categoryId)
-      // TODO: Navigate to dishes view
+    viewDishes(categoryName) {
+      console.log('View dishes for category:', categoryName)
+      this.$router.push(`/piatti/${categoryName}`)
     },
     
     navigateToCategory(category) {
       console.log('Navigate to category:', category)
-      // TODO: Navigate to category page
+      this.$router.push(`/piatti/${category.name}`)
+    },
+    
+    editCategory(category) {
+      console.log('Edit category:', category)
+      // TODO: Implementare logica per modificare la categoria
+    },
+    
+    deleteCategory(category) {
+      console.log('Delete category:', category)
+      // TODO: Implementare logica per eliminare la categoria
+      if (confirm(`Sei sicuro di voler eliminare la categoria "${category.name}"?`)) {
+        this.categories = this.categories.filter(c => c.id !== category.id)
+      }
     }
   }
 }
@@ -348,139 +304,8 @@ export default {
 
 @media (max-width: 768px) {
   .categories-grid {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     gap: 16px;
   }
-}
-
-/* Category Cards */
-.category-card {
-  background: #f0f0f0;
-  border: 0.5px solid #adb5bd;
-  border-radius: 8px;
-  height: 200px;
-  padding: 17px;
-  box-shadow: -8px -8px 16px 0px #ffffff, 8px 8px 16px 0px #acacac;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.category-card:hover {
-  transform: translateY(-2px);
-}
-
-@media (max-width: 768px) {
-  .category-card {
-    width: 100%;
-    height: auto;
-    min-height: 180px;
-  }
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-}
-
-.card-header {
-  flex: 1;
-  margin-bottom: 24px;
-}
-
-.title-section {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 24px;
-}
-
-.category-title {
-  font-family: 'Urbanist', sans-serif;
-  font-size: 24px;
-  font-weight: 700;
-  color: #140003;
-  margin: 0;
-  line-height: normal;
-}
-
-.dish-count {
-  background: #f0f0f0;
-  border-radius: 16px;
-  padding: 2px 15px;
-  height: 21px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  box-shadow: -2px -2px 4px 0px #ffffff, 2px 2px 4px 0px #acacac;
-}
-
-.dish-count span {
-  font-family: 'Urbanist', sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  color: #140003;
-}
-
-.category-description {
-  font-family: 'Urbanist', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  color: #212529;
-  line-height: normal;
-  margin: 0;
-}
-
-/* Card Actions */
-.card-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: auto;
-}
-
-.view-btn {
-  background: #f92561;
-  color: #f3f4f6;
-  border: none;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-family: 'Urbanist', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  cursor: pointer;
-  flex: 1;
-  box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
-}
-
-.view-btn:hover {
-  background: #e91e5a;
-}
-
-.action-btn {
-  background: #f0f0f0;
-  border: none;
-  border-radius: 4px;
-  padding: 9px;
-  width: 35px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: -2px -2px 4px 0px #ffffff, 2px 2px 4px 0px #acacac;
-  transition: all 0.2s ease;
-}
-
-.action-btn:hover {
-  background: #e9ecef;
-}
-
-.action-btn i {
-  font-size: 16px;
-  color: #140003;
 }
 </style>
