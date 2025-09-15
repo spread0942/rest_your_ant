@@ -40,6 +40,18 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/piatto/nuovo',
+    name: 'NuovoPiatto',
+    component: () => import('../views/ModificaPiatto.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/piatto/:id/modifica',
+    name: 'ModificaPiatto',
+    component: () => import('../views/ModificaPiatto.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/aree-tavoli',
     name: 'AreeTavoli',
     component: () => import('../views/AreeTavoli.vue'),

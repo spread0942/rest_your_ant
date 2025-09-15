@@ -7,6 +7,7 @@
     @add="addDish"
     @edit="editDish"
     @delete="deleteDish"
+    @rowClick="editDish"
   />
 </template>
 
@@ -22,8 +23,9 @@ export default {
     return {
       categoryName: 'Antipasti',
       columns: [
-        { label: 'Nome', key: 'name' },
-        { label: 'Prezzo', key: 'price' }
+        { label: 'Nome', key: 'name', cellClass: 'name-cell' },
+        { label: 'Prezzo', key: 'price' },
+        { label: '', key: 'actions', cellClass: 'actions-cell' }
       ],
       dishes: [
         { id: 1, name: 'Involtini di asiago', price: '5,00€' },
@@ -45,11 +47,13 @@ export default {
   methods: {
     addDish() {
       console.log('Aggiungi piatto per categoria:', this.categoryName)
-      // TODO: Implementare logica per aggiungere un nuovo piatto
+      // Naviga alla pagina per aggiungere un nuovo piatto
+      this.$router.push('/piatto/nuovo')
     },
     editDish(dish) {
       console.log('Modifica piatto:', dish)
-      // TODO: Implementare logica per modificare il piatto
+      // Naviga alla pagina di modifica del piatto
+      this.$router.push(`/piatto/${dish.id}/modifica`)
     },
     deleteDish(dish) {
       console.log('Elimina piatto:', dish)

@@ -2,7 +2,7 @@ body{
   background-color: #f3f4f6;
 }
 .main-content{  margin-left: 20vw; /* uguale alla larghezza della sidebar */
-  padding: 20px;}
+}
 .btn-primary, .btn-primary:visited {
   background: #d41e51;
   color: #f3f4f6;
