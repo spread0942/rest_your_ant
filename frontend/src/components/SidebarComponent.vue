@@ -228,17 +228,23 @@ export default {
 <style scoped>
 /* Sidebar Container */
 .sidebar {
-  width: 20vw;
-  height: calc(100vh - 80px);
+  position: fixed;              /* fissa la sidebar */
+  top: 20px;                    /* la abbassi di 80px per compensare l’header */
+  left: 20px;                      /* attaccata al bordo sinistro */
+  width: 20vw;                  /* la tua larghezza */
+  height: calc(100vh - 40px);   /* calcolata correttamente sotto l’header */
   background: #f3f4f6;
   border-radius: 8px;
-  box-shadow: -8px -8px 16px 0px inset #ffffff, 8px 8px 16px 0px inset #acacac;
+  box-shadow: -8px -8px 16px 0px inset #ffffff,
+              8px 8px 16px 0px inset #acacac;
   padding: 0;
   display: flex;
   flex-direction: column;
   font-family: 'Urbanist', sans-serif;
   overflow-y: auto;
+  z-index: 1000;                /* per stare sopra al contenuto */
 }
+
 
 .mobile-sidebar {
   position: fixed;
