@@ -205,8 +205,7 @@ export default {
   cursor: pointer;
   box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
-  height: 30px;
-  z-index: 1001;
+
 }
 
 .add-button:hover {

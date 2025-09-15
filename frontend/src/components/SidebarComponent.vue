@@ -280,6 +280,11 @@ export default {
   border-radius: 50%;
   overflow: hidden;
   flex-shrink: 0;
+  display: flex;
+justify-content: center;
+align-items: center;
+background-color: color(srgb 0.952 0.957 0.9657);
+object-fit: cover;
 }
 
 .restaurant-image {
@@ -305,10 +310,11 @@ export default {
 
 .restaurant-name {
   font-family: 'Urbanist', sans-serif;
-  font-size: 14px;
+  font-size: 1rem;
   font-weight: 400;
   color: #140003;
   margin: 0;
+  padding-right: 10px;
   line-height: normal;
 }
 
@@ -320,12 +326,11 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: rotate(90deg);
   transition: transform 0.2s ease;
 }
 
 .restaurant-dropdown.dropdown-open {
-  transform: rotate(270deg);
+  transform: rotate(180deg);
 }
 
 .restaurant-dropdown i {

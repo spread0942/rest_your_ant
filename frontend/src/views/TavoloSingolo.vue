@@ -5,8 +5,7 @@
       <SidebarComponent 
         :selectedRestaurant="selectedRestaurant"
         :isMobile="false"
-        @logout="handleLogout"
-        @restaurant-changed="handleRestaurantChanged" 
+        @logout="handleLogout" 
       />
     </div>
 
@@ -93,9 +92,9 @@
 
           <!-- Save Button -->
           <div class="save-section">
-                      <button class="save-button" @click="saveTable">
-            Salva
-          </button>
+            <button class="save-button" @click="saveTable">
+              Salva
+            </button>
           </div>
         </div>
       </div>
@@ -135,10 +134,6 @@ export default {
     }
   },
   methods: {
-    handleRestaurantChanged(restaurant) {
-      this.selectedRestaurant = restaurant
-      console.log('Restaurant changed in TavoloSingolo:', restaurant)
-    },
     loadTableData(tableId) {
       // TODO: Implementare caricamento dati tavolo da API
       console.log('Caricamento dati tavolo:', tableId)
@@ -452,7 +447,6 @@ export default {
   box-shadow: -6px -6px 12px 0px #ffffff, 6px 6px 12px 0px #f2abbf;
   transition: all 0.2s ease;
   min-width: 107px;
-  z-index: 1001;
 }
 
 .save-button:hover {

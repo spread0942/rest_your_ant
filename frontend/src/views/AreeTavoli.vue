@@ -30,21 +30,18 @@ export default {
         {
           id: 1,
           name: 'Sala Interna',
-          description: 'Area principale del ristorante con atmosfera accogliente',
           count: 4,
           area: 'sala-interna'
         },
         {
           id: 2,
           name: 'Terrazzo',
-          description: 'Area esterna con vista panoramica sulla città',
           count: 19,
           area: 'terrazzo'
         },
         {
           id: 3,
           name: 'Sala Esterna',
-          description: 'Spazio all\'aperto per cene estive e eventi',
           count: 4,
           area: 'sala-esterna'
         }

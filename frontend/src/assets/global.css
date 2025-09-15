@@ -22,3 +22,6 @@
   background: #c11a47;
   transform: translateY(-1px);
 }
+.page-title{
+  text-transform: capitalize;
+}
