@@ -11,6 +11,7 @@ interface RestaurantAttributes {
   openingHours?: string;
   createdAt: Date;
   updatedAt: Date;
+  accountId: number;
 }
 
 interface RestaurantCreationAttributes extends Optional<RestaurantAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
@@ -25,6 +26,7 @@ class Restaurant extends Model<RestaurantAttributes, RestaurantCreationAttribute
   public openingHours?: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+  public accountId!: number;
 }
 
 Restaurant.init(
@@ -68,6 +70,13 @@ Restaurant.init(
     updatedAt: {
       type: DataTypes.DATE,
       allowNull: false,
+    },
+    accountId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'accounts', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
   },
   {

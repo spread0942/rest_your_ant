@@ -297,15 +297,13 @@ router.get('/:id', authenticate, getRestaurantById);
  *         description: Bad request - Invalid input data
  *       401:
  *         description: Unauthorized - Invalid or missing token
- *       403:
- *         description: Forbidden - Admin access required
  *       409:
  *         description: Conflict - Restaurant name or email already exists
  *       500:
  *         description: Internal server error
  */
 // Protected routes (admin only)
-router.post('/', authenticate, authorize(['admin']), createRestaurant);
+router.post('/', authenticate, createRestaurant);
 
 /**
  * @openapi
@@ -409,8 +407,6 @@ router.post('/', authenticate, authorize(['admin']), createRestaurant);
  *         description: Bad request - Invalid input data
  *       401:
  *         description: Unauthorized - Invalid or missing token
- *       403:
- *         description: Forbidden - Admin access required
  *       404:
  *         description: Restaurant not found
  *       409:
@@ -418,7 +414,7 @@ router.post('/', authenticate, authorize(['admin']), createRestaurant);
  *       500:
  *         description: Internal server error
  */
-router.patch('/:id', authenticate, authorize(['admin']), updateRestaurant);
+router.patch('/:id', authenticate, updateRestaurant);
 
 /**
  * @openapi
@@ -453,8 +449,6 @@ router.patch('/:id', authenticate, authorize(['admin']), updateRestaurant);
  *                   example: Restaurant and all associated data deleted successfully
  *       401:
  *         description: Unauthorized - Invalid or missing token
- *       403:
- *         description: Forbidden - Admin access required
  *       404:
  *         description: Restaurant not found
  *       409:
@@ -462,6 +456,6 @@ router.patch('/:id', authenticate, authorize(['admin']), updateRestaurant);
  *       500:
  *         description: Internal server error
  */
-router.delete('/:id', authenticate, authorize(['admin']), deleteRestaurant);
+router.delete('/:id', authenticate, deleteRestaurant);
 
 export default router;

@@ -34,7 +34,8 @@ export const seedDatabase = async (): Promise<void> => {
       address: '123 Main Street, City, State 12345',
       phone: '+1-555-0123',
       email: 'info@samplerestaurant.com',
-      description: 'A beautiful sample restaurant for testing'
+      description: 'A beautiful sample restaurant for testing',
+      accountId: adminAccount.id,
     });
 
     console.log('✅ Sample restaurant created');
