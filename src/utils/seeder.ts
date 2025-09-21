@@ -35,6 +35,7 @@ export const seedDatabase = async (): Promise<void> => {
       phone: '+1-555-0123',
       email: 'info@samplerestaurant.com',
       description: 'A beautiful sample restaurant for testing',
+      website: 'https://www.samplerestaurant.com',
       accountId: adminAccount.id,
     });
 

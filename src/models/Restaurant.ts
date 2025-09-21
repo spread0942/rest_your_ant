@@ -8,7 +8,7 @@ interface RestaurantAttributes {
   address: string;
   phone: string;
   email?: string;
-  openingHours?: string;
+  website?: string;
   createdAt: Date;
   updatedAt: Date;
   accountId: number;
@@ -23,7 +23,7 @@ class Restaurant extends Model<RestaurantAttributes, RestaurantCreationAttribute
   public address!: string;
   public phone!: string;
   public email?: string;
-  public openingHours?: string;
+  public website?: string;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
   public accountId!: number;
@@ -59,9 +59,12 @@ Restaurant.init(
         isEmail: true,
       },
     },
-    openingHours: {
+    website: {
       type: DataTypes.STRING(100),
       allowNull: true,
+      validate: {
+        isUrl: true,
+      },
     },
     createdAt: {
       type: DataTypes.DATE,

@@ -77,9 +77,6 @@ const router = Router();
  *                       website:
  *                         type: string
  *                         example: "https://pizzapalace.com"
- *                       isActive:
- *                         type: boolean
- *                         example: true
  *                       createdAt:
  *                         type: string
  *                         format: date-time
@@ -162,18 +159,6 @@ router.get('/', authenticate, getAllRestaurants);
  *                     website:
  *                       type: string
  *                       example: "https://pizzapalace.com"
- *                     openingHours:
- *                       type: string
- *                       example: "Mon-Sun: 11:00 AM - 10:00 PM"
- *                     cuisine:
- *                       type: string
- *                       example: "Italian"
- *                     priceRange:
- *                       type: string
- *                       example: "$$"
- *                     isActive:
- *                       type: boolean
- *                       example: true
  *                     createdAt:
  *                       type: string
  *                       format: date-time
@@ -234,20 +219,6 @@ router.get('/:id', authenticate, getRestaurantById);
  *               website:
  *                 type: string
  *                 example: "https://pizzapalace.com"
- *               openingHours:
- *                 type: string
- *                 example: "Mon-Sun: 11:00 AM - 10:00 PM"
- *               cuisine:
- *                 type: string
- *                 example: "Italian"
- *               priceRange:
- *                 type: string
- *                 enum: ["$", "$$", "$$$", "$$$$"]
- *                 example: "$$"
- *               isActive:
- *                 type: boolean
- *                 default: true
- *                 example: true
  *     responses:
  *       201:
  *         description: Restaurant created successfully
@@ -283,9 +254,6 @@ router.get('/:id', authenticate, getRestaurantById);
  *                     website:
  *                       type: string
  *                       example: "https://pizzapalace.com"
- *                     isActive:
- *                       type: boolean
- *                       example: true
  *                     createdAt:
  *                       type: string
  *                       format: date-time
@@ -348,19 +316,6 @@ router.post('/', authenticate, createRestaurant);
  *               website:
  *                 type: string
  *                 example: "https://new.pizzapalace.com"
- *               openingHours:
- *                 type: string
- *                 example: "Mon-Sun: 10:00 AM - 11:00 PM"
- *               cuisine:
- *                 type: string
- *                 example: "Italian & Mediterranean"
- *               priceRange:
- *                 type: string
- *                 enum: ["$", "$$", "$$$", "$$$$"]
- *                 example: "$$$"
- *               isActive:
- *                 type: boolean
- *                 example: true
  *     responses:
  *       200:
  *         description: Restaurant updated successfully
@@ -393,9 +348,9 @@ router.post('/', authenticate, createRestaurant);
  *                     email:
  *                       type: string
  *                       example: "updated@pizzapalace.com"
- *                     isActive:
- *                       type: boolean
- *                       example: true
+ *                    website:
+ *                       type: string
+ *                       example: "https://new.pizzapalace.com"
  *                     updatedAt:
  *                       type: string
  *                       format: date-time

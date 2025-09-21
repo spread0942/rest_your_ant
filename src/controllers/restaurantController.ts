@@ -4,7 +4,7 @@ import { createSuccessResponse, createErrorResponse } from '../utils/response';
 
 export const createRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, description, address, phone, email, openingHours } = req.body;
+    const { name, description, address, phone, email, website } = req.body;
     const account = (req as any).user as Account;
 
     if (!account?.id) {
@@ -18,7 +18,7 @@ export const createRestaurant = async (req: Request, res: Response, next: NextFu
       address,
       phone,
       email,
-      openingHours,
+      website,
       accountId: account.id,
     });
 
@@ -89,7 +89,7 @@ export const getRestaurantById = async (req: Request, res: Response, next: NextF
 export const updateRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, description, address, phone, email, openingHours } = req.body;
+    const { name, description, address, phone, email, website } = req.body;
     const account = (req as any).user as Account;
 
     if (!account?.id) {
@@ -111,7 +111,7 @@ export const updateRestaurant = async (req: Request, res: Response, next: NextFu
       address,
       phone,
       email,
-      openingHours,
+      website,
     });
 
     res.json(createSuccessResponse(restaurant, 'Restaurant updated successfully'));
