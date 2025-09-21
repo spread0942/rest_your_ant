@@ -128,6 +128,26 @@
           </div>
 
           <div class="form-group">
+            <label for="restaurantEmail">Email</label>
+            <input 
+              type="email" 
+              id="restaurantEmail"
+              v-model="newRestaurant.email"
+              placeholder="Es. info@ristorante.it"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="restaurantWebsite">Website</label>
+            <input 
+              type="url" 
+              id="restaurantWebsite"
+              v-model="newRestaurant.website"
+              placeholder="Es. https://www.ristorante.it"
+            />
+          </div>
+
+          <div class="form-group">
             <label for="restaurantDescription">Descrizione</label>
             <textarea 
               id="restaurantDescription"
@@ -188,30 +208,19 @@ export default {
       try {
         this.loading = true
         
-        // Simulazione API call - sostituire con chiamata reale
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        
-        // Mock data - sostituire con chiamata API reale
-        this.restaurants = [
-          {
-            id: 1,
-            name: 'Trattoria da Mario',
-            address: 'Via Roma 123, Milano',
-            phone: '+39 02 123 4567',
-            description: 'Cucina tradizionale italiana',
-            menuCount: 3,
-            tableCount: 15
-          },
-          {
-            id: 2,
-            name: 'Pizzeria Bella Napoli',
-            address: 'Corso Venezia 45, Milano',
-            phone: '+39 02 987 6543',
-            description: 'Le migliori pizze della città',
-            menuCount: 2,
-            tableCount: 20
-          }
-        ]
+        const response = await fetch(`${apiConfig.apiEndpoint}/restaurants`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            }
+          });
+        if (response.ok) {
+          const data = await response.json();
+          this.restaurants = data.data.restaurants;
+        } else {
+          throw new Error('Failed to fetch restaurants');
+        }
       } catch (error) {
         console.error('Errore nel caricamento ristoranti:', error)
         this.restaurants = []
@@ -237,8 +246,7 @@ export default {
           
         if (response.ok) {
           const data = await response.json();
-          this.restaurants.push(data.data.restaurant);
-        console.log('Ristorante creato:', data.data.restaurant)
+          this.restaurants.push(data.data);
         } else {
           throw new Error('Invalid credentials');
         }
@@ -265,14 +273,30 @@ export default {
       console.log('Modifica ristorante:', restaurant)
     },
 
-    deleteRestaurant(restaurant) {
+    async deleteRestaurant(restaurant) {
       if (confirm(`Sei sicuro di voler eliminare "${restaurant.name}"?`)) {
-        // TODO: Implementare eliminazione ristorante
-        const index = this.restaurants.findIndex(r => r.id === restaurant.id)
-        if (index > -1) {
-          this.restaurants.splice(index, 1)
+        try {
+          const response = await fetch(`${apiConfig.apiEndpoint}/restaurants/${restaurant.id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (!data.success) {
+              throw new Error(data.message || 'Failed to delete restaurant');
+            }
+            this.restaurants = this.restaurants.filter(r => r.id !== restaurant.id);
+          } else {
+            throw new Error('Failed to delete restaurant');
+          }
+        } catch (error) {
+          console.error('Errore nell\'eliminazione del ristorante:', error);
+          alert('Errore nell\'eliminazione del ristorante. Riprova.');
         }
-        console.log('Ristorante eliminato:', restaurant)
       }
     },
 
