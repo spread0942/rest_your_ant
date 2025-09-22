@@ -1,47 +1,80 @@
 <template>
   <div class="login-page">
     <div class="login-container">
+      <!-- Header with Logo -->
+      <div class="login-header">
+        <h1 class="logo-title">
+          <span class="logo-perfect">Perfect</span><span class="logo-menu">Menu</span>
+        </h1>
+        <p class="logo-subtitle">Gestisci i tuoi menu tutto in un unica piattaforma</p>
+      </div>
+
+      <!-- Login Card with Neumorphism -->
       <div class="login-card">
-        <div class="login-header">
-          <h1>🍽️ Restaurant Manager</h1>
-          <p>Sign in to your account</p>
-        </div>
-        
-        <form @submit.prevent="handleLogin" class="login-form">
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input 
-              type="email" 
-              id="email" 
-              v-model="credentials.email"
-              required 
-              placeholder="Enter your email"
-            >
+        <div class="card-content">
+          <!-- Login Title -->
+          <div class="login-title-section">
+            <h2 class="login-title">Accedi</h2>
+            <p class="login-subtitle">Inserisci le tue credenziali per continuare</p>
           </div>
-          
-          <div class="form-group">
-            <label for="password">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              v-model="credentials.password"
-              required 
-              placeholder="Enter your password"
-            >
-          </div>
-          
-          <button type="submit" class="login-btn" :disabled="loading">
-            {{ loading ? 'Signing in...' : 'Sign In' }}
-          </button>
-          
-          <p v-if="error" class="error-message">{{ error }}</p>
-        </form>
-        
-        <div class="demo-credentials">
-          <p><strong>Demo Credentials:</strong></p>
-          <p>Email: admin@restaurant.com</p>
-          <p>Password: admin123</p>
+
+          <!-- Login Form -->
+          <form @submit.prevent="handleLogin" class="login-form">
+            <div class="form-fields">
+              <!-- Email Field -->
+              <div class="form-group">
+                <label for="email" class="field-label">Email</label>
+                <div class="input-container">
+                  <i class="fi fi-rr-envelope input-icon"></i>
+                  <input 
+                    type="email" 
+                    id="email" 
+                    v-model="credentials.email"
+                    required 
+                    placeholder="Inserisci la tua email"
+                    class="form-input"
+                  >
+                </div>
+              </div>
+
+              <!-- Password Field -->
+              <div class="form-group">
+                <label for="password" class="field-label">Password</label>
+                <div class="input-container">
+                  <i class="fi fi-rr-lock input-icon"></i>
+                  <input 
+                    type="password" 
+                    id="password" 
+                    v-model="credentials.password"
+                    required 
+                    placeholder="Inserisci la tua password"
+                    class="form-input"
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Forgot Password Link -->
+            <div class="forgot-password">
+              <a href="#" class="forgot-link">Password dimenticata?</a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="login-btn" :disabled="loading">
+              {{ loading ? 'Accesso in corso...' : 'Accedi' }}
+            </button>
+
+            <!-- Error Message -->
+            <p v-if="error" class="error-message">{{ error }}</p>
+          </form>
         </div>
+      </div>
+
+      <!-- Demo Credentials (for development) -->
+      <div class="demo-credentials" v-if="showDemo">
+        <p><strong>Credenziali Demo:</strong></p>
+        <p>Email: admin@restaurant.com</p>
+        <p>Password: admin123</p>
       </div>
     </div>
   </div>
@@ -59,7 +92,8 @@ export default {
         password: ''
       },
       loading: false,
-      error: null
+      error: null,
+      showDemo: process.env.NODE_ENV === 'development' // Show demo credentials only in development
     }
   },
   methods: {
@@ -111,7 +145,7 @@ export default {
           }
         }
       } catch (error) {
-        this.error = 'Invalid email or password. Try the demo credentials.';
+        this.error = 'Email o password non validi. Prova le credenziali demo.';
       } finally {
         this.loading = false;
       }
@@ -127,89 +161,224 @@ export default {
 </script>
 
 <style scoped>
+/* Login Page with Neumorphism Design */
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #f3f4f6;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2rem;
+  font-family: 'Urbanist', sans-serif;
 }
 
 .login-container {
   width: 100%;
-  max-width: 400px;
+  max-width: 448px;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  align-items: center;
 }
 
-.login-card {
-  background: white;
-  border-radius: 20px;
-  padding: 2.5rem;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-  backdrop-filter: blur(10px);
-}
-
+/* Header Section */
 .login-header {
   text-align: center;
-  margin-bottom: 2rem;
+  width: 338px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.login-header h1 {
-  color: #667eea;
-  margin: 0 0 0.5rem 0;
-  font-size: 2rem;
-}
-
-.login-header p {
-  color: #666;
+.logo-title {
+  font-size: 48px;
+  font-weight: 400;
   margin: 0;
+  line-height: normal;
+  letter-spacing: -2.88px;
 }
 
-.login-form {
-  margin-bottom: 2rem;
+.logo-perfect {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 800;
+  color: #f92561;
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
+.logo-menu {
+  font-family: 'Urbanist', sans-serif;
+  font-weight: 300;
+  color: rgba(20, 0, 3, 0.58);
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #333;
-  font-weight: 500;
+.logo-subtitle {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  line-height: normal;
 }
 
-.form-group input {
+/* Login Card with Neumorphism */
+.login-card {
+  background: #f3f4f6;
+  border-radius: 12px;
+  padding: 25px 28px;
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid #e1e5e9;
-  border-radius: 10px;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
+  box-shadow: -8px -8px 16px 0px #ffffff, 8px 8px 16px 0px #acacac;
   box-sizing: border-box;
 }
 
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  width: 392px;
+  margin: 0 auto;
 }
 
-.login-btn {
-  width: 100%;
-  background: #667eea;
-  color: white;
+/* Login Title Section */
+.login-title-section {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 282px;
+  margin: 0 auto;
+}
+
+.login-title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 30px;
+  font-weight: 700;
+  color: #140003;
+  margin: 0;
+  line-height: normal;
+}
+
+.login-subtitle {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #979ea5;
+  margin: 0;
+  line-height: normal;
+}
+
+/* Form Styles */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #000000;
+  margin: 0;
+  line-height: normal;
+}
+
+.input-container {
+  position: relative;
+  background: #f3f4f6;
+  border-radius: 8px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  padding: 12px 17px;
+  box-shadow: -8px -8px 16px 0px inset #ffffff, 8px 8px 16px 0px inset #dfe2e7;
+  box-sizing: border-box;
+}
+
+.input-icon {
+  font-size: 16px;
+  color: #979ea5;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.form-input {
+  background: transparent;
   border: none;
-  padding: 1rem;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 500;
+  outline: none;
+  width: 100%;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #140003;
+  line-height: normal;
+}
+
+.form-input::placeholder {
+  color: #979ea5;
+  font-family: 'Urbanist', sans-serif;
+}
+
+.form-input:focus {
+  outline: none;
+}
+
+/* Forgot Password */
+.forgot-password {
+  text-align: center;
+}
+
+.forgot-link {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #d41e51;
+  text-decoration: underline;
+  text-underline-position: from-font;
+  line-height: normal;
+}
+
+.forgot-link:hover {
+  color: #c11d4a;
+}
+
+/* Login Button */
+.login-btn {
+  background: #d41e51;
+  color: #f3f4f6;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 26px;
+  height: 46px;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.3s ease;
+  box-shadow: -6px -6px 12px 0px #ffffff, 6px 6px 12px 0px #f2abbf;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: normal;
 }
 
 .login-btn:hover:not(:disabled) {
-  background: #5a6fd8;
+  background: #c11d4a;
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #f2abbf;
+}
+
+.login-btn:active:not(:disabled) {
+  box-shadow: inset -2px -2px 4px 0px #ffffff, inset 2px 2px 4px 0px #f2abbf;
 }
 
 .login-btn:disabled {
@@ -217,38 +386,84 @@ export default {
   cursor: not-allowed;
 }
 
+/* Error Message */
 .error-message {
-  color: #dc3545;
+  color: #d41e51;
   text-align: center;
-  margin-top: 1rem;
-  margin-bottom: 0;
+  margin: 0;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
 }
 
+/* Demo Credentials (development only) */
 .demo-credentials {
-  background: #f8f9fa;
-  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   padding: 1rem;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 1rem;
 }
 
 .demo-credentials p {
   margin: 0.25rem 0;
   color: #666;
+  font-family: 'Urbanist', sans-serif;
 }
 
 .demo-credentials p:first-child {
   color: #333;
   margin-bottom: 0.5rem;
+  font-weight: 600;
 }
 
-@media (max-width: 480px) {
+/* Responsive Design */
+@media (max-width: 768px) {
   .login-page {
     padding: 1rem;
   }
   
+  .login-container {
+    gap: 32px;
+  }
+
+  .login-header {
+    width: 100%;
+  }
+
+  .logo-title {
+    font-size: 36px;
+  }
+
   .login-card {
-    padding: 2rem;
+    padding: 20px;
+  }
+
+  .card-content {
+    width: 100%;
+    gap: 24px;
+  }
+
+  .login-title-section {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-title {
+    font-size: 28px;
+    letter-spacing: -1.68px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+  .input-container {
+    padding: 10px 15px;
   }
 }
 </style>

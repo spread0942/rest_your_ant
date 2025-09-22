@@ -3,6 +3,7 @@ import LoginView from '../views/Login.vue'
 import DashboardView from '../views/Dashboard.vue'
 import MenuView from '../views/Menu.vue'
 import RestaurantsView from '../views/Restaurants.vue'
+import PiattiView from '../views/Piatti.vue'
 
 const routes = [
   {
@@ -31,6 +32,48 @@ const routes = [
     name: 'Menu',
     component: MenuView,
     meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/piatti/:category',
+    name: 'Piatti',
+    component: () => import('../views/Piatti.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/piatto/nuovo',
+    name: 'NuovoPiatto',
+    component: () => import('../views/ModificaPiatto.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/piatto/:id/modifica',
+    name: 'ModificaPiatto',
+    component: () => import('../views/ModificaPiatto.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/aree-tavoli',
+    name: 'AreeTavoli',
+    component: () => import('../views/AreeTavoli.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/tavoli/:area',
+    name: 'Tavoli',
+    component: () => import('../views/Tavoli.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/tavolo/:id',
+    name: 'TavoloSingolo',
+    component: () => import('../views/TavoloSingolo.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/impostazioni',
+    name: 'Impostazioni',
+    component: () => import('../views/Impostazioni.vue'),
+    meta: { requiresAuth: true }
   }
 ]
 

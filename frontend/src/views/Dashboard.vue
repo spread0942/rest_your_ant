@@ -1,124 +1,165 @@
 <template>
-  <div class="dashboard">
-    <!-- Top Navigation Bar -->
-    <nav class="dashboard-nav">
-      <div class="nav-brand">
-        <h1>🍽️ {{ selectedRestaurant.name || 'Restaurant Manager' }}</h1>
-      </div>
-      <div class="nav-user">
-        <span class="welcome-text">Welcome back, {{ user.firstname || 'User' }}!</span>
-        <button @click="goToRestaurants" class="restaurant-btn">
-          <span>🏪</span> Cambia Ristorante
-        </button>
-        <div class="user-avatar">{{ getUserInitial() }}</div>
-        <button @click="logout" class="logout-btn">
-          <span>🚪</span> Logout
-        </button>
-      </div>
-    </nav>
+  <div class="dashboard-container">
+    <!-- Sidebar -->
+    <div class="sidebar-wrapper">
+      <SidebarComponent @restaurant-changed="handleRestaurantChanged" />
+    </div>
 
     <!-- Main Content -->
-    <div class="dashboard-content">
-      <!-- Quick Stats -->
-      <section class="stats-section">
-        <h2>📊 Today's Overview</h2>
+    <div class="main-content">
+      <!-- Header Section -->
+      <div class="header-section">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-subtitle">Panoramica generale del ristorante</p>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-section">
         <div class="stats-grid">
-          <div class="stat-card orders">
-            <div class="stat-icon">🛒</div>
-            <div class="stat-content">
-              <h3>{{ stats.todayOrders }}</h3>
-              <p>Orders Today</p>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon orders-icon">
+                <i class="fi fi-rr-shopping-cart"></i>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-title">Ordini Oggi</h3>
+                <p class="stat-value">{{ stats.todayOrders }}</p>
+              </div>
+            </div>
+            <div class="stat-trend positive">
+              <span class="trend-icon">↗</span>
+              <span class="trend-text">+12% da ieri</span>
             </div>
           </div>
-          <div class="stat-card revenue">
-            <div class="stat-icon">💰</div>
-            <div class="stat-content">
-              <h3>${{ stats.todayRevenue }}</h3>
-              <p>Revenue Today</p>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon revenue-icon">
+                <i class="fi fi-rr-euro"></i>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-title">Incasso Oggi</h3>
+                <p class="stat-value">€{{ stats.todayRevenue }}</p>
+              </div>
+            </div>
+            <div class="stat-trend positive">
+              <span class="trend-icon">↗</span>
+              <span class="trend-text">+8% da ieri</span>
             </div>
           </div>
-          <div class="stat-card tables">
-            <div class="stat-icon">🪑</div>
-            <div class="stat-content">
-              <h3>{{ stats.activeTables }}/{{ stats.totalTables }}</h3>
-              <p>Active Tables</p>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon tables-icon">
+                <i class="fi fi-rr-table"></i>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-title">Tavoli Attivi</h3>
+                <p class="stat-value">{{ stats.activeTables }}/{{ stats.totalTables }}</p>
+              </div>
+            </div>
+            <div class="stat-trend neutral">
+              <span class="trend-icon">→</span>
+              <span class="trend-text">Stabile</span>
             </div>
           </div>
-          <div class="stat-card customers">
-            <div class="stat-icon">👥</div>
-            <div class="stat-content">
-              <h3>{{ stats.todayCustomers }}</h3>
-              <p>Customers Served</p>
+
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon customers-icon">
+                <i class="fi fi-rr-users"></i>
+              </div>
+              <div class="stat-info">
+                <h3 class="stat-title">Clienti Serviti</h3>
+                <p class="stat-value">{{ stats.todayCustomers }}</p>
+              </div>
+            </div>
+            <div class="stat-trend positive">
+              <span class="trend-icon">↗</span>
+              <span class="trend-text">+15% da ieri</span>
             </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- Quick Actions -->
-      <section class="actions-section">
-        <h2>⚡ Azioni Rapide</h2>
+      <!-- Quick Actions Section -->
+      <div class="actions-section">
+        <h2 class="section-title">Azioni Rapide</h2>
         <div class="actions-grid">
           <div class="action-card" @click="navigateTo('/menu')">
-            <div class="action-icon">📖</div>
-            <h3>Vedi i Menu</h3>
-            <p>Modifica piatti e prezzi</p>
+            <div class="action-icon">
+              <i class="fi fi-rr-book-alt"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Gestisci Menu</h3>
+              <p class="action-description">Modifica piatti e categorie</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fi fi-rr-angle-right"></i>
+            </div>
           </div>
-          <div class="action-card" @click="navigateTo('/orders')">
-            <div class="action-icon">📋</div>
-            <h3>Gestisci Ordini</h3>
-            <p>Visualizza e gestisci gli ordini dei clienti</p>
+
+          <div class="action-card" @click="navigateTo('/aree-tavoli')">
+            <div class="action-icon">
+              <i class="fi fi-rr-reservation-table"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Gestisci Tavoli</h3>
+              <p class="action-description">Monitora aree e tavoli</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fi fi-rr-angle-right"></i>
+            </div>
           </div>
-          <div class="action-card" @click="navigateTo('/tables')">
-            <div class="action-icon">🍽️</div>
-            <h3>Gestisci Tavoli</h3>
-            <p>Monitora lo stato dei tavoli</p>
-          </div>
-          <div class="action-card" @click="navigateTo('/inventory')">
-            <div class="action-icon">📦</div>
-            <h3>Gestisci Magazzino</h3>
-            <p>Controlla i livelli di stock</p>
+
+          <div class="action-card" @click="navigateTo('/piatti')">
+            <div class="action-icon">
+              <i class="fi fi-rr-plate-wheat"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Gestisci Piatti</h3>
+              <p class="action-description">Modifica ingredienti e prezzi</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fi fi-rr-angle-right"></i>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- Recent Orders -->
-      <section class="recent-orders">
-        <h2>🕒 Ordini Recenti</h2>
-        <div class="orders-list">
-          <div v-for="order in recentOrders" :key="order.id" class="order-item">
+      <!-- Recent Orders Section -->
+      <div class="recent-section">
+        <h2 class="section-title">Ordini Recenti</h2>
+        <div class="orders-container">
+          <div class="order-item" v-for="order in recentOrders" :key="order.id">
             <div class="order-info">
-              <span class="order-id">#{{ order.id }}</span>
-              <span class="order-table">Table {{ order.table }}</span>
-              <span class="order-time">{{ formatTime(order.createdAt) }}</span>
+              <div class="order-id">#{{ order.id }}</div>
+              <div class="order-details">
+                <span class="order-table">Tavolo {{ order.table }}</span>
+                <span class="order-time">{{ formatTime(order.createdAt) }}</span>
+              </div>
             </div>
             <div class="order-status" :class="order.status.toLowerCase()">
-              {{ order.status }}
+              {{ getStatusText(order.status) }}
             </div>
-            <div class="order-total">${{ order.total }}</div>
+            <div class="order-total">€{{ order.total.toFixed(2) }}</div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
+import SidebarComponent from '@/components/SidebarComponent.vue'
+
 export default {
   name: 'DashboardView',
+  components: {
+    SidebarComponent
+  },
   data() {
     return {
-      user: {
-        firstname: '',
-        lastname: '',
-        email: '',
-        role: ''
-      },
-      selectedRestaurant: {
-        id: null,
-        name: '',
-        address: '',
-        phone: ''
-      },
       stats: {
         todayOrders: 47,
         todayRevenue: 1250.50,
@@ -130,28 +171,28 @@ export default {
         {
           id: 1023,
           table: 5,
-          status: 'Preparing',
+          status: 'preparing',
           total: 45.30,
           createdAt: new Date(Date.now() - 5 * 60000) // 5 minutes ago
         },
         {
           id: 1022,
           table: 3,
-          status: 'Ready',
+          status: 'ready',
           total: 78.90,
           createdAt: new Date(Date.now() - 12 * 60000) // 12 minutes ago
         },
         {
           id: 1021,
           table: 7,
-          status: 'Delivered',
+          status: 'delivered',
           total: 32.50,
           createdAt: new Date(Date.now() - 25 * 60000) // 25 minutes ago
         },
         {
           id: 1020,
           table: 2,
-          status: 'Paid',
+          status: 'paid',
           total: 89.75,
           createdAt: new Date(Date.now() - 45 * 60000) // 45 minutes ago
         }
@@ -159,294 +200,313 @@ export default {
     }
   },
   methods: {
-    getUserInitial() {
-      if (this.user.firstname) {
-        return this.user.firstname.charAt(0).toUpperCase();
-      }
-      return 'U'; // Default fallback
-    },
-    loadUserData() {
-      try {
-        const userData = localStorage.getItem('user');
-        if (userData) {
-          this.user = JSON.parse(userData);
-        }
-      } catch (error) {
-        console.error('Error loading user data:', error);
-        // Fallback to default
-        this.user = {
-          firstname: 'User',
-          lastname: '',
-          email: '',
-          role: 'user'
-        };
-      }
-    },
-    loadRestaurantData() {
-      try {
-        const restaurantData = localStorage.getItem('selectedRestaurant');
-        if (restaurantData) {
-          this.selectedRestaurant = JSON.parse(restaurantData);
-        } else {
-          // No restaurant selected, redirect to restaurants page
-          this.$router.push('/restaurants');
-        }
-      } catch (error) {
-        console.error('Error loading restaurant data:', error);
-        this.$router.push('/restaurants');
-      }
-    },
-    goToRestaurants() {
-      this.$router.push('/restaurants');
-    },
-    logout() {
-      // Clear authentication and redirect to login
-      localStorage.removeItem('authToken');
-      localStorage.removeItem('user');
-      localStorage.removeItem('selectedRestaurant');
-      this.$router.push('/login');
+    handleRestaurantChanged(restaurant) {
+      console.log('Restaurant changed in Dashboard:', restaurant)
+      // Update dashboard data based on selected restaurant
+      this.loadDashboardData()
     },
     navigateTo(path) {
-      this.$router.push(path);
+      this.$router.push(path)
     },
     formatTime(date) {
       return date.toLocaleTimeString('it-IT', { 
         hour: '2-digit', 
         minute: '2-digit' 
-      });
+      })
+    },
+    getStatusText(status) {
+      const statusMap = {
+        'preparing': 'In Preparazione',
+        'ready': 'Pronto',
+        'delivered': 'Consegnato',
+        'paid': 'Pagato'
+      }
+      return statusMap[status] || status
     },
     async loadDashboardData() {
       try {
         // Here you would normally fetch data from your API
-        const response = await fetch('http://localhost:3000/api/dashboard/stats');
+        const response = await fetch('http://localhost:3000/api/dashboard/stats')
         if (response.ok) {
-          const data = await response.json();
-          this.stats = data.stats;
-          this.recentOrders = data.recentOrders;
+          const data = await response.json()
+          this.stats = data.stats
+          this.recentOrders = data.recentOrders
         }
       } catch (error) {
-        console.log('Using mock data - API not available');
+        console.log('Using mock data - API not available')
       }
     }
   },
   async mounted() {
-    // Load user data from localStorage
-    this.loadUserData();
-    
-    // Load restaurant data from localStorage
-    this.loadRestaurantData();
-    
     // Load dashboard data
-    await this.loadDashboardData();
+    await this.loadDashboardData()
   }
 }
 </script>
 
 <style scoped>
-.dashboard {
-  min-height: 100vh;
-  background: #f8f9fa;
-}
-
-/* Navigation */
-.dashboard-nav {
-  background: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  padding: 1rem 2rem;
+.dashboard-container {
+  width: 100%;
+  height: 100vh;
+  background: #f3f4f6;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  font-family: 'Urbanist', sans-serif;
+  padding: 40px 20px;
+  gap: 26px;
 }
 
-.nav-brand h1 {
-  color: #667eea;
-  margin: 0;
-  font-size: 1.8rem;
-}
-
-.nav-user {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.welcome-text {
-  color: #666;
-  font-weight: 500;
-}
-
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: #667eea;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-}
-
-.logout-btn {
-  background: #dc3545;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background 0.3s ease;
-}
-
-.logout-btn:hover {
-  background: #c82333;
-}
-
-.restaurant-btn {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: background 0.3s ease;
-  margin-right: 1rem;
-}
-
-.restaurant-btn:hover {
-  background: #0056b3;
+/* Sidebar */
+.sidebar-wrapper {
+  flex-shrink: 0;
 }
 
 /* Main Content */
-.dashboard-content {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  gap: 32px;
 }
 
-.dashboard-content section {
-  margin-bottom: 3rem;
+/* Header Section */
+.header-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.dashboard-content h2 {
-  color: #333;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+.page-title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 48px;
+  font-weight: 400;
+  color: #140003;
+  margin: 0;
+  line-height: normal;
+}
+
+.page-subtitle {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #140003;
+  margin: 0;
+  line-height: normal;
 }
 
 /* Stats Section */
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
 }
 
 .stat-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  background: #f0f0f0;
+  border: 0.5px solid #adb5bd;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: -8px -8px 16px 0px #ffffff, 8px 8px 16px 0px #acacac;
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.stat-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+.stat-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .stat-icon {
-  font-size: 2.5rem;
-  width: 60px;
-  height: 60px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 20px;
+  color: #140003;
+  background: #f3f4f6;
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #dfe2e7;
 }
 
-.orders .stat-icon { background: #e3f2fd; }
-.revenue .stat-icon { background: #f3e5f5; }
-.tables .stat-icon { background: #e8f5e8; }
-.customers .stat-icon { background: #fff3e0; }
-
-.stat-content h3 {
-  margin: 0;
-  font-size: 2rem;
-  font-weight: bold;
-  color: #333;
+.orders-icon {
+  color: #007bff;
 }
 
-.stat-content p {
-  margin: 0.25rem 0 0 0;
+.revenue-icon {
+  color: #28a745;
+}
+
+.tables-icon {
+  color: #ffc107;
+}
+
+.customers-icon {
+  color: #dc3545;
+}
+
+.stat-info {
+  flex: 1;
+}
+
+.stat-title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
   color: #666;
-  font-size: 0.9rem;
+  margin: 0 0 4px 0;
+  line-height: normal;
+}
+
+.stat-value {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 24px;
+  font-weight: 600;
+  color: #140003;
+  margin: 0;
+  line-height: normal;
+}
+
+.stat-trend {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.stat-trend.positive {
+  color: #28a745;
+}
+
+.stat-trend.negative {
+  color: #dc3545;
+}
+
+.stat-trend.neutral {
+  color: #666;
+}
+
+.trend-icon {
+  font-size: 14px;
 }
 
 /* Actions Section */
+.actions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.section-title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: #140003;
+  margin: 0;
+  line-height: normal;
+}
+
 .actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
 }
 
 .action-card {
-  background: white;
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-  text-align: center;
+  background: #f0f0f0;
+  border: 0.5px solid #adb5bd;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: -8px -8px 16px 0px #ffffff, 8px 8px 16px 0px #acacac;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .action-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #acacac;
+  transform: translateY(-2px);
 }
 
 .action-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  box-shadow: -4px -4px 8px 0px #ffffff, 4px 4px 8px 0px #dfe2e7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #140003;
+  flex-shrink: 0;
 }
 
-.action-card h3 {
-  color: #333;
-  margin: 0 0 0.5rem 0;
-  font-size: 1.2rem;
+.action-content {
+  flex: 1;
 }
 
-.action-card p {
+.action-title {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  color: #140003;
+  margin: 0 0 4px 0;
+  line-height: normal;
+}
+
+.action-description {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
   color: #666;
   margin: 0;
-  font-size: 0.9rem;
+  line-height: normal;
 }
 
-/* Recent Orders */
-.orders-list {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+.action-arrow {
+  font-size: 16px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+/* Recent Orders Section */
+.recent-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.orders-container {
+  background: #f0f0f0;
+  border: 0.5px solid #adb5bd;
+  border-radius: 8px;
+  box-shadow: -8px -8px 16px 0px #ffffff, 8px 8px 16px 0px #acacac;
   overflow: hidden;
 }
 
 .order-item {
-  display: grid;
-  grid-template-columns: 1fr auto auto;
+  display: flex;
   align-items: center;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #eee;
-  gap: 1rem;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #ddd;
+  transition: background-color 0.2s ease;
+}
+
+.order-item:hover {
+  background: rgba(0, 0, 0, 0.02);
 }
 
 .order-item:last-child {
@@ -456,25 +516,41 @@ export default {
 .order-info {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 4px;
+  flex: 1;
 }
 
 .order-id {
-  font-weight: bold;
-  color: #333;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #140003;
+  line-height: normal;
 }
 
-.order-table, .order-time {
-  font-size: 0.8rem;
+.order-details {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
   color: #666;
 }
 
+.order-table,
+.order-time {
+  font-family: 'Urbanist', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: normal;
+}
+
 .order-status {
-  padding: 0.25rem 0.75rem;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 12px;
   font-weight: 500;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0 16px;
 }
 
 .order-status.preparing {
@@ -498,37 +574,61 @@ export default {
 }
 
 .order-total {
-  font-weight: bold;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
   color: #28a745;
-  font-size: 1.1rem;
+  line-height: normal;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .dashboard-nav {
-    padding: 1rem;
+  .dashboard-container {
     flex-direction: column;
-    gap: 1rem;
+    padding: 20px;
+    gap: 20px;
+  }
+  
+  .sidebar-wrapper {
+    width: 100%;
+  }
+  
+  .main-content {
+    padding: 0;
+    width: 100%;
   }
 
-  .nav-user {
-    flex-direction: column;
-    gap: 0.5rem;
+  .page-title {
+    font-size: 32px;
   }
 
-  .dashboard-content {
-    padding: 1rem;
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 
-  .stats-grid,
   .actions-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
   .order-item {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
-    text-align: center;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .order-details {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .order-status {
+    margin: 0;
+    align-self: flex-start;
   }
 }
+
+/* Font Loading */
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600&display=swap');
 </style>
