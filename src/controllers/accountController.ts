@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { Account } from '../models';
+import { Account, Auth, User } from '../models';
 import { createSuccessResponse, createErrorResponse } from '../utils/response';
 import { hashPassword, comparePassword, generateToken } from '../utils/auth';
 
 export const createAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { username, email, password, role, firstName, lastName } = req.body;
+    const { username, email, password, firstName, lastName } = req.body;
 
     const hashedPassword = await hashPassword(password);
 
@@ -13,7 +13,6 @@ export const createAccount = async (req: Request, res: Response, next: NextFunct
       username,
       email,
       password: hashedPassword,
-      role,
       firstName,
       lastName,
     });
@@ -75,7 +74,7 @@ export const getAccountById = async (req: Request, res: Response, next: NextFunc
 export const updateAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { username, email, role, firstName, lastName, password } = req.body;
+    const { username, email, firstName, lastName, password } = req.body;
 
     const account = await Account.findByPk(id);
     if (!account) {
@@ -86,7 +85,6 @@ export const updateAccount = async (req: Request, res: Response, next: NextFunct
     const updateData: any = {
       username,
       email,
-      role,
       firstName,
       lastName,
     };
@@ -125,7 +123,8 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
   try {
     const { email, password } = req.body;
 
-    const account = await Account.findOne({ where: { email } });
+    // validate account
+    const account: Account | null = await Account.findOne({ where: { email } });
     if (!account) {
       res.status(401).json(createErrorResponse('Invalid credentials'));
       return;
@@ -137,7 +136,16 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       return;
     }
 
-    const token = generateToken({ id: account.id, email: account.email, role: account.role });
+    // validate users and tenants
+    const users: User[] = await User.findAll({ where: { accountId: account.id } });
+    if (!users || users.length === 0) {
+      res.status(401).json(createErrorResponse('User not found for this account'));
+      return;
+    }
+
+    // generate token
+    const auth = new Auth(account, users);
+    const token = generateToken(auth);
     const { password: _, ...accountData } = account.toJSON();
 
     res.json(createSuccessResponse({

@@ -6,7 +6,6 @@ interface AccountAttributes {
   username: string;
   email: string;
   password: string;
-  role: 'admin' | 'user';
   firstName?: string;
   lastName?: string;
   createdAt: Date;
@@ -20,7 +19,6 @@ class Account extends Model<AccountAttributes, AccountCreationAttributes> implem
   public username!: string;
   public email!: string;
   public password!: string;
-  public role!: 'admin' | 'user';
   public firstName?: string;
   public lastName?: string;
   public readonly createdAt!: Date;
@@ -50,11 +48,6 @@ Account.init(
     password: {
       type: DataTypes.STRING(255),
       allowNull: false,
-    },
-    role: {
-      type: DataTypes.ENUM('admin', 'user'),
-      allowNull: false,
-      defaultValue: 'user',
     },
     firstName: {
       type: DataTypes.STRING(50),

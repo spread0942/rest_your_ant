@@ -20,7 +20,7 @@ export const authenticate = async (
       return;
     }
 
-    const token = authHeader.substring(7);
+    const token: string = authHeader.substring(7);
     const decoded = verifyToken(token);
     
     const user = await Account.findByPk(decoded.id);
@@ -28,8 +28,8 @@ export const authenticate = async (
       res.status(401).json(createErrorResponse('Invalid token'));
       return;
     }
-
-    req.user = user;
+    
+    req.user = decoded;
     next();
   } catch (error) {
     res.status(401).json(createErrorResponse('Invalid token'));

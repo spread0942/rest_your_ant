@@ -1,24 +1,28 @@
 import { Router } from 'express';
 import accountRoutes from './accountRoutes';
-import restaurantRoutes from './restaurantRoutes';
+import drinkRoutes from './drinkRoutes';
 import menuRoutes from './menuRoutes';
+import orderRoutes from './orderRoutes';
 import plateRoutes from './plateRoutes';
 import productRoutes from './productRoutes';
-import drinkRoutes from './drinkRoutes';
+import restaurantRoutes from './restaurantRoutes';
 import tableRoutes from './tableRoutes';
-import orderRoutes from './orderRoutes';
+import tenantRoutes from './tenantRoutes';
+import userRoutes from './userRoutes';
 
 const router = Router();
 
 // API route prefix: /api
 router.use('/accounts', accountRoutes);
-router.use('/restaurants', restaurantRoutes);
+router.use('/drinks', drinkRoutes);
 router.use('/menus', menuRoutes);
+router.use('/orders', orderRoutes);
 router.use('/plates', plateRoutes);
 router.use('/products', productRoutes);
-router.use('/drinks', drinkRoutes);
+router.use('/restaurants', restaurantRoutes);
 router.use('/tables', tableRoutes);
-router.use('/orders', orderRoutes);
+router.use('/tenants', tenantRoutes);
+router.use('/users', userRoutes);
 
 /**
  * @openapi
@@ -38,6 +42,10 @@ router.use('/orders', orderRoutes);
  * tags:
  *   - name: Accounts
  *     description: User account management and authentication
+ *   - name: Tenants
+ *     description: Tenant management operations
+ *   - name: Users
+ *     description: User management operations
  *   - name: Restaurants
  *     description: Restaurant management operations
  *   - name: Menus
