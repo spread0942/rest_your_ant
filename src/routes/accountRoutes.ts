@@ -65,9 +65,6 @@ const router = Router();
  *                         email:
  *                           type: string
  *                           example: john@example.com
- *                         role:
- *                           type: string
- *                           example: user
  *                 message:
  *                   type: string
  *                   example: Login successful
@@ -121,11 +118,6 @@ router.post('/login', login);
  *               phone:
  *                 type: string
  *                 example: "+1234567890"
- *               role:
- *                 type: string
- *                 enum: [user, admin]
- *                 default: user
- *                 example: user
  *     responses:
  *       201:
  *         description: Account created successfully
@@ -155,9 +147,6 @@ router.post('/login', login);
  *                     lastName:
  *                       type: string
  *                       example: Doe
- *                     role:
- *                       type: string
- *                       example: user
  *                 message:
  *                   type: string
  *                   example: Account created successfully
@@ -226,9 +215,6 @@ router.post('/', createAccount);
  *                       lastName:
  *                         type: string
  *                         example: Doe
- *                       role:
- *                         type: string
- *                         example: user
  *                       createdAt:
  *                         type: string
  *                         format: date-time
@@ -309,9 +295,6 @@ router.get('/', authenticate, authorize(['admin']), getAllAccounts);
  *                     phone:
  *                       type: string
  *                       example: "+1234567890"
- *                     role:
- *                       type: string
- *                       example: user
  *                     createdAt:
  *                       type: string
  *                       format: date-time
@@ -380,11 +363,6 @@ router.get('/:id', authenticate, getAccountById);
  *                 minLength: 6
  *                 example: newpassword123
  *                 description: Only include if changing password
- *               role:
- *                 type: string
- *                 enum: [user, admin]
- *                 example: user
- *                 description: Only admins can change roles
  *     responses:
  *       200:
  *         description: Account updated successfully
@@ -414,9 +392,6 @@ router.get('/:id', authenticate, getAccountById);
  *                     lastName:
  *                       type: string
  *                       example: Doe
- *                     role:
- *                       type: string
- *                       example: user
  *                     updatedAt:
  *                       type: string
  *                       format: date-time

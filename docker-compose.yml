@@ -52,7 +52,7 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=(Host(`rest_your_ant.localhost`) && PathPrefix(`/api`))"
+      - "traefik.http.routers.api.rule=(Host(`perfectmenu.localhost`) && PathPrefix(`/api`))"
       - "traefik.http.routers.api.service=api"
       - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api"
       - "traefik.http.routers.api.middlewares=api-strip@docker"
@@ -69,10 +69,10 @@ services:
       - "8000:8000"
     restart: unless-stopped
     environment:
-      - VUE_APP_API_ENDPOINT=http://rest_your_ant.localhost/api/api
+      - VUE_APP_API_ENDPOINT=http://perfectmenu.localhost/api/api
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`rest_your_ant.localhost`)"
+      - "traefik.http.routers.frontend.rule=Host(`perfectmenu.localhost`)"
       - "traefik.http.services.frontend.loadbalancer.server.port=8000"
       - "traefik.http.routers.frontend.priority=10"
 

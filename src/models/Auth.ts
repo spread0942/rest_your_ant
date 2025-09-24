@@ -17,6 +17,14 @@ class Auth {
       }));
     }
   }
+
+  toJSON() {
+    return {
+      id: this.id,
+      email: this.email,
+      tenants: this.tenants
+    };
+  }
 }
 
 export default Auth;

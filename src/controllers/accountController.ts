@@ -119,9 +119,14 @@ export const deleteAccount = async (req: Request, res: Response, next: NextFunct
   }
 };
 
+interface LoginRequestBody {
+  email: string;
+  password: string;
+}
+
 export const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body as LoginRequestBody;
 
     // validate account
     const account: Account | null = await Account.findOne({ where: { email } });
@@ -145,7 +150,7 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
 
     // generate token
     const auth = new Auth(account, users);
-    const token = generateToken(auth);
+    const token = generateToken(auth.toJSON());
     const { password: _, ...accountData } = account.toJSON();
 
     res.json(createSuccessResponse({
