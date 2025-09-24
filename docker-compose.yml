@@ -68,8 +68,6 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
-    volumes:
-      - ./frontend:/app
     environment:
       - VUE_APP_API_ENDPOINT=http://rest_your_ant.localhost/api/api
     labels:
