@@ -52,12 +52,17 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
+      # API Router
       - "traefik.http.routers.api.rule=Host(`perfectmenu.localhost`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.priority=100"
       - "traefik.http.routers.api.service=api"
-      - "traefik.http.routers.api.middlewares=api-strip@docker"
-      - "traefik.http.middlewares.api-strip.stripprefix.prefixes=/api"
       - "traefik.http.services.api.loadbalancer.server.port=3000"
+      # API Docs Router
+      - "traefik.http.routers.api-docs.rule=Host(`perfectmenu.localhost`) && PathPrefix(`/api/docs`)"
+      - "traefik.http.routers.api-docs.priority=110"
+      - "traefik.http.routers.api-docs.service=api"
+      - "traefik.http.routers.api-docs.middlewares=api-docs-strip@docker"
+      - "traefik.http.middlewares.api-docs-strip.stripprefix.prefixes=/api"
 
   # Vue.js Frontend
   frontend:
