@@ -24,7 +24,7 @@
       
       <form @submit.prevent="createMenu" class="create-form">
         <div class="form-group">
-          <label for="categoryName">Nome Categoria *</label>
+          <label for="categoryName">Nome Menu *</label>
           <input 
             type="text" 
             id="categoryName"
@@ -71,7 +71,7 @@
           </button>
           <button type="submit" :disabled="!newMenu.name || creating" class="submit-btn">
             <span v-if="creating">Creazione...</span>
-            <span v-else>Crea Categoria</span>
+            <span v-else>Crea Menu</span>
           </button>
         </div>
       </form>
@@ -88,7 +88,7 @@
       
       <form @submit.prevent="updateMenu" class="create-form">
         <div class="form-group">
-          <label for="editCategoryName">Nome Categoria *</label>
+          <label for="editCategoryName">Nome Menu *</label>
           <input 
             type="text" 
             id="editCategoryName"
@@ -134,7 +134,7 @@
           </button>
           <button type="submit" :disabled="!editingMenu.name || updating" class="submit-btn">
             <span v-if="updating">Aggiornamento...</span>
-            <span v-else>Aggiorna Categoria</span>
+            <span v-else>Aggiorna Menu</span>
           </button>
         </div>
       </form>
@@ -404,10 +404,30 @@ export default {
       this.showEditModal = true
     },
     
-    deleteMenu(menu) {
-      if (confirm(`Sei sicuro di voler eliminare il menu "${menu.name}"? Questa azione non può essere annullata.`)) {
-        this.menus = this.menus.filter(m => m.id !== menu.id)
-        console.log('Menu eliminato:', menu)
+    async deleteMenu(menu) {
+      if (confirm(`Sei sicuro di voler eliminare "${menu.name}"?`)) {
+        try {
+          const response = await fetch(`${apiConfig.apiEndpoint}/menus/${menu.id}`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (!data.success) {
+              throw new Error(data.message || 'Failed to delete menu');
+            }
+            this.menus = this.menus.filter(m => m.id !== menu.id);
+          } else {
+            throw new Error('Failed to delete menu');
+          }
+        } catch (error) {
+          console.error('Errore nell\'eliminazione del menu:', error);
+          alert('Errore nell\'eliminazione del menu. Riprova.');
+        }
       }
     }
   }
