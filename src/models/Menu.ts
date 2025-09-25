@@ -6,6 +6,7 @@ interface MenuAttributes {
   restaurantId: number;
   name: string;
   description?: string;
+  category: string;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -18,6 +19,7 @@ class Menu extends Model<MenuAttributes, MenuCreationAttributes> implements Menu
   public restaurantId!: number;
   public name!: string;
   public description?: string;
+  public category!: string;
   public isActive!: boolean;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -46,6 +48,10 @@ Menu.init(
       type: DataTypes.TEXT,
       allowNull: true,
     },
+    category: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
     isActive: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
@@ -64,6 +70,13 @@ Menu.init(
     sequelize,
     tableName: 'menus',
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['category', 'restaurantId'],
+        name: 'unique_category_restaurant'
+      }
+    ]
   }
 );
 

@@ -4,7 +4,7 @@ import { createSuccessResponse, createErrorResponse } from '../utils/response';
 
 export const createMenu = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { restaurantId, name, description, isActive } = req.body;
+    const { restaurantId, name, description, category, isActive } = req.body;
 
     const restaurant = await Restaurant.findByPk(restaurantId);
     if (!restaurant) {
@@ -16,6 +16,7 @@ export const createMenu = async (req: Request, res: Response, next: NextFunction
       restaurantId,
       name,
       description,
+      category,
       isActive,
     });
 

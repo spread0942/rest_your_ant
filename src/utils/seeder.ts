@@ -182,6 +182,7 @@ export const seedDatabase = async (): Promise<void> => {
     const menu = await Menu.create({
       name: 'Main Menu',
       description: 'Our main dining menu',
+      category: 'main',
       isActive: true,
       restaurantId: restaurant.id
     });
