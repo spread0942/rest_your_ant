@@ -77,6 +77,69 @@
       </form>
     </div>
   </div>
+  
+  <!-- Edit Menu Category Modal -->
+  <div v-if="showEditModal" class="modal-overlay" @click="showEditModal = false">
+    <div class="modal-content" @click.stop>
+      <div class="modal-header">
+        <h3>Modifica Categoria Menu</h3>
+        <button @click="showEditModal = false" class="close-btn">&times;</button>
+      </div>
+      
+      <form @submit.prevent="updateMenu" class="create-form">
+        <div class="form-group">
+          <label for="editCategoryName">Nome Categoria *</label>
+          <input 
+            type="text" 
+            id="editCategoryName"
+            v-model="editingMenu.name"
+            placeholder="Es. Antipasti, Primi Piatti, Dessert"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="editCategoryDescription">Descrizione</label>
+          <textarea 
+            id="editCategoryDescription"
+            v-model="editingMenu.description"
+            placeholder="Descrivi brevemente questa categoria di menu..."
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="editCategorySlug">Slug (identificativo URL)</label>
+          <input 
+            type="text" 
+            id="editCategorySlug"
+            v-model="editingMenu.category"
+            placeholder="Es. antipasti, primi-piatti, dessert"
+          />
+          <small class="form-help">Verrà generato automaticamente dal nome se lasciato vuoto</small>
+        </div>
+
+        <div class="form-group">
+          <label for="editIsActive">Attivo</label>
+          <input 
+            type="checkbox" 
+            id="editIsActive"
+            v-model="editingMenu.isActive"
+          />
+        </div>
+
+        <div class="form-actions">
+          <button type="button" @click="showEditModal = false" class="cancel-btn">
+            Annulla
+          </button>
+          <button type="submit" :disabled="!editingMenu.name || updating" class="submit-btn">
+            <span v-if="updating">Aggiornamento...</span>
+            <span v-else>Aggiorna Categoria</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -114,8 +177,17 @@ export default {
         }
       ],
       showCreateModal: false,
+      showEditModal: false,
       creating: false,
+      updating: false,
       newMenu: {
+        name: '',
+        description: '',
+        category: '',
+        isActive: true,
+      },
+      editingMenu: {
+        id: null,
         name: '',
         description: '',
         category: '',
@@ -221,6 +293,81 @@ export default {
       }
     },
 
+    resetEditForm() {
+      this.editingMenu = {
+        id: null,
+        name: '',
+        description: '',
+        category: '',
+        isActive: true
+      }
+    },
+
+    async updateMenu() {
+      if (!this.editingMenu.name.trim()) return
+
+      try {
+        this.updating = true
+
+        // Generate slug if not provided
+        if (!this.editingMenu.category) {
+          this.editingMenu.category = this.generateSlug(this.editingMenu.name)
+        } else {
+          this.editingMenu.category = this.generateSlug(this.editingMenu.category)
+        }
+
+        const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}')
+
+        const categoryData = {
+          name: this.editingMenu.name,
+          description: this.editingMenu.description,
+          category: this.editingMenu.category,
+          isActive: this.editingMenu.isActive,
+          restaurantId: selectedRestaurant.id
+        }
+
+        const response = await fetch(`${apiConfig.apiEndpoint}/menus/${this.editingMenu.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          },
+          body: JSON.stringify(categoryData)
+        })
+        
+        if (response.ok) {
+          const result = await response.json()
+          if (result.success) {
+            // Update the menu in the local array
+            const menuIndex = this.menus.findIndex(m => m.id === this.editingMenu.id)
+            if (menuIndex !== -1) {
+              this.menus[menuIndex] = {
+                id: result.data.id,
+                name: result.data.name,
+                description: result.data.description,
+                category: result.data.category,
+                isActive: result.data.isActive
+              }
+            }
+            
+            this.resetEditForm()
+            this.showEditModal = false
+          } else {
+            throw new Error(result.message || 'Failed to update category')
+          }
+        } else {
+          const errorData = await response.json()
+          throw new Error(errorData.message || 'Failed to update category')
+        }
+
+      } catch (error) {
+        console.error('Errore nell\'aggiornamento della categoria:', error)
+        alert(`Errore nell'aggiornamento della categoria: ${error.message}`)
+      } finally {
+        this.updating = false
+      }
+    },
+
     generateSlug(name) {
       return name
         .toLowerCase()
@@ -246,10 +393,15 @@ export default {
     },
     
     editMenu(category) {
-      if (confirm(`Vuoi modificare la categoria "${category.name}"?`)) {
-        console.log('Modifica categoria:', category)
-        // TODO: Implementare modifica categoria
+      // Populate the editing form with current category data
+      this.editingMenu = {
+        id: category.id,
+        name: category.name,
+        description: category.description || '',
+        category: category.category || '',
+        isActive: category.isActive !== undefined ? category.isActive : true
       }
+      this.showEditModal = true
     },
     
     deleteMenu(menu) {
