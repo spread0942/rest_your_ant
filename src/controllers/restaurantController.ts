@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
-import { Restaurant, User } from '../models';
+import { Restaurant, Auth } from '../models';
 import { createSuccessResponse, createErrorResponse } from '../utils/response';
 
 export const createRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { name, description, address, phone, email, website } = req.body;
-    const user = (req as any).user as User;
+    const auth = (req as any).user as Auth;
 
-    if (!user?.tenantId) {
+    if (!auth?.tenants || auth.tenants.length === 0) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
@@ -19,7 +19,7 @@ export const createRestaurant = async (req: Request, res: Response, next: NextFu
       phone,
       email,
       website,
-      tenantId: user.tenantId,
+      tenantId: auth.tenants[0].id, // assuming the user is associated with at least one tenant
     });
 
     res.status(201).json(createSuccessResponse(restaurant, 'Restaurant created successfully'));
@@ -33,15 +33,15 @@ export const getAllRestaurants = async (req: Request, res: Response, next: NextF
     // can you update this method to filter by accountId and paginate the results?
     const { page = 1, limit = 10 } = req.query;
     const offset = (Number(page) - 1) * Number(limit);
-    const user = (req as any).user as User;
+    const auth = (req as any).user as Auth;
 
-    if (!user?.tenantId) {
+    if (!auth?.tenants || auth.tenants.length === 0) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
 
     const { count, rows } = await Restaurant.findAndCountAll({
-      where: { tenantId: user.tenantId },
+      where: { tenantId: auth.tenants[0].id },
       limit: Number(limit),
       offset,
       order: [['createdAt', 'DESC']],
@@ -64,15 +64,15 @@ export const getAllRestaurants = async (req: Request, res: Response, next: NextF
 export const getRestaurantById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const user = (req as any).user as User;
+    const auth = (req as any).user as Auth;
 
-    if (!user?.tenantId) {
+    if (!auth?.tenants || auth.tenants.length === 0) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
 
     const restaurant = await Restaurant.findOne({
-      where: { id, tenantId: user.tenantId },
+      where: { id, tenantId: auth.tenants[0].id },
     });
 
     if (!restaurant) {
@@ -90,15 +90,15 @@ export const updateRestaurant = async (req: Request, res: Response, next: NextFu
   try {
     const { id } = req.params;
     const { name, description, address, phone, email, website } = req.body;
-    const user = (req as any).user as User;
+    const auth = (req as any).user as Auth;
 
-    if (!user?.tenantId) {
+    if (!auth?.tenants || auth.tenants.length === 0) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
 
     const restaurant = await Restaurant.findOne({
-      where: { id, tenantId: user.tenantId },
+      where: { id, tenantId: auth.tenants[0].id },
     });
     if (!restaurant) {
       res.status(404).json(createErrorResponse('Restaurant not found'));
@@ -123,15 +123,15 @@ export const updateRestaurant = async (req: Request, res: Response, next: NextFu
 export const deleteRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const user = (req as any).user as User;
+    const auth = (req as any).user as Auth;
 
-    if (!user?.tenantId) {
+    if (!auth?.tenants || auth.tenants.length === 0) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
 
     const restaurant = await Restaurant.findOne({
-      where: { id, tenantId: user.tenantId },
+      where: { id, tenantId: auth.tenants[0].id },
     });
     if (!restaurant) {
       res.status(404).json(createErrorResponse('Restaurant not found'));
