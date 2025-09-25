@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Auth, Tenant, User } from '../models';
+import { Auth, Tenant } from '../models';
 import { createSuccessResponse, createErrorResponse } from '../utils/response';
 
 export const createTenant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -22,15 +22,13 @@ export const createTenant = async (req: Request, res: Response, next: NextFuncti
 export const getTenants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const auth = (req as any).user as Auth;
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('Tenants ID is required'));
       return;
     }
 
-    const tenantIds = auth.tenants.map(tenant => tenant.id);
     const tenants = await Tenant.findAll({
-      where: { id: tenantIds },
-      include: [{ model: User, as: 'users' }],
+      where: { id: auth.tenantId },
     });
     res.json(createSuccessResponse(tenants, 'Tenants retrieved successfully'));
   } catch (error) {
@@ -42,19 +40,17 @@ export const getTenantById = async (req: Request, res: Response, next: NextFunct
   try {
     const { id } = req.params;
     const auth = (req as any).user as Auth;
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('Tenants ID is required'));
       return;
     }
 
-    if (!auth.tenants.find(tenant => tenant.id === parseInt(id, 10))) {
+    if (auth.tenantId !== parseInt(id, 10)) {
       res.status(403).json(createErrorResponse('Access to this tenant is forbidden'));
       return;
     }
 
-    const tenant = await Tenant.findByPk(id, {
-      include: [{ model: User, as: 'users' }]
-    });
+    const tenant = await Tenant.findByPk(id);
     if (!tenant) {
       res.status(404).json(createErrorResponse('Tenant not found'));
       return;
@@ -71,12 +67,12 @@ export const updateTenant = async (req: Request, res: Response, next: NextFuncti
     const { id } = req.params;
     const { name, domain } = req.body;
     const auth = (req as any).user as Auth;
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('Tenants ID is required'));
       return;
     }
 
-    if (!auth.tenants.find(tenant => tenant.id === parseInt(id, 10))) {
+    if (auth.tenantId !== parseInt(id, 10)) {
       res.status(403).json(createErrorResponse('Access to this tenant is forbidden'));
       return;
     }
@@ -101,12 +97,12 @@ export const deleteTenant = async (req: Request, res: Response, next: NextFuncti
   try {
     const { id } = req.params;
     const auth = (req as any).user as Auth;
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('Tenants ID is required'));
       return;
     }
 
-    if (!auth.tenants.find(tenant => tenant.id === parseInt(id, 10))) {
+    if (auth.tenantId !== parseInt(id, 10)) {
       res.status(403).json(createErrorResponse('Access to this tenant is forbidden'));
       return;
     }

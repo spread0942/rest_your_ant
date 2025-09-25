@@ -348,7 +348,7 @@ router.post('/', authenticate, createRestaurant);
  *                     email:
  *                       type: string
  *                       example: "updated@pizzapalace.com"
- *                    website:
+ *                     website:
  *                       type: string
  *                       example: "https://new.pizzapalace.com"
  *                     updatedAt:

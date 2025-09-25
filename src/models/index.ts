@@ -12,13 +12,6 @@ import Product from './Product';
 import Restaurant from './Restaurant';
 import Table from './Table';
 import Tenant from './Tenant';
-import User from './User';
-
-// Account associations
-Account.hasMany(User, { foreignKey: 'accountId', as: 'userRoles' });
-User.belongsTo(Account, { foreignKey: 'accountId', as: 'account' });
-Account.hasMany(Order, { foreignKey: 'accountId', as: 'orders' });
-Order.belongsTo(Account, { foreignKey: 'accountId', as: 'account' });
 
 // Drink associations
 Drink.hasMany(OrderDetail, { foreignKey: 'drinkId', as: 'orderDetails' });
@@ -107,8 +100,8 @@ Drink.hasMany(MenuDrink, { foreignKey: 'drinkId', as: 'menuDrinks' });
 MenuDrink.belongsTo(Drink, { foreignKey: 'drinkId', as: 'drink' });
 
 // Tenant associations
-Tenant.hasMany(User, { foreignKey: 'tenantId', as: 'users' });
-User.belongsTo(Tenant, { foreignKey: 'tenantId', as: 'tenant' });
+Tenant.hasMany(Account, { foreignKey: 'tenantId', as: 'accounts' });
+Account.belongsTo(Tenant, { foreignKey: 'tenantId', as: 'tenant' });
 
 export {
   // db models
@@ -125,7 +118,6 @@ export {
   MenuDrink,
   OrderDetail,
   Tenant,
-  User,
   // class models
   Auth,
 };
@@ -145,7 +137,6 @@ export default {
   MenuDrink,
   OrderDetail,
   Tenant,
-  User,
   // class models
   Auth,
 };

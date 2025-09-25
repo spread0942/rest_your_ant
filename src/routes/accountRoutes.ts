@@ -96,6 +96,8 @@ router.post('/login', login);
  *               - password
  *               - firstName
  *               - lastName
+ *               - role
+ *               - tenantId
  *             properties:
  *               username:
  *                 type: string
@@ -115,9 +117,13 @@ router.post('/login', login);
  *               lastName:
  *                 type: string
  *                 example: Doe
- *               phone:
+ *               role:
  *                 type: string
- *                 example: "+1234567890"
+ *                 enum: [admin, user]
+ *                 example: user
+ *               tenantId:
+ *                 type: integer
+ *                 example: 1
  *     responses:
  *       201:
  *         description: Account created successfully
@@ -147,6 +153,16 @@ router.post('/login', login);
  *                     lastName:
  *                       type: string
  *                       example: Doe
+ *                     role:
+ *                       type: string
+ *                       example: user
+ *                     tenantId:
+ *                       type: integer
+ *                       example: 1
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2023-01-01T00:00:00.000Z
  *                 message:
  *                   type: string
  *                   example: Account created successfully
@@ -215,6 +231,12 @@ router.post('/', createAccount);
  *                       lastName:
  *                         type: string
  *                         example: Doe
+ *                       role:
+ *                         type: string
+ *                         example: user
+ *                       tenantId:
+ *                         type: integer
+ *                         example: 1
  *                       createdAt:
  *                         type: string
  *                         format: date-time
@@ -292,9 +314,12 @@ router.get('/', authenticate, authorize(['admin']), getAllAccounts);
  *                     lastName:
  *                       type: string
  *                       example: Doe
- *                     phone:
+ *                     role:
  *                       type: string
- *                       example: "+1234567890"
+ *                       example: user
+ *                     tenantId:
+ *                       type: integer
+ *                       example: 1
  *                     createdAt:
  *                       type: string
  *                       format: date-time
@@ -363,6 +388,12 @@ router.get('/:id', authenticate, getAccountById);
  *                 minLength: 6
  *                 example: newpassword123
  *                 description: Only include if changing password
+ *               role:
+ *                 type: string
+ *                 example: user
+ *               tenantId:
+ *                 type: integer
+ *                 example: 1
  *     responses:
  *       200:
  *         description: Account updated successfully
@@ -392,6 +423,12 @@ router.get('/:id', authenticate, getAccountById);
  *                     lastName:
  *                       type: string
  *                       example: Doe
+ *                     role:
+ *                       type: string
+ *                       example: user
+ *                     tenantId:
+ *                       type: integer
+ *                       example: 1
  *                     updatedAt:
  *                       type: string
  *                       format: date-time

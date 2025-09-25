@@ -7,7 +7,7 @@ export const createRestaurant = async (req: Request, res: Response, next: NextFu
     const { name, description, address, phone, email, website } = req.body;
     const auth = (req as any).user as Auth;
 
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
@@ -19,7 +19,7 @@ export const createRestaurant = async (req: Request, res: Response, next: NextFu
       phone,
       email,
       website,
-      tenantId: auth.tenants[0].id, // assuming the user is associated with at least one tenant
+      tenantId: auth.tenantId,
     });
 
     res.status(201).json(createSuccessResponse(restaurant, 'Restaurant created successfully'));
@@ -35,13 +35,13 @@ export const getAllRestaurants = async (req: Request, res: Response, next: NextF
     const offset = (Number(page) - 1) * Number(limit);
     const auth = (req as any).user as Auth;
 
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
 
     const { count, rows } = await Restaurant.findAndCountAll({
-      where: { tenantId: auth.tenants[0].id },
+      where: { tenantId: auth.tenantId },
       limit: Number(limit),
       offset,
       order: [['createdAt', 'DESC']],
@@ -66,13 +66,13 @@ export const getRestaurantById = async (req: Request, res: Response, next: NextF
     const { id } = req.params;
     const auth = (req as any).user as Auth;
 
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
 
     const restaurant = await Restaurant.findOne({
-      where: { id, tenantId: auth.tenants[0].id },
+      where: { id, tenantId: auth.tenantId },
     });
 
     if (!restaurant) {
@@ -92,13 +92,13 @@ export const updateRestaurant = async (req: Request, res: Response, next: NextFu
     const { name, description, address, phone, email, website } = req.body;
     const auth = (req as any).user as Auth;
 
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
 
     const restaurant = await Restaurant.findOne({
-      where: { id, tenantId: auth.tenants[0].id },
+      where: { id, tenantId: auth.tenantId },
     });
     if (!restaurant) {
       res.status(404).json(createErrorResponse('Restaurant not found'));
@@ -125,13 +125,13 @@ export const deleteRestaurant = async (req: Request, res: Response, next: NextFu
     const { id } = req.params;
     const auth = (req as any).user as Auth;
 
-    if (!auth?.tenants || auth.tenants.length === 0) {
+    if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
       return;
     }
 
     const restaurant = await Restaurant.findOne({
-      where: { id, tenantId: auth.tenants[0].id },
+      where: { id, tenantId: auth.tenantId },
     });
     if (!restaurant) {
       res.status(404).json(createErrorResponse('Restaurant not found'));

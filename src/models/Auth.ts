@@ -1,20 +1,18 @@
 import Account from './Account';
-import User from './User';
 
 // create a class without creating it in the database
 class Auth {
   id!: Account['id'];
   email!: Account['email'];
-  tenants: { id: number; role: string }[] = [];
+  tenantId!: Account['tenantId'];
+  role!: Account['role'];
 
-  constructor(account?: Account, users?: User[]) {
-    if (account && users) {
+  constructor(account?: Account) {
+    if (account) {
       this.id = account.id;
       this.email = account.email;
-      this.tenants = users.map(user => ({
-        id: user.tenantId,
-        role: user.role,
-      }));
+      this.tenantId = account.tenantId;
+      this.role = account.role;
     }
   }
 
@@ -22,7 +20,8 @@ class Auth {
     return {
       id: this.id,
       email: this.email,
-      tenants: this.tenants
+      tenantId: this.tenantId,
+      role: this.role
     };
   }
 }

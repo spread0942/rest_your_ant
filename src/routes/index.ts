@@ -8,7 +8,6 @@ import productRoutes from './productRoutes';
 import restaurantRoutes from './restaurantRoutes';
 import tableRoutes from './tableRoutes';
 import tenantRoutes from './tenantRoutes';
-import userRoutes from './userRoutes';
 
 const router = Router();
 
@@ -22,7 +21,6 @@ router.use('/products', productRoutes);
 router.use('/restaurants', restaurantRoutes);
 router.use('/tables', tableRoutes);
 router.use('/tenants', tenantRoutes);
-router.use('/users', userRoutes);
 
 /**
  * @openapi
@@ -40,12 +38,10 @@ router.use('/users', userRoutes);
  *   - url: http://localhost:3000
  *     description: Development server
  * tags:
- *   - name: Accounts
- *     description: User account management and authentication
  *   - name: Tenants
  *     description: Tenant management operations
- *   - name: Users
- *     description: User management operations
+ *   - name: Accounts
+ *     description: User account management and authentication
  *   - name: Restaurants
  *     description: Restaurant management operations
  *   - name: Menus

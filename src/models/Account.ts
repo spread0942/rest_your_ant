@@ -8,6 +8,8 @@ interface AccountAttributes {
   password: string;
   firstName?: string;
   lastName?: string;
+  role: 'admin' | 'user';
+  tenantId: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -21,6 +23,8 @@ class Account extends Model<AccountAttributes, AccountCreationAttributes> implem
   public password!: string;
   public firstName?: string;
   public lastName?: string;
+  public role!: 'admin' | 'user';
+  public tenantId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -56,6 +60,14 @@ Account.init(
     lastName: {
       type: DataTypes.STRING(50),
       allowNull: true,
+    },
+    role: {
+      type: DataTypes.STRING(20),
+      allowNull: false,
+    },
+    tenantId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,

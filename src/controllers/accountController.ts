@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { Account, Auth, User } from '../models';
+import { Account, Auth } from '../models';
 import { createSuccessResponse, createErrorResponse } from '../utils/response';
 import { hashPassword, comparePassword, generateToken } from '../utils/auth';
 
 export const createAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { username, email, password, firstName, lastName } = req.body;
+    const { username, email, password, firstName, lastName, role, tenantId } = req.body;
 
     const hashedPassword = await hashPassword(password);
 
@@ -15,6 +15,8 @@ export const createAccount = async (req: Request, res: Response, next: NextFunct
       password: hashedPassword,
       firstName,
       lastName,
+      role,
+      tenantId,
     });
 
     const { password: _, ...accountData } = account.toJSON();
@@ -74,7 +76,7 @@ export const getAccountById = async (req: Request, res: Response, next: NextFunc
 export const updateAccount = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { username, email, firstName, lastName, password } = req.body;
+    const { username, email, firstName, lastName, password, role, tenantId } = req.body;
 
     const account = await Account.findByPk(id);
     if (!account) {
@@ -87,6 +89,8 @@ export const updateAccount = async (req: Request, res: Response, next: NextFunct
       email,
       firstName,
       lastName,
+      role,
+      tenantId,
     };
 
     if (password) {
@@ -141,15 +145,8 @@ export const login = async (req: Request, res: Response, next: NextFunction): Pr
       return;
     }
 
-    // validate users and tenants
-    const users: User[] = await User.findAll({ where: { accountId: account.id } });
-    if (!users || users.length === 0) {
-      res.status(401).json(createErrorResponse('User not found for this account'));
-      return;
-    }
-
     // generate token
-    const auth = new Auth(account, users);
+    const auth = new Auth(account);
     const token = generateToken(auth.toJSON());
     const { password: _, ...accountData } = account.toJSON();
 

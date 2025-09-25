@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import { Account, Restaurant, Menu, Plate, Product, Drink, Table, Tenant, User } from '../models';
+import { Account, Restaurant, Menu, Plate, Product, Drink, Table, Tenant } from '../models';
 
 /**
  * Seed the database with initial data for development
@@ -14,6 +14,13 @@ export const seedDatabase = async (): Promise<void> => {
       console.log('📝 Database already contains data. Skipping seeding.');
       return;
     }
+    
+    const tenant = await Tenant.create({
+      name: 'Admin Tenant',
+      domain: 'admin-tenant.com'
+    });
+
+    console.log('✅ Admin tenant created');
 
     // Create admin account
     const hashedPassword = await bcrypt.hash('admin123', 10);
@@ -23,22 +30,11 @@ export const seedDatabase = async (): Promise<void> => {
       lastName: 'User',
       email: 'admin@restaurant.com',
       password: hashedPassword,
+      role: 'admin',
+      tenantId: tenant.id
     });
 
     console.log('✅ Admin account created');
-
-    const tenant = await Tenant.create({
-      name: 'Admin Tenant',
-      domain: 'admin-tenant.com'
-    });
-
-    console.log('✅ Admin tenant created');
-
-    await User.create({
-      accountId: adminAccount.id,
-      tenantId: tenant.id,
-      role: 'owner'
-    });
 
     // Create sample restaurant
     const restaurant = await Restaurant.create({

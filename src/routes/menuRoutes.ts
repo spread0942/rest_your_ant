@@ -144,7 +144,7 @@ router.get('/', authenticate, getAllMenus);
  *                     description:
  *                       type: string
  *                       example: "Our special dinner selection"
- *                    category:
+ *                     category:
  *                       type: string
  *                       example: "dinner"
  *                     isActive:
@@ -245,7 +245,7 @@ router.get('/:id', authenticate, getMenuById);
  *                     description:
  *                       type: string
  *                       example: "Our special dinner selection"
- *                    category:
+ *                     category:
  *                       type: string
  *                       example: "dinner"
  *                     restaurantId:
@@ -331,7 +331,7 @@ router.post('/', authenticate, /*authorize(['admin']),*/ createMenu);
  *                     description:
  *                       type: string
  *                       example: "Updated description"
- *                    category:
+ *                     category:
  *                       type: string
  *                       example: "dinner"
  *                     isActive:
