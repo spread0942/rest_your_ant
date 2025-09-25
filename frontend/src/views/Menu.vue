@@ -123,7 +123,35 @@ export default {
       }
     }
   },
+  mounted() {
+    this.loadMenus()
+  },
   methods: {
+    async loadMenus() {
+      try {
+        this.loading = true
+        
+        const response = await fetch(`${apiConfig.apiEndpoint}/menus`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            }
+          });
+        if (response.ok) {
+          const data = await response.json();
+          this.menus = data.data.menus || [];
+        } else {
+          throw new Error('Failed to fetch menus');
+        }
+      } catch (error) {
+        console.error('Error to load menus:', error)
+        this.menus = []
+      } finally {
+        this.loading = false
+      }
+    },
+
     async createMenu() {
       if (!this.newMenu.name.trim()) return
 
