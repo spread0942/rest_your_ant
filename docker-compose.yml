@@ -34,7 +34,7 @@ services:
   # Node.js API
   api:
     build: 
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: restaurant_api
     environment:
