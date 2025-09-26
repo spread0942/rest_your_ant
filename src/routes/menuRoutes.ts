@@ -5,6 +5,9 @@ import {
   getMenuById,
   updateMenu,
   deleteMenu,
+  addDrinkToMenu,
+  removeDrinkFromMenu,
+  getMenuDrinks,
 } from '../controllers/menuController';
 import { authenticate, authorize } from '../middleware/auth';
 
@@ -398,5 +401,10 @@ router.patch('/:id', authenticate, /*authorize(['admin']),*/ updateMenu);
  *         description: Internal server error
  */
 router.delete('/:id', authenticate, /*authorize(['admin']),*/ deleteMenu);
+
+// Menu-Drink association routes
+router.get('/:id/drinks', authenticate, getMenuDrinks);
+router.post('/:id/drinks', authenticate, addDrinkToMenu);
+router.delete('/:id/drinks/:drinkId', authenticate, removeDrinkFromMenu);
 
 export default router;

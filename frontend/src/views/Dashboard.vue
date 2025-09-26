@@ -124,6 +124,32 @@
               <i class="fi fi-rr-angle-right"></i>
             </div>
           </div>
+
+          <div class="action-card" @click="navigateTo('/menu-products')">
+            <div class="action-icon">
+              <i class="fi fi-rr-glass"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Bevande & Prodotti</h3>
+              <p class="action-description">Gestisci bevande e prodotti</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fi fi-rr-angle-right"></i>
+            </div>
+          </div>
+
+          <div class="action-card" @click="navigateTo('/menu-management')">
+            <div class="action-icon">
+              <i class="fi fi-rr-settings-sliders"></i>
+            </div>
+            <div class="action-content">
+              <h3 class="action-title">Assegnazioni Menu</h3>
+              <p class="action-description">Assegna elementi ai menu</p>
+            </div>
+            <div class="action-arrow">
+              <i class="fi fi-rr-angle-right"></i>
+            </div>
+          </div>
         </div>
       </div>
 

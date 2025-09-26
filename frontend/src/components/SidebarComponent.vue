@@ -68,6 +68,30 @@
         </router-link>
 
         <router-link 
+          to="/menu-products"
+          class="nav-item"
+          :class="{ active: $route.path === '/menu-products' }"
+          @click="handleNavClick"
+        >
+          <div class="nav-item-content">
+            <i class="fi fi-rr-glass nav-icon"></i>
+            <span>Bevande & Prodotti</span>
+          </div>
+        </router-link>
+
+        <router-link 
+          to="/menu-management"
+          class="nav-item"
+          :class="{ active: $route.path === '/menu-management' }"
+          @click="handleNavClick"
+        >
+          <div class="nav-item-content">
+            <i class="fi fi-rr-settings-sliders nav-icon"></i>
+            <span>Assegnazioni Menu</span>
+          </div>
+        </router-link>
+
+        <router-link 
           to="/aree-tavoli"
           class="nav-item"
           :class="{ active: $route.path === '/aree-tavoli' }"

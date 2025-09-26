@@ -74,6 +74,18 @@ const routes = [
     name: 'Impostazioni',
     component: () => import('../views/Impostazioni.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/menu-products',
+    name: 'MenuProducts',
+    component: () => import('../views/MenuProducts.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/menu-management',
+    name: 'MenuManagement',
+    component: () => import('../views/MenuManagement.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
   }
 ]
 
