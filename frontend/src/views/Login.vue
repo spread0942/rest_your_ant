@@ -69,13 +69,6 @@
           </form>
         </div>
       </div>
-
-      <!-- Demo Credentials (for development) -->
-      <div class="demo-credentials" v-if="showDemo">
-        <p><strong>Credenziali Demo:</strong></p>
-        <p>Email: admin@restaurant.com</p>
-        <p>Password: admin123</p>
-      </div>
     </div>
   </div>
 </template>
@@ -102,47 +95,30 @@ export default {
       this.error = null;
       
       try {
-        // Demo login - accept admin credentials
-        if (this.credentials.email === 'admin@restaurant.com' && 
-            this.credentials.password === 'admin123') {
+        // Try real API login
+        const response = await fetch(`${apiConfig.apiEndpoint}/accounts/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(this.credentials)
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
           
-          // Store auth token (in real app, get from API)
-          localStorage.setItem('authToken', 'demo-token-123');
+          // Store auth token and user data including firstname
+          localStorage.setItem('authToken', data.data.token);
           localStorage.setItem('user', JSON.stringify({
-            firstname: 'Mario',
-            lastname: 'Rossi',
-            email: this.credentials.email,
-            role: 'admin'
+            firstname: data.data.account.firstName || data.data.account.username || 'User',
+            lastname: data.data.account.lastName || '',
+            email: data.data.account.email,
+            role: data.data.account.role || 'user'
           }));
           
-          // Redirect to restaurants page
           this.$router.push('/restaurants');
         } else {
-          // Try real API login
-          const response = await fetch(`${apiConfig.apiEndpoint}/accounts/login`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(this.credentials)
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            
-            // Store auth token and user data including firstname
-            localStorage.setItem('authToken', data.data.token);
-            localStorage.setItem('user', JSON.stringify({
-              firstname: data.data.account.firstName || data.data.account.username || 'User',
-              lastname: data.data.account.lastName || '',
-              email: data.data.account.email,
-              role: data.data.account.role || 'user'
-            }));
-            
-            this.$router.push('/restaurants');
-          } else {
-            throw new Error('Invalid credentials');
-          }
+          throw new Error('Invalid credentials');
         }
       } catch (error) {
         this.error = 'Email o password non validi. Prova le credenziali demo.';

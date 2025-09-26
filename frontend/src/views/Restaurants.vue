@@ -186,9 +186,12 @@ export default {
       creating: false,
       newRestaurant: {
         name: '',
+        description: '',
         address: '',
         phone: '',
-        description: ''
+        email: '',
+        website: '',
+        tenantId: null,
       }
     }
   },
@@ -234,6 +237,8 @@ export default {
 
       try {
         this.creating = true
+
+        this.newRestaurant.tenantId = this.user.tenantId || null;
 
         const response = await fetch(`${apiConfig.apiEndpoint}/restaurants`, {
             method: 'POST',
