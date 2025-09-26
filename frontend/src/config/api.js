@@ -31,6 +31,8 @@ const api = {
   },
 
   async post(url, data, options = {}) {
+
+    console.log('POST data:', JSON.stringify(data)); // Debug log
     return this.request(url, {
       method: 'POST',
       body: JSON.stringify(data),

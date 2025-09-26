@@ -8,6 +8,7 @@ interface ProductAttributes {
   unit: string;
   price: number;
   stock: number;
+  restaurantId: number;
   minStock: number;
   createdAt: Date;
   updatedAt: Date;
@@ -23,6 +24,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
   public price!: number;
   public stock!: number;
   public minStock!: number;
+  public restaurantId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -68,6 +70,10 @@ Product.init(
       validate: {
         min: 0,
       },
+    },
+    restaurantId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,

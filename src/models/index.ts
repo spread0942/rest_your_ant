@@ -78,6 +78,8 @@ Plate.hasMany(PlateProduct, { foreignKey: 'plateId', as: 'plateProducts' });
 PlateProduct.belongsTo(Plate, { foreignKey: 'plateId', as: 'plate' });
 Product.hasMany(PlateProduct, { foreignKey: 'productId', as: 'plateProducts' });
 PlateProduct.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Restaurant.hasMany(Product, { foreignKey: 'restaurantId', as: 'products' });
+Product.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
 
 // Many-to-many: Menu <-> Drink through MenuDrink
 Menu.belongsToMany(Drink, { 
@@ -98,6 +100,8 @@ Menu.hasMany(MenuDrink, { foreignKey: 'menuId', as: 'menuDrinks' });
 MenuDrink.belongsTo(Menu, { foreignKey: 'menuId', as: 'menu' });
 Drink.hasMany(MenuDrink, { foreignKey: 'drinkId', as: 'menuDrinks' });
 MenuDrink.belongsTo(Drink, { foreignKey: 'drinkId', as: 'drink' });
+Drink.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
+Restaurant.hasMany(Drink, { foreignKey: 'restaurantId', as: 'drinks' });
 
 // Tenant associations
 Tenant.hasMany(Account, { foreignKey: 'tenantId', as: 'accounts' });

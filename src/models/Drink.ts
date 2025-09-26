@@ -9,6 +9,7 @@ interface DrinkAttributes {
   category?: string;
   isAlcoholic: boolean;
   isAvailable: boolean;
+  restaurantId: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -23,6 +24,7 @@ class Drink extends Model<DrinkAttributes, DrinkCreationAttributes> implements D
   public category?: string;
   public isAlcoholic!: boolean;
   public isAvailable!: boolean;
+  public restaurantId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -62,6 +64,10 @@ Drink.init(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: true,
+    },
+    restaurantId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,

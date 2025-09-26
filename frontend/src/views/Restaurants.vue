@@ -173,7 +173,7 @@
 </template>
 
 <script>
-import apiConfig from '@/config/api.js'
+import api from '@/config/api.js'
 
 export default {
   name: 'RestaurantsView',
@@ -211,18 +211,12 @@ export default {
       try {
         this.loading = true
         
-        const response = await fetch(`${apiConfig.apiEndpoint}/restaurants`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-            }
-          });
-        if (response.ok) {
-          const data = await response.json();
-          this.restaurants = data.data.restaurants;
+        const response = await api.get('/restaurants');
+
+        if (response.success) {
+          this.restaurants = response.data.restaurants;
         } else {
-          throw new Error('Failed to fetch restaurants');
+          throw new Error('Failed to fetch restaurants: ' + response.message);
         }
       } catch (error) {
         console.error('Errore nel caricamento ristoranti:', error)
@@ -240,20 +234,11 @@ export default {
 
         this.newRestaurant.tenantId = this.user.tenantId || null;
 
-        const response = await fetch(`${apiConfig.apiEndpoint}/restaurants`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-            },
-            body: JSON.stringify(this.newRestaurant)
-          });
-          
-        if (response.ok) {
-          const data = await response.json();
-          this.restaurants.push(data.data);
+        const response = await api.post('/restaurants', this.newRestaurant);
+        if (response.success) {
+          this.restaurants.unshift(response.data);
         } else {
-          throw new Error('Invalid credentials');
+          throw new Error('Error creating restaurant: ' + response.message);
         }
         this.showCreateForm = false
 
@@ -281,22 +266,11 @@ export default {
     async deleteRestaurant(restaurant) {
       if (confirm(`Sei sicuro di voler eliminare "${restaurant.name}"?`)) {
         try {
-          const response = await fetch(`${apiConfig.apiEndpoint}/restaurants/${restaurant.id}`, {
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-            }
-          });
-
-          if (response.ok) {
-            const data = await response.json();
-            if (!data.success) {
-              throw new Error(data.message || 'Failed to delete restaurant');
-            }
+          const response = await api.delete(`/restaurants/${restaurant.id}`);
+          if (response.success) {
             this.restaurants = this.restaurants.filter(r => r.id !== restaurant.id);
           } else {
-            throw new Error('Failed to delete restaurant');
+            throw new Error('Failed to delete restaurant: ' + response.message);
           }
         } catch (error) {
           console.error('Errore nell\'eliminazione del ristorante:', error);

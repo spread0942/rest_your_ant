@@ -14,13 +14,13 @@ const createAdminUser = async () => {
     console.log('Tenant id:', tenantId);
 
     response = await axios.post(`${HOST}/api/accounts`, {
-        username: 'admin',
-        email: 'admin@restaurant.com',
-        password: 'admin123',
-        firstName: 'Tullio',
-        lastName: 'De Piscopo',
-        role: 'admin',
-        tenantId: tenantId
+      username: "johndoe",
+      email: "john@example.com",
+      password: "password123",
+      firstName: "John",
+      lastName: "Doe",
+      role: 'admin',
+      tenantId: tenantId
     });
     console.log('✅ Admin user created:', response.data);
   } catch (error) {

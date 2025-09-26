@@ -391,7 +391,7 @@ export default {
         unit: '',
         price: '',
         stock: '',
-        minStock: ''
+        minStock: '',
       }
     }
   },
@@ -420,61 +420,30 @@ export default {
     
     async loadDrinks() {
       try {
-        const response = await api.get('/drinks')
-        this.drinks = response.data.data.drinks || []
+        const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}');
+        const response = await api.get(`/drinks?restaurantId=${selectedRestaurant.id}`);
+        if (response.success) {
+          this.drinks = response.data.drinks || []
+        } else {
+          throw new Error('Error fetching drinks: ' + response.message);
+        }
       } catch (error) {
         console.error('Error loading drinks:', error)
-        // Use mock data if API fails
-        this.drinks = [
-          {
-            id: 1,
-            name: 'Coca Cola',
-            description: 'Classic Coca Cola',
-            price: 2.99,
-            category: 'soft_drink',
-            isAlcoholic: false,
-            isAvailable: true
-          },
-          {
-            id: 2,
-            name: 'Vino della Casa',
-            description: 'Vino rosso della casa',
-            price: 8.99,
-            category: 'wine',
-            isAlcoholic: true,
-            isAvailable: true
-          }
-        ]
       }
     },
     
     async loadProducts() {
       try {
-        const response = await api.get('/products')
-        this.products = response.data.data.products || []
+        const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}');
+        const response = await api.get(`/products?restaurantId=${selectedRestaurant.id}`);
+        if (response.success) {
+          this.products = response.data.products || []
+        } else {
+          throw new Error('Error fetching products: ' + response.message);
+        }
+        this.products = response.data.products || []
       } catch (error) {
         console.error('Error loading products:', error)
-        // Use mock data if API fails
-        this.products = [
-          {
-            id: 1,
-            name: 'Pomodoro',
-            description: 'Pomodori freschi',
-            unit: 'kg',
-            price: 3.50,
-            stock: 15,
-            minStock: 5
-          },
-          {
-            id: 2,
-            name: 'Mozzarella',
-            description: 'Mozzarella di bufala',
-            unit: 'kg',
-            price: 12.00,
-            stock: 3,
-            minStock: 5
-          }
-        ]
       }
     },
     
@@ -512,18 +481,30 @@ export default {
     async saveDrink() {
       this.savingDrink = true
       try {
+        const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}');
+        if (!selectedRestaurant || !selectedRestaurant.id) {
+          throw new Error('Nessun ristorante selezionato');
+        }
         const drinkData = { ...this.drinkForm }
         drinkData.price = parseFloat(drinkData.price)
+        drinkData.restaurantId = selectedRestaurant.id;
         
         if (this.editingDrink) {
           const response = await api.patch(`/drinks/${this.editingDrink.id}`, drinkData)
-          const index = this.drinks.findIndex(d => d.id === this.editingDrink.id)
+          if (!response.success) {
+            throw new Error('Error updating drink: ' + response.message);
+          }
+          const index = this.drinks.findIndex(d => d.id === this.editingDrink.id);
           if (index !== -1) {
-            this.drinks[index] = response.data.data
+            this.drinks[index] = response.data
           }
         } else {
           const response = await api.post('/drinks', drinkData)
-          this.drinks.unshift(response.data.data)
+          if (response.success) {
+            this.drinks.unshift(response.data);
+          } else {
+            throw new Error('Error creating drink: ' + response.message);
+          }
         }
         
         this.closeDrinkModal()
@@ -561,7 +542,7 @@ export default {
           unit: '',
           price: '',
           stock: '',
-          minStock: ''
+          minStock: '',
         }
       }
       this.showProductModal = true
@@ -576,29 +557,40 @@ export default {
         unit: '',
         price: '',
         stock: '',
-        minStock: ''
+        minStock: '',
       }
     },
     
     async saveProduct() {
       this.savingProduct = true
       try {
+        const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}');
+        if (!selectedRestaurant || !selectedRestaurant.id) {
+          throw new Error('Nessun ristorante selezionato');
+        }
         const productData = { ...this.productForm }
         productData.price = parseFloat(productData.price)
         productData.stock = parseInt(productData.stock)
         productData.minStock = parseInt(productData.minStock)
-        
+        productData.restaurantId = selectedRestaurant.id;
+
         if (this.editingProduct) {
-          const response = await api.patch(`/products/${this.editingProduct.id}`, productData)
-          const index = this.products.findIndex(p => p.id === this.editingProduct.id)
+          const response = await api.patch(`/products/${this.editingProduct.id}`, productData);
+          if (!response.success) {
+            throw new Error('Error updating product: ' + response.message);
+          }
+          const index = this.products.findIndex(p => p.id === this.editingProduct.id);
           if (index !== -1) {
-            this.products[index] = response.data.data
+            this.products[index] = response.data;
           }
         } else {
           const response = await api.post('/products', productData)
-          this.products.unshift(response.data.data)
+          if (response.success) {
+            this.products.unshift(response.data);
+          } else {
+            throw new Error('Error creating product: ' + response.message);
+          }
         }
-        
         this.closeProductModal()
       } catch (error) {
         console.error('Error saving product:', error)

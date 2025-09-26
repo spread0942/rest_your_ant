@@ -57,7 +57,8 @@ export const seedDatabase = async (): Promise<void> => {
         unit: 'kg',
         price: 12.50,
         stock: 100,
-        minStock: 10
+        minStock: 10,
+        restaurantId: restaurant.id
       },
       {
         name: 'Tomatoes',
@@ -65,7 +66,8 @@ export const seedDatabase = async (): Promise<void> => {
         unit: 'kg',
         price: 3.20,
         stock: 50,
-        minStock: 5
+        minStock: 5,
+        restaurantId: restaurant.id
       },
       {
         name: 'Mozzarella Cheese',
@@ -73,7 +75,8 @@ export const seedDatabase = async (): Promise<void> => {
         unit: 'kg',
         price: 8.75,
         stock: 25,
-        minStock: 3
+        minStock: 3,
+        restaurantId: restaurant.id
       },
       {
         name: 'Pasta',
@@ -81,7 +84,8 @@ export const seedDatabase = async (): Promise<void> => {
         unit: 'kg',
         price: 2.40,
         stock: 80,
-        minStock: 10
+        minStock: 10,
+        restaurantId: restaurant.id
       }
     ]);
 
@@ -122,7 +126,8 @@ export const seedDatabase = async (): Promise<void> => {
         price: 2.99,
         category: 'soft_drink',
         isAlcoholic: false,
-        isAvailable: true
+        isAvailable: true,
+        restaurantId: restaurant.id
       },
       {
         name: 'House Wine',
@@ -130,7 +135,8 @@ export const seedDatabase = async (): Promise<void> => {
         price: 8.99,
         category: 'wine',
         isAlcoholic: true,
-        isAvailable: true
+        isAvailable: true,
+        restaurantId: restaurant.id
       },
       {
         name: 'Fresh Orange Juice',
@@ -138,7 +144,8 @@ export const seedDatabase = async (): Promise<void> => {
         price: 4.99,
         category: 'juice',
         isAlcoholic: false,
-        isAvailable: true
+        isAvailable: true,
+        restaurantId: restaurant.id
       }
     ]);
 

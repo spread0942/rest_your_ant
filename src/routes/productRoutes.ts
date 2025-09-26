@@ -27,8 +27,8 @@ const router = Router();
  *             type: object
  *             required:
  *               - name
- *               - category
  *               - unit
+ *               - price
  *               - restaurantId
  *             properties:
  *               name:
@@ -37,36 +37,24 @@ const router = Router();
  *               description:
  *                 type: string
  *                 example: "Fresh mozzarella cheese for pizzas"
- *               category:
- *                 type: string
- *                 example: "Dairy"
  *               unit:
  *                 type: string
- *                 enum: ["kg", "g", "l", "ml", "pcs", "lbs"]
  *                 example: "kg"
- *               stockQuantity:
+ *               price:
  *                 type: number
- *                 minimum: 0
- *                 example: 50.5
- *               minimumStock:
- *                 type: number
- *                 minimum: 0
- *                 example: 10
- *               unitCost:
- *                 type: number
+ *                 format: decimal
  *                 minimum: 0
  *                 example: 8.50
- *               supplier:
- *                 type: string
- *                 example: "Local Dairy Farm"
- *               expirationDate:
- *                 type: string
- *                 format: date
- *                 example: "2023-12-31"
- *               isActive:
- *                 type: boolean
- *                 default: true
- *                 example: true
+ *               stock:
+ *                 type: integer
+ *                 minimum: 0
+ *                 default: 0
+ *                 example: 50
+ *               minStock:
+ *                 type: integer
+ *                 minimum: 0
+ *                 default: 0
+ *                 example: 10
  *               restaurantId:
  *                 type: integer
  *                 example: 1
@@ -90,19 +78,30 @@ const router = Router();
  *                     name:
  *                       type: string
  *                       example: "Mozzarella Cheese"
- *                     category:
+ *                     description:
  *                       type: string
- *                       example: "Dairy"
- *                     stockQuantity:
- *                       type: number
- *                       example: 50.5
+ *                       example: "Fresh mozzarella cheese for pizzas"
  *                     unit:
  *                       type: string
  *                       example: "kg"
+ *                     price:
+ *                       type: number
+ *                       format: decimal
+ *                       example: 8.50
+ *                     stock:
+ *                       type: integer
+ *                       example: 50
+ *                     minStock:
+ *                       type: integer
+ *                       example: 10
  *                     restaurantId:
  *                       type: integer
  *                       example: 1
  *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2023-01-01T00:00:00.000Z
+ *                     updatedAt:
  *                       type: string
  *                       format: date-time
  *                       example: 2023-01-01T00:00:00.000Z
@@ -148,15 +147,10 @@ router.post('/', authenticate, authorize(['admin']), createProduct);
  *           default: 10
  *         description: Number of items per page
  *       - in: query
- *         name: category
- *         schema:
- *           type: string
- *         description: Filter by product category
- *       - in: query
  *         name: lowStock
  *         schema:
  *           type: boolean
- *         description: Filter products with low stock (below minimum)
+ *         description: Filter products with low stock (below minimum stock level)
  *       - in: query
  *         name: restaurantId
  *         schema:
@@ -184,35 +178,30 @@ router.post('/', authenticate, authorize(['admin']), createProduct);
  *                       name:
  *                         type: string
  *                         example: "Mozzarella Cheese"
- *                       category:
+ *                       description:
  *                         type: string
- *                         example: "Dairy"
- *                       stockQuantity:
- *                         type: number
- *                         example: 50.5
- *                       minimumStock:
- *                         type: number
- *                         example: 10
+ *                         example: "Fresh mozzarella cheese for pizzas"
  *                       unit:
  *                         type: string
  *                         example: "kg"
- *                       unitCost:
+ *                       price:
  *                         type: number
+ *                         format: decimal
  *                         example: 8.50
- *                       supplier:
- *                         type: string
- *                         example: "Local Dairy Farm"
- *                       expirationDate:
- *                         type: string
- *                         format: date
- *                         example: "2023-12-31"
- *                       isActive:
- *                         type: boolean
- *                         example: true
+ *                       stock:
+ *                         type: integer
+ *                         example: 50
+ *                       minStock:
+ *                         type: integer
+ *                         example: 10
  *                       restaurantId:
  *                         type: integer
  *                         example: 1
  *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: 2023-01-01T00:00:00.000Z
+ *                       updatedAt:
  *                         type: string
  *                         format: date-time
  *                         example: 2023-01-01T00:00:00.000Z
@@ -283,31 +272,19 @@ router.get('/', authenticate, authorize(['admin']), getAllProducts);
  *                     description:
  *                       type: string
  *                       example: "Fresh mozzarella cheese for pizzas"
- *                     category:
- *                       type: string
- *                       example: "Dairy"
  *                     unit:
  *                       type: string
  *                       example: "kg"
- *                     stockQuantity:
+ *                     price:
  *                       type: number
- *                       example: 50.5
- *                     minimumStock:
- *                       type: number
- *                       example: 10
- *                     unitCost:
- *                       type: number
+ *                       format: decimal
  *                       example: 8.50
- *                     supplier:
- *                       type: string
- *                       example: "Local Dairy Farm"
- *                     expirationDate:
- *                       type: string
- *                       format: date
- *                       example: "2023-12-31"
- *                     isActive:
- *                       type: boolean
- *                       example: true
+ *                     stock:
+ *                       type: integer
+ *                       example: 50
+ *                     minStock:
+ *                       type: integer
+ *                       example: 10
  *                     restaurantId:
  *                       type: integer
  *                       example: 1
@@ -363,31 +340,22 @@ router.get('/:id', authenticate, authorize(['admin']), getProductById);
  *               description:
  *                 type: string
  *                 example: "Updated premium quality mozzarella"
- *               category:
+ *               unit:
  *                 type: string
- *                 example: "Premium Dairy"
- *               stockQuantity:
+ *                 example: "kg"
+ *               price:
  *                 type: number
- *                 minimum: 0
- *                 example: 75.0
- *               minimumStock:
- *                 type: number
- *                 minimum: 0
- *                 example: 15
- *               unitCost:
- *                 type: number
+ *                 format: decimal
  *                 minimum: 0
  *                 example: 9.50
- *               supplier:
- *                 type: string
- *                 example: "Premium Dairy Farm"
- *               expirationDate:
- *                 type: string
- *                 format: date
- *                 example: "2024-01-31"
- *               isActive:
- *                 type: boolean
- *                 example: true
+ *               stock:
+ *                 type: integer
+ *                 minimum: 0
+ *                 example: 75
+ *               minStock:
+ *                 type: integer
+ *                 minimum: 0
+ *                 example: 15
  *     responses:
  *       200:
  *         description: Product updated successfully
@@ -408,12 +376,29 @@ router.get('/:id', authenticate, authorize(['admin']), getProductById);
  *                     name:
  *                       type: string
  *                       example: "Premium Mozzarella Cheese"
- *                     stockQuantity:
+ *                     description:
+ *                       type: string
+ *                       example: "Updated premium quality mozzarella"
+ *                     unit:
+ *                       type: string
+ *                       example: "kg"
+ *                     price:
  *                       type: number
- *                       example: 75.0
- *                     unitCost:
- *                       type: number
+ *                       format: decimal
  *                       example: 9.50
+ *                     stock:
+ *                       type: integer
+ *                       example: 75
+ *                     minStock:
+ *                       type: integer
+ *                       example: 15
+ *                     restaurantId:
+ *                       type: integer
+ *                       example: 1
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2023-01-01T00:00:00.000Z
  *                     updatedAt:
  *                       type: string
  *                       format: date-time
