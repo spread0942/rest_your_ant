@@ -2,7 +2,11 @@
   <div class="dashboard-container">
     <!-- Sidebar -->
     <div class="sidebar-wrapper">
-      <SidebarComponent @restaurant-changed="handleRestaurantChanged" />
+      <SidebarComponent 
+        :restaurants="restaurants" 
+        :selectedRestaurant="selectedRestaurant"
+        @restaurant-changed="handleRestaurantChanged" 
+      />
     </div>
 
     <!-- Main Content -->
@@ -178,14 +182,17 @@
 
 <script>
 import SidebarComponent from '@/components/SidebarComponent.vue'
+import restaurantMixin from '@/mixins/restaurantMixin.js'
 
 export default {
   name: 'DashboardView',
+  mixins: [restaurantMixin],
   components: {
     SidebarComponent
   },
   data() {
     return {
+      loading: true,
       stats: {
         todayOrders: 47,
         todayRevenue: 1250.50,
@@ -228,6 +235,8 @@ export default {
   methods: {
     handleRestaurantChanged(restaurant) {
       console.log('Restaurant changed in Dashboard:', restaurant)
+      // The mixin will handle updating the service
+      restaurantMixin.methods.handleRestaurantChanged.call(this, restaurant)
       // Update dashboard data based on selected restaurant
       this.loadDashboardData()
     },
@@ -264,7 +273,8 @@ export default {
     }
   },
   async mounted() {
-    // Load dashboard data
+    // The mixin will handle loading restaurants
+    // Just load dashboard data after restaurants are loaded
     await this.loadDashboardData()
   }
 }

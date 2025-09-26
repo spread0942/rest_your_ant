@@ -2,7 +2,11 @@
   <div class="base-table-container">
     <!-- Sidebar -->
     <div class="sidebar-wrapper">
-      <SidebarComponent @restaurant-changed="$emit('restaurant-changed', $event)" />
+      <SidebarComponent 
+        :restaurants="restaurants" 
+        :selectedRestaurant="selectedRestaurant"
+        @restaurant-changed="handleRestaurantChanged" 
+      />
     </div>
 
     <!-- Main Content -->
@@ -80,9 +84,11 @@
 
 <script>
 import SidebarComponent from './SidebarComponent.vue'
+import restaurantMixin from '@/mixins/restaurantMixin.js'
 
 export default {
   name: 'BaseTableView',
+  mixins: [restaurantMixin],
   components: {
     SidebarComponent
   },
@@ -127,6 +133,14 @@ export default {
         return column.formatter(item[column.key])
       }
       return item[column.key]
+    },
+    
+    // Override the mixin method to also emit to parent
+    handleRestaurantChanged(restaurant) {
+      // Call the original mixin method
+      restaurantMixin.methods.handleRestaurantChanged.call(this, restaurant)
+      // Also emit to parent components
+      this.$emit('restaurant-changed', restaurant)
     }
   }
 }

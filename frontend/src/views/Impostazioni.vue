@@ -217,7 +217,7 @@
 import SidebarComponent from '../components/SidebarComponent.vue'
 
 export default {
-  name: 'Impostazioni',
+  name: 'ImpostazioniView',
   components: {
     SidebarComponent
   },

@@ -2,7 +2,11 @@
   <div class="menu-products-container">
     <!-- Sidebar -->
     <div class="sidebar-wrapper">
-      <SidebarComponent @restaurant-changed="handleRestaurantChanged" />
+      <SidebarComponent 
+        :restaurants="restaurants" 
+        :selectedRestaurant="selectedRestaurant"
+        @restaurant-changed="handleRestaurantChanged" 
+      />
     </div>
 
     <!-- Main Content -->
@@ -354,10 +358,12 @@
 
 <script>
 import SidebarComponent from '@/components/SidebarComponent.vue'
+import restaurantMixin from '@/mixins/restaurantMixin.js'
 import api from '@/config/api'
 
 export default {
   name: 'MenuProductsView',
+  mixins: [restaurantMixin],
   components: {
     SidebarComponent
   },

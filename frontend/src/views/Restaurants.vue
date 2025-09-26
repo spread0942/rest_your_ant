@@ -174,6 +174,7 @@
 
 <script>
 import api from '@/config/api.js'
+import restaurantService from '@/utils/restaurantService.js'
 
 export default {
   name: 'RestaurantsView',
@@ -215,6 +216,9 @@ export default {
 
         if (response.success) {
           this.restaurants = response.data.restaurants;
+          
+          // Update the restaurant service with the loaded restaurants
+          restaurantService.updateRestaurants(this.restaurants);
         } else {
           throw new Error('Failed to fetch restaurants: ' + response.message);
         }
@@ -237,6 +241,8 @@ export default {
         const response = await api.post('/restaurants', this.newRestaurant);
         if (response.success) {
           this.restaurants.unshift(response.data);
+          // Refresh the restaurant service to update all components
+          await restaurantService.refresh();
         } else {
           throw new Error('Error creating restaurant: ' + response.message);
         }
@@ -251,10 +257,10 @@ export default {
     },
 
     selectRestaurant(restaurant) {
-      // Salva il ristorante selezionato in localStorage
-      localStorage.setItem('selectedRestaurant', JSON.stringify(restaurant))
+      // Update the restaurant service with the selected restaurant
+      restaurantService.setSelectedRestaurant(restaurant)
       
-      // Naviga alla dashboard del ristorante
+      // Navigate to the dashboard
       this.$router.push('/dashboard')
     },
 

@@ -2,20 +2,21 @@
   <div class="sidebar" :class="{ 'mobile-sidebar': isMobile }">
     <!-- Restaurant Selector -->
     <div class="restaurant-selector">
-      <div class="restaurant-content" @click="toggleRestaurantSelector">
+      <div class="restaurant-content" :class="{ clickable: canShowDropdown }" @click="toggleRestaurantSelector">
         <div class="restaurant-avatar">
-          <img :src="currentRestaurant.avatar" :alt="currentRestaurant.name" class="restaurant-image" @error="setDefaultImage">
+          <img v-if="currentRestaurant.avatar" :src="currentRestaurant.avatar" :alt="currentRestaurant.name" class="restaurant-image" @error="setDefaultImage">
+          <div v-else class="default-restaurant-icon">🏪</div>
         </div>
         <div class="restaurant-info">
-          <p class="restaurant-name">{{ currentRestaurant.name }}</p>
+          <p class="restaurant-name">{{ currentRestaurant.name || 'Seleziona un ristorante' }}</p>
         </div>
-        <button class="restaurant-dropdown" :class="{ 'dropdown-open': showDropdown }">
+        <button v-if="canShowDropdown" class="restaurant-dropdown" :class="{ 'dropdown-open': showDropdown }">
           <i class="fi fi-sr-angle-down"></i>
         </button>
       </div>
       
       <!-- Dropdown Menu -->
-      <div v-if="showDropdown" class="restaurant-dropdown-menu">
+      <div v-if="showDropdown && canShowDropdown" class="restaurant-dropdown-menu">
         <div 
           v-for="restaurant in restaurants" 
           :key="restaurant.id"
@@ -24,11 +25,12 @@
           @click="selectRestaurant(restaurant)"
         >
           <div class="dropdown-item-avatar">
-            <img :src="restaurant.avatar" :alt="restaurant.name" class="dropdown-item-image" @error="setDefaultImage">
+            <img v-if="restaurant.avatar" :src="restaurant.avatar" :alt="restaurant.name" class="dropdown-item-image" @error="setDefaultImage">
+            <div v-else class="default-restaurant-icon">🏪</div>
           </div>
           <div class="dropdown-item-info">
             <p class="dropdown-item-name">{{ restaurant.name }}</p>
-            <p class="dropdown-item-address">{{ restaurant.address }}</p>
+            <p class="dropdown-item-address">{{ restaurant.address || 'Indirizzo non specificato' }}</p>
           </div>
           <div v-if="restaurant.id === currentRestaurant.id" class="dropdown-item-check">
             <i class="fi fi-sr-check"></i>
@@ -142,6 +144,10 @@
 export default {
   name: 'SidebarComponent',
   props: {
+    restaurants: {
+      type: Array,
+      default: () => []
+    },
     selectedRestaurant: {
       type: Object,
       default: null
@@ -155,52 +161,81 @@ export default {
   data() {
     return {
       showDropdown: false,
-      restaurants: [
-        {
-          id: 1,
-          name: 'Fabbrica in Pedavena',
-          address: 'Via Roma, 123 - Pedavena',
-          avatar: '/restaurant-logo-1.png'
-        },
-        {
-          id: 2,
-          name: 'Osteria del Centro',
-          address: 'Piazza Centrale, 45 - Belluno',
-          avatar: '/restaurant-logo-2.png'
-        },
-        {
-          id: 3,
-          name: 'Rifugio Alpino',
-          address: 'Monte Grappa, 1 - Feltre',
-          avatar: '/restaurant-logo-3.png'
-        }
-      ],
       currentRestaurant: {
-        id: 1,
-        name: 'Fabbrica in Pedavena',
-        address: 'Via Roma, 123 - Pedavena',
-        avatar: '/restaurant-logo-1.png'
+        id: null,
+        name: 'Seleziona un ristorante',
+        address: '',
+        avatar: ''
       }
     }
   },
-  mounted() {
-    // Load saved restaurant from localStorage
-    const savedRestaurant = localStorage.getItem('selectedRestaurant')
-    if (savedRestaurant) {
-      try {
-        this.currentRestaurant = JSON.parse(savedRestaurant)
-      } catch (e) {
-        console.warn('Error parsing saved restaurant:', e)
-      }
+  computed: {
+    canShowDropdown() {
+      return this.restaurants.length > 1
     }
+  },
+  mounted() {
+    this.initializeRestaurant()
     
     // Add click outside listener
     document.addEventListener('click', this.handleClickOutside)
+  },
+  watch: {
+    restaurants: {
+      handler() {
+        this.initializeRestaurant()
+      },
+      immediate: true
+    },
+    selectedRestaurant: {
+      handler(newRestaurant) {
+        if (newRestaurant) {
+          this.currentRestaurant = newRestaurant
+        }
+      },
+      immediate: true
+    }
   },
   beforeUnmount() {
     document.removeEventListener('click', this.handleClickOutside)
   },
   methods: {
+    initializeRestaurant() {
+      // If there's a selected restaurant prop, use it
+      if (this.selectedRestaurant) {
+        this.currentRestaurant = this.selectedRestaurant
+        return
+      }
+
+      // Load saved restaurant from localStorage
+      const savedRestaurant = localStorage.getItem('selectedRestaurant')
+      if (savedRestaurant) {
+        try {
+          const parsed = JSON.parse(savedRestaurant)
+          // Check if the saved restaurant still exists in the restaurants list
+          const exists = this.restaurants.find(r => r.id === parsed.id)
+          if (exists) {
+            this.currentRestaurant = parsed
+          } else if (this.restaurants.length > 0) {
+            // If saved restaurant doesn't exist, select the first available
+            this.currentRestaurant = this.restaurants[0]
+            localStorage.setItem('selectedRestaurant', JSON.stringify(this.restaurants[0]))
+          }
+        } catch (e) {
+          console.warn('Error parsing saved restaurant:', e)
+          // Select first restaurant if parsing fails
+          if (this.restaurants.length > 0) {
+            this.currentRestaurant = this.restaurants[0]
+            localStorage.setItem('selectedRestaurant', JSON.stringify(this.restaurants[0]))
+          }
+        }
+      } else if (this.restaurants.length > 0) {
+        // No saved restaurant, select the first one
+        this.currentRestaurant = this.restaurants[0]
+        localStorage.setItem('selectedRestaurant', JSON.stringify(this.restaurants[0]))
+      }
+    },
+
     handleNavClick() {
       if (this.isMobile) {
         this.$emit('close')
@@ -219,7 +254,10 @@ export default {
     },
     
     toggleRestaurantSelector() {
-      this.showDropdown = !this.showDropdown
+      // Only allow dropdown if there are multiple restaurants
+      if (this.canShowDropdown) {
+        this.showDropdown = !this.showDropdown
+      }
     },
     
     selectRestaurant(restaurant) {
@@ -295,12 +333,15 @@ export default {
   align-items: center;
   gap: 8px;
   padding: 8px;
-  cursor: pointer;
   border-radius: 4px;
   transition: all 0.2s ease;
 }
 
-.restaurant-content:hover {
+.restaurant-content.clickable {
+  cursor: pointer;
+}
+
+.restaurant-content.clickable:hover {
   background: rgba(0, 0, 0, 0.02);
 }
 

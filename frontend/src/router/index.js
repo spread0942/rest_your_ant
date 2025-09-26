@@ -3,7 +3,6 @@ import LoginView from '../views/Login.vue'
 import DashboardView from '../views/Dashboard.vue'
 import MenuView from '../views/Menu.vue'
 import RestaurantsView from '../views/Restaurants.vue'
-import PiattiView from '../views/Piatti.vue'
 
 const routes = [
   {

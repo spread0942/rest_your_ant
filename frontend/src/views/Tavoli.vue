@@ -18,7 +18,7 @@
 import BaseTableView from '../components/BaseTableView.vue'
 
 export default {
-  name: 'Tavoli',
+  name: 'TavoliView',
   components: {
     BaseTableView
   },

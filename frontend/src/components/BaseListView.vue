@@ -2,7 +2,11 @@
   <div class="base-list-container">
     <!-- Sidebar -->
     <div class="sidebar-wrapper">
-      <SidebarComponent @restaurant-changed="$emit('restaurant-changed', $event)" />
+      <SidebarComponent 
+        :restaurants="restaurants" 
+        :selectedRestaurant="selectedRestaurant"
+        @restaurant-changed="handleRestaurantChanged" 
+      />
     </div>
     
     <!-- Main Content -->
@@ -51,9 +55,11 @@
 <script>
 import SidebarComponent from './SidebarComponent.vue'
 import BaseCard from './BaseCard.vue'
+import restaurantMixin from '@/mixins/restaurantMixin.js'
 
 export default {
   name: 'BaseListView',
+  mixins: [restaurantMixin],
   components: {
     SidebarComponent,
     BaseCard
@@ -96,7 +102,16 @@ export default {
       default: 'Crea nuovo'
     }
   },
-  emits: ['create', 'navigate', 'view', 'edit', 'delete', 'restaurant-changed']
+  emits: ['create', 'navigate', 'view', 'edit', 'delete', 'restaurant-changed'],
+  methods: {
+    // Override the mixin method to also emit to parent
+    handleRestaurantChanged(restaurant) {
+      // Call the original mixin method
+      restaurantMixin.methods.handleRestaurantChanged.call(this, restaurant)
+      // Also emit to parent components
+      this.$emit('restaurant-changed', restaurant)
+    }
+  }
 }
 </script>
 
