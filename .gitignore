@@ -70,7 +70,6 @@ build/
 
 # Docker
 .dockerignore
-docker-compose.override.yml
 
 # Logs
 logs/

@@ -1,0 +1,64 @@
+services:
+  # Traefik Reverse Proxy
+  traefik:
+    command:
+      - "--api.insecure=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # dashboard
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+  
+  # PostgreSQL Database
+  db:
+    ports:
+      - "5432:5432"   # expose for local access
+    environment:
+      POSTGRES_DB: restaurant_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+  # Node.js API
+  api:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: restaurant_db
+      DB_USER: postgres
+      DB_PASSWORD: password
+      PORT: 3000
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+
+  # Vue.js Frontend
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "8000:8000"
+    environment:
+      VUE_APP_API_ENDPOINT: http://api:3000/api
+      NODE_ENV: development
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+volumes:
+  postgres_data:

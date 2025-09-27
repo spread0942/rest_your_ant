@@ -1,53 +1,66 @@
 services:
   # Traefik Reverse Proxy
   traefik:
-    image: traefik:v3.3
+    image: traefik:v3.5
     command:
-      - "--api.insecure=true"
+      - "--api.dashboard=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      # For HTTPS (optional, requires proper certificate setup)
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=you@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
-      - "8080:8080"
+      - "443:443"
+    restart: unless-stopped
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+    networks:
+      - traefik_proxy
   
   # PostgreSQL Database
   db:
-    image: postgres:16
+    image: postgres:18
     container_name: restaurant_db
+    env_file:
+      - .env
     environment:
-      POSTGRES_DB: restaurant_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - perfectmenu_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - internal_net
 
   # Node.js API
   api:
     build: 
       context: ./backend
       dockerfile: Dockerfile
-    container_name: restaurant_api
+      target: production
+    image: perfectmenu_api:${APP_VERSION:-latest}
+    env_file:
+      - .env
     environment:
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: restaurant_db
-      DB_USER: postgres
-      DB_PASSWORD: password
-      JWT_SECRET: your-super-secret-jwt-key-here
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
       PORT: 3000
       NODE_ENV: production
-    ports:
-      - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
@@ -55,33 +68,51 @@ services:
     labels:
       - "traefik.enable=true"
       # API Router
-      - "traefik.http.routers.api.rule=Host(`perfectmenu.localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.rule=Host(`api.perfectmenu.com`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.priority=100"
       - "traefik.http.routers.api.service=api"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls.certresolver=myresolver"
       - "traefik.http.services.api.loadbalancer.server.port=3000"
       # API Docs Router
-      - "traefik.http.routers.api-docs.rule=Host(`perfectmenu.localhost`) && PathPrefix(`/api/docs`)"
+      - "traefik.http.routers.api-docs.rule=Host(`api.perfectmenu.com`) && PathPrefix(`/api/docs`)"
       - "traefik.http.routers.api-docs.priority=110"
       - "traefik.http.routers.api-docs.service=api"
       - "traefik.http.routers.api-docs.middlewares=api-docs-strip@docker"
+      - "traefik.http.routers.api-docs.entrypoints=websecure"
+      - "traefik.http.routers.api-docs.tls.certresolver=myresolver"
       - "traefik.http.middlewares.api-docs-strip.stripprefix.prefixes=/api"
+    networks:
+      - traefik_proxy
+      - internal_net
 
   # Vue.js Frontend
   frontend:
     build: 
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: restaurant_frontend
-    ports:
-      - "8000:8000"
+      target: production
+      args:
+        VUE_APP_API_ENDPOINT: https://api.perfectmenu.com/api
+    image: perfectmenu_frontend:${APP_VERSION:-latest}
     restart: unless-stopped
     environment:
-      - VUE_APP_API_ENDPOINT=http://perfectmenu.localhost/api
+      NODE_ENV: production
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`perfectmenu.localhost`)"
-      - "traefik.http.services.frontend.loadbalancer.server.port=8000"
+      - "traefik.http.routers.frontend.rule=Host(`perfectmenu.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
       - "traefik.http.routers.frontend.priority=10"
+    networks:
+      - traefik_proxy
 
 volumes:
-  postgres_data:
+  perfectmenu_data:
+
+networks:
+  traefik_proxy:
+    driver: bridge
+  internal_net:
+    driver: bridge

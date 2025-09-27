@@ -6,12 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
-    "dev": "nodemon src/app.ts",
-    "validate": "npx ts-node src/scripts/validate-env.ts",
-    "db:seed": "npx ts-node src/scripts/seed.ts",
-    "db:clear": "npx ts-node src/scripts/seed.ts clear",
-    "db:reset": "npm run db:clear && npm run db:seed",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "debug": "ts-node --inspect --prefer-ts-exts src/app.ts"
   },
   "keywords": [
     "restaurant",
