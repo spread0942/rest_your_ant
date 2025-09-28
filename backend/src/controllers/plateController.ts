@@ -1,10 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
-import { Plate } from '../models';
+import { Auth, Menu, Plate, Restaurant } from '../models';
 import { createSuccessResponse, createErrorResponse } from '../utils/response';
 
 export const createPlate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, description, price, category, isAvailable } = req.body;
+    const { name, description, price, category, isAvailable, menuId } = req.body;
+    const auth: Auth = (req as any).auth as Auth;
+
+    if (!auth || !auth?.tenantId) {
+      res.status(401).json(createErrorResponse('Unauthorized'));
+      return;
+    }
+
+    // Verify that the menu belongs to the user's tenant
+    const menu = await Menu.findOne({
+      where: { 
+        id: menuId,
+      },
+      include: [{
+        model: Restaurant,
+        as: 'restaurant',
+        where: { tenantId: auth.tenantId }
+      }]
+    });
+
+    if (!menu) {
+      res.status(404).json(createErrorResponse('Menu not found'));
+      return;
+    }
 
     const plate = await Plate.create({
       name,
@@ -12,6 +35,7 @@ export const createPlate = async (req: Request, res: Response, next: NextFunctio
       price,
       category,
       isAvailable,
+      menuId,
     });
 
     res.status(201).json(createSuccessResponse(plate, 'Plate created successfully'));
@@ -24,13 +48,32 @@ export const getAllPlates = async (req: Request, res: Response, next: NextFuncti
   try {
     const { page = 1, limit = 10, category, isAvailable } = req.query;
     const offset = (Number(page) - 1) * Number(limit);
+    const auth: Auth = (req as any).auth as Auth;
 
-    const whereClause: any = {};
+    if (!auth || !auth?.tenantId) {
+      res.status(401).json(createErrorResponse('Unauthorized'));
+      return;
+    }
+
+    // Build where clause based on query parameters
+    let whereClause: any = {};
+
     if (category) whereClause.category = category;
     if (isAvailable !== undefined) whereClause.isAvailable = isAvailable === 'true';
 
     const { count, rows } = await Plate.findAndCountAll({
       where: whereClause,
+      include: [
+        {
+          model: Menu,
+          as: 'menu',
+          include: [{
+            model: Restaurant,
+            as: 'restaurant',
+            where: { tenantId: auth.tenantId }
+          }]
+        }
+      ],
       limit: Number(limit),
       offset,
       order: [['createdAt', 'DESC']],
@@ -53,8 +96,25 @@ export const getAllPlates = async (req: Request, res: Response, next: NextFuncti
 export const getPlateById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
+    const auth: Auth = (req as any).auth as Auth;
 
-    const plate = await Plate.findByPk(id);
+    if (!auth || !auth?.tenantId) {
+      res.status(401).json(createErrorResponse('Unauthorized'));
+      return;
+    }
+
+    const plate = await Plate.findOne({
+      where: { id },
+      include: [{
+        model: Menu,
+        as: 'menu',
+        include: [{
+          model: Restaurant,
+          as: 'restaurant',
+          where: { tenantId: auth.tenantId }
+        }]
+      }]
+    });
 
     if (!plate) {
       res.status(404).json(createErrorResponse('Plate not found'));
@@ -71,8 +131,26 @@ export const updatePlate = async (req: Request, res: Response, next: NextFunctio
   try {
     const { id } = req.params;
     const { name, description, price, category, isAvailable } = req.body;
+    const auth: Auth = (req as any).auth as Auth;
 
-    const plate = await Plate.findByPk(id);
+    if (!auth || !auth?.tenantId) {
+      res.status(401).json(createErrorResponse('Unauthorized'));
+      return;
+    }
+
+    const plate = await Plate.findOne({
+      where: { id },
+      include: [{
+        model: Menu,
+        as: 'menu',
+        include: [{
+          model: Restaurant,
+          as: 'restaurant',
+          where: { tenantId: auth.tenantId }
+        }]
+      }]
+    });
+
     if (!plate) {
       res.status(404).json(createErrorResponse('Plate not found'));
       return;
@@ -95,8 +173,27 @@ export const updatePlate = async (req: Request, res: Response, next: NextFunctio
 export const deletePlate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
+    const auth: Auth = (req as any).auth as Auth;
 
-    const plate = await Plate.findByPk(id);
+    if (!auth || !auth?.tenantId) {
+      res.status(401).json(createErrorResponse('Unauthorized'));
+      return;
+    }
+
+    // Verify that the plate belongs to the user's tenant via the menu and restaurant
+    const plate = await Plate.findOne({
+      where: { id },
+      include: [{
+        model: Menu,
+        as: 'menu',
+        include: [{
+          model: Restaurant,
+          as: 'restaurant',
+          where: { tenantId: auth.tenantId }
+        }]
+      }]
+    });
+
     if (!plate) {
       res.status(404).json(createErrorResponse('Plate not found'));
       return;

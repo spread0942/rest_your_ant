@@ -41,10 +41,10 @@ const router = Router();
  *           type: string
  *         description: Filter by plate category
  *       - in: query
- *         name: restaurantId
+ *         name: menuId
  *         schema:
  *           type: integer
- *         description: Filter by restaurant ID
+ *         description: Filter by menu ID
  *     responses:
  *       200:
  *         description: List of plates retrieved successfully
@@ -79,10 +79,14 @@ const router = Router();
  *                       isAvailable:
  *                         type: boolean
  *                         example: true
- *                       restaurantId:
+ *                       menuId:
  *                         type: integer
  *                         example: 1
  *                       createdAt:
+ *                         type: string
+ *                         format: date-time
+ *                         example: 2023-01-01T00:00:00.000Z
+ *                       updatedAt:
  *                         type: string
  *                         format: date-time
  *                         example: 2023-01-01T00:00:00.000Z
@@ -158,41 +162,12 @@ router.get('/', authenticate, getAllPlates);
  *                     category:
  *                       type: string
  *                       example: "Pizza"
- *                     preparationTime:
- *                       type: integer
- *                       example: 15
- *                     calories:
- *                       type: integer
- *                       example: 280
- *                     isVegetarian:
- *                       type: boolean
- *                       example: true
- *                     isVegan:
- *                       type: boolean
- *                       example: false
- *                     isGlutenFree:
- *                       type: boolean
- *                       example: false
  *                     isAvailable:
  *                       type: boolean
  *                       example: true
- *                     restaurantId:
+ *                     menuId:
  *                       type: integer
  *                       example: 1
- *                     products:
- *                       type: array
- *                       items:
- *                         type: object
- *                         properties:
- *                           id:
- *                             type: integer
- *                             example: 1
- *                           name:
- *                             type: string
- *                             example: "Mozzarella Cheese"
- *                           quantity:
- *                             type: string
- *                             example: "100g"
  *                     createdAt:
  *                       type: string
  *                       format: date-time
@@ -231,10 +206,11 @@ router.get('/:id', authenticate, getPlateById);
  *             required:
  *               - name
  *               - price
- *               - restaurantId
+ *               - menuId
  *             properties:
  *               name:
  *                 type: string
+ *                 maxLength: 100
  *                 example: "Margherita Pizza"
  *               description:
  *                 type: string
@@ -245,32 +221,13 @@ router.get('/:id', authenticate, getPlateById);
  *                 example: 12.99
  *               category:
  *                 type: string
+ *                 maxLength: 50
  *                 example: "Pizza"
- *               preparationTime:
- *                 type: integer
- *                 minimum: 1
- *                 example: 15
- *               calories:
- *                 type: integer
- *                 minimum: 0
- *                 example: 280
- *               isVegetarian:
- *                 type: boolean
- *                 default: false
- *                 example: true
- *               isVegan:
- *                 type: boolean
- *                 default: false
- *                 example: false
- *               isGlutenFree:
- *                 type: boolean
- *                 default: false
- *                 example: false
  *               isAvailable:
  *                 type: boolean
  *                 default: true
  *                 example: true
- *               restaurantId:
+ *               menuId:
  *                 type: integer
  *                 example: 1
  *     responses:
@@ -305,10 +262,14 @@ router.get('/:id', authenticate, getPlateById);
  *                     isAvailable:
  *                       type: boolean
  *                       example: true
- *                     restaurantId:
+ *                     menuId:
  *                       type: integer
  *                       example: 1
  *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2023-01-01T00:00:00.000Z
+ *                     updatedAt:
  *                       type: string
  *                       format: date-time
  *                       example: 2023-01-01T00:00:00.000Z
@@ -322,7 +283,7 @@ router.get('/:id', authenticate, getPlateById);
  *       403:
  *         description: Forbidden - Admin access required
  *       404:
- *         description: Restaurant not found
+ *         description: Menu not found
  *       500:
  *         description: Internal server error
  */
@@ -355,6 +316,7 @@ router.post('/', authenticate, authorize(['admin']), createPlate);
  *             properties:
  *               name:
  *                 type: string
+ *                 maxLength: 100
  *                 example: "Updated Margherita Pizza"
  *               description:
  *                 type: string
@@ -365,24 +327,8 @@ router.post('/', authenticate, authorize(['admin']), createPlate);
  *                 example: 14.99
  *               category:
  *                 type: string
+ *                 maxLength: 50
  *                 example: "Gourmet Pizza"
- *               preparationTime:
- *                 type: integer
- *                 minimum: 1
- *                 example: 20
- *               calories:
- *                 type: integer
- *                 minimum: 0
- *                 example: 300
- *               isVegetarian:
- *                 type: boolean
- *                 example: true
- *               isVegan:
- *                 type: boolean
- *                 example: false
- *               isGlutenFree:
- *                 type: boolean
- *                 example: false
  *               isAvailable:
  *                 type: boolean
  *                 example: false
@@ -406,12 +352,25 @@ router.post('/', authenticate, authorize(['admin']), createPlate);
  *                     name:
  *                       type: string
  *                       example: "Updated Margherita Pizza"
+ *                     description:
+ *                       type: string
+ *                       example: "Updated description"
  *                     price:
  *                       type: number
  *                       example: 14.99
+ *                     category:
+ *                       type: string
+ *                       example: "Gourmet Pizza"
  *                     isAvailable:
  *                       type: boolean
  *                       example: false
+ *                     menuId:
+ *                       type: integer
+ *                       example: 1
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2023-01-01T00:00:00.000Z
  *                     updatedAt:
  *                       type: string
  *                       format: date-time

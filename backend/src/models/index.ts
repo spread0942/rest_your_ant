@@ -19,6 +19,10 @@ OrderDetail.belongsTo(Drink, { foreignKey: 'drinkId', as: 'drink' });
 Order.hasMany(OrderDetail, { foreignKey: 'orderId', as: 'details' });
 OrderDetail.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
 
+// Menu associations
+Menu.hasMany(Plate, { foreignKey: 'menuId', as: 'plates' });
+Plate.belongsTo(Menu, { foreignKey: 'menuId', as: 'menu' });
+
 // Plate associations
 Plate.hasMany(OrderDetail, { foreignKey: 'plateId', as: 'orderDetails' });
 OrderDetail.belongsTo(Plate, { foreignKey: 'plateId', as: 'plate' });
