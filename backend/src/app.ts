@@ -20,7 +20,22 @@ setupSwagger(app);
 
 // Security middleware
 app.use(helmet());
-app.use(cors());
+
+// CORS configuration for development
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'development' 
+    ? [
+        'http://localhost:8000',
+        'http://localhost:3000',
+        'http://perfectmenu.localhost',
+        'http://perfectmenu.localhost:8000'
+      ]
+    : ['https://perfectmenu.com'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 // Logging middleware
 app.use(morgan('combined'));

@@ -1,4 +1,6 @@
-const API_ENDPOINT = process.env.VUE_APP_API_ENDPOINT || 'http://localhost:3000/api';
+const API_ENDPOINT = process.env.NODE_ENV === 'development' 
+  ? 'http://localhost:3000/api'
+  : 'https://api.perfectmenu.com/api';
 
 // Simple HTTP client
 const api = {

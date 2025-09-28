@@ -26,7 +26,7 @@ services:
   # PostgreSQL Database
   db:
     image: postgres:18
-    container_name: restaurant_db
+    container_name: perfect_menu_db
     env_file:
       - .env
     environment:
@@ -49,7 +49,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: production
-    image: perfectmenu_api:${APP_VERSION:-latest}
+    image: perfect_menu_api:${APP_VERSION:-latest}
+    container_name: perfect_menu_api
     env_file:
       - .env
     environment:
@@ -94,7 +95,8 @@ services:
       target: production
       args:
         VUE_APP_API_ENDPOINT: https://api.perfectmenu.com/api
-    image: perfectmenu_frontend:${APP_VERSION:-latest}
+    image: perfect_menu_frontend:${APP_VERSION:-latest}
+    container_name: perfect_menu_frontend
     restart: unless-stopped
     environment:
       NODE_ENV: production
@@ -113,6 +115,6 @@ volumes:
 
 networks:
   traefik_proxy:
-    driver: bridge
+    external: true
   internal_net:
     driver: bridge

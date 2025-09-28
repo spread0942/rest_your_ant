@@ -1,31 +1,40 @@
 services:
   # Traefik Reverse Proxy
   traefik:
+    container_name: perfect_menu_traefik_dev
     command:
       - "--api.insecure=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
-      - "--entrypoints.websecure.http.tls=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
+      - "--log.level=DEBUG"
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"  # dashboard
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./certs:/certs:ro"
+      - "./dynamic:/etc/traefik/dynamic:ro"
+    networks:
+      - traefik_proxy
   
   # PostgreSQL Database
   db:
+    container_name: perfect_menu_db_dev
     ports:
-      - "5432:5432"   # expose for local access
+      - "5432:5432"
     environment:
       POSTGRES_DB: restaurant_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
+    networks:
+      - internal_net
 
   # Node.js API
   api:
+    container_name: perfect_menu_api_dev
     build: 
       context: ./backend
       dockerfile: Dockerfile
@@ -44,9 +53,28 @@ services:
     volumes:
       - ./backend:/app
       - /app/node_modules
+    labels:
+      - "traefik.enable=true"
+      # API Router
+      - "traefik.http.routers.api.rule=Host(`localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.priority=100"
+      - "traefik.http.routers.api.service=api"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.services.api.loadbalancer.server.port=3000"
+      # API Docs Router
+      - "traefik.http.routers.api-docs.rule=Host(`localhost`) && PathPrefix(`/api/docs`)"
+      - "traefik.http.routers.api-docs.priority=110"
+      - "traefik.http.routers.api-docs.service=api"
+      - "traefik.http.routers.api-docs.middlewares=api-docs-strip@docker"
+      - "traefik.http.routers.api-docs.entrypoints=web"
+      - "traefik.http.middlewares.api-docs-strip.stripprefix.prefixes=/api"
+    networks:
+      - traefik_proxy
+      - internal_net
 
   # Vue.js Frontend
   frontend:
+    container_name: perfect_menu_frontend_dev
     build: 
       context: ./frontend
       dockerfile: Dockerfile
@@ -54,11 +82,25 @@ services:
     ports:
       - "8000:8000"
     environment:
-      VUE_APP_API_ENDPOINT: http://api:3000/api
+      VUE_APP_API_ENDPOINT: http://localhost:3000/api
       NODE_ENV: development
     volumes:
       - ./frontend:/app
       - /app/node_modules
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=8000"
+      - "traefik.http.routers.frontend.priority=10"
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    driver: bridge
+  internal_net:
+    driver: bridge
 
 volumes:
   postgres_data:
