@@ -25,10 +25,8 @@ app.use(helmet());
 const corsOptions = {
   origin: process.env.NODE_ENV === 'development' 
     ? [
-        'http://localhost:8000',
         'http://localhost:3000',
-        'http://perfectmenu.localhost',
-        'http://perfectmenu.localhost:8000'
+        'https://localhost:3000',
       ]
     : ['https://perfectmenu.com'],
   credentials: true,

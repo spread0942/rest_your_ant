@@ -45,6 +45,14 @@ export default {
     this.categoryName = this.$route.params.category || 'Antipasti'
   },
   methods: {
+    async loadDishes() {
+      try {
+        const response = await this.$http.get(`/api/plates?menuId=${this.$route.params.menuId}`)
+        this.dishes = response.data.data
+      } catch (error) {
+        console.error('Error loading dishes:', error)
+      }
+    },
     addDish() {
       console.log('Aggiungi piatto per categoria:', this.categoryName)
       // Naviga alla pagina per aggiungere un nuovo piatto
