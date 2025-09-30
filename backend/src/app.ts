@@ -27,6 +27,8 @@ const corsOptions = {
     ? [
         'http://localhost:3000',
         'https://localhost:3000',
+        'http://localhost:8000',
+        'https://localhost:8000',
       ]
     : ['https://perfectmenu.com'],
   credentials: true,
