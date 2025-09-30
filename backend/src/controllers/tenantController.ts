@@ -21,7 +21,7 @@ export const createTenant = async (req: Request, res: Response, next: NextFuncti
 
 export const getTenants = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('Tenants ID is required'));
       return;
@@ -39,7 +39,7 @@ export const getTenants = async (req: Request, res: Response, next: NextFunction
 export const getTenantById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('Tenants ID is required'));
       return;
@@ -66,7 +66,7 @@ export const updateTenant = async (req: Request, res: Response, next: NextFuncti
   try {
     const { id } = req.params;
     const { name, domain } = req.body;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('Tenants ID is required'));
       return;
@@ -96,7 +96,7 @@ export const updateTenant = async (req: Request, res: Response, next: NextFuncti
 export const deleteTenant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('Tenants ID is required'));
       return;

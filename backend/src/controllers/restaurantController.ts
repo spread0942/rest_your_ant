@@ -5,7 +5,7 @@ import { createSuccessResponse, createErrorResponse } from '../utils/response';
 export const createRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { name, description, address, phone, email, website } = req.body;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
@@ -33,7 +33,7 @@ export const getAllRestaurants = async (req: Request, res: Response, next: NextF
     // can you update this method to filter by accountId and paginate the results?
     const { page = 1, limit = 10 } = req.query;
     const offset = (Number(page) - 1) * Number(limit);
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
@@ -64,7 +64,7 @@ export const getAllRestaurants = async (req: Request, res: Response, next: NextF
 export const getRestaurantById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
@@ -90,7 +90,7 @@ export const updateRestaurant = async (req: Request, res: Response, next: NextFu
   try {
     const { id } = req.params;
     const { name, description, address, phone, email, website } = req.body;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
@@ -123,7 +123,7 @@ export const updateRestaurant = async (req: Request, res: Response, next: NextFu
 export const deleteRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));

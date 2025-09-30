@@ -271,7 +271,7 @@ router.get('/:id', authenticate, getRestaurantById);
  *         description: Internal server error
  */
 // Protected routes (admin only)
-router.post('/', authenticate, createRestaurant);
+router.post('/', authenticate, authorize(['admin']), createRestaurant);
 
 /**
  * @openapi
@@ -369,7 +369,7 @@ router.post('/', authenticate, createRestaurant);
  *       500:
  *         description: Internal server error
  */
-router.patch('/:id', authenticate, updateRestaurant);
+router.patch('/:id', authenticate, authorize(['admin']), updateRestaurant);
 
 /**
  * @openapi
@@ -411,6 +411,6 @@ router.patch('/:id', authenticate, updateRestaurant);
  *       500:
  *         description: Internal server error
  */
-router.delete('/:id', authenticate, deleteRestaurant);
+router.delete('/:id', authenticate, authorize(['admin']), deleteRestaurant);
 
 export default router;

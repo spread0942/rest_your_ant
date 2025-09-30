@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../utils/auth';
 import { createErrorResponse } from '../utils/response';
-import { Account } from '../models';
+import { Account, Auth } from '../models';
 
 interface AuthenticatedRequest extends Request {
-  user?: any;
+  auth?: Auth;
 }
 
 export const authenticate = async (
@@ -23,13 +23,14 @@ export const authenticate = async (
     const token: string = authHeader.substring(7);
     const decoded = verifyToken(token);
     
-    const user = await Account.findByPk(decoded.id);
-    if (!user) {
+    const account = await Account.findByPk(decoded.id);
+    if (!account) {
       res.status(401).json(createErrorResponse('Invalid token'));
       return;
     }
     
-    req.user = decoded;
+    // attach user info to request object
+    req.auth = new Auth(account);
     next();
   } catch (error) {
     res.status(401).json(createErrorResponse('Invalid token'));
@@ -38,12 +39,12 @@ export const authenticate = async (
 
 export const authorize = (roles: string[]) => {
   return (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
-    if (!req.user) {
+    if (!req.auth) {
       res.status(401).json(createErrorResponse('Authentication required'));
       return;
     }
 
-    if (!roles.includes(req.user.role)) {
+    if (!roles.includes(req.auth.role)) {
       res.status(403).json(createErrorResponse('Insufficient permissions'));
       return;
     }

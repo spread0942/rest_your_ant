@@ -5,7 +5,7 @@ import { createSuccessResponse, createErrorResponse } from '../utils/response';
 export const createDrink = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { name, description, price, category, isAlcoholic, isAvailable, restaurantId } = req.body;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
@@ -45,7 +45,7 @@ export const getAllDrinks = async (req: Request, res: Response, next: NextFuncti
   try {
     const { page = 1, limit = 10, category, isAlcoholic, isAvailable, restaurantId } = req.query;
     const offset = (Number(page) - 1) * Number(limit);
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
@@ -92,7 +92,7 @@ export const getAllDrinks = async (req: Request, res: Response, next: NextFuncti
 export const getDrinkById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
@@ -128,7 +128,7 @@ export const updateDrink = async (req: Request, res: Response, next: NextFunctio
   try {
     const { id } = req.params;
     const { name, description, price, category, isAlcoholic, isAvailable, restaurantId } = req.body;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
@@ -188,7 +188,7 @@ export const updateDrink = async (req: Request, res: Response, next: NextFunctio
 export const deleteDrink = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const auth = (req as any).user as Auth;
+    const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
       res.status(400).json(createErrorResponse('User tenant ID is required'));
