@@ -262,7 +262,20 @@ export default {
     },
     
     handleLogout() {
+      // Clear authentication token
+      localStorage.removeItem('authToken')
+      
+      // Clear selected restaurant data
+      localStorage.removeItem('selectedRestaurant')
+      
+      // Clear any other session data if needed
+      localStorage.removeItem('userData')
+      
+      // Emit logout event for any parent components that need to know
       this.$emit('logout')
+      
+      // Redirect to login page
+      this.$router.push('/login')
     },
     
     toggleRestaurantSelector() {
