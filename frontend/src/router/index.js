@@ -45,6 +45,48 @@ const routes = [
     meta: { requiresAuth: true, requiresRestaurant: true }
   },
   {
+    path: '/plates',
+    name: 'PlatesList',
+    component: () => import('../views/PlatesList.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/plates/create',
+    name: 'PlateCreate',
+    component: () => import('../views/PlateCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/plates/:id/edit',
+    name: 'PlateEdit',
+    component: () => import('../views/PlateCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/plates/:id/products',
+    name: 'PlateProducts',
+    component: () => import('../views/PlateProducts.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/products',
+    name: 'ProductsList',
+    component: () => import('../views/ProductsList.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/products/create',
+    name: 'ProductCreate',
+    component: () => import('../views/ProductCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/products/:id/edit',
+    name: 'ProductEdit',
+    component: () => import('../views/ProductCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
     path: '/piatti/:category',
     name: 'Piatti',
     component: () => import('../views/Piatti.vue'),

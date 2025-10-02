@@ -198,14 +198,13 @@ export const updatePlate = async (req: Request, res: Response, next: NextFunctio
       );
 
       if (!isValidStructure) {
-        res.status(400).json(createErrorResponse('Invalid products structure. Expected array of {productId: number, quantity: number}'));
+        res.status(400).json(createErrorResponse('Invalid products structure. Expected array of product IDs (numbers)'));
         return;
       }
 
       // Validate product IDs exist and belong to the same tenant
-      const products = productIds.map((p: any) => p.productId);
       const validProducts = await Product.findAll({
-        where: { id: products },
+        where: { id: productIds },
         include: [
           { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }
         ],

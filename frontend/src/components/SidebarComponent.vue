@@ -70,6 +70,30 @@
         </router-link>
 
         <router-link 
+          to="/plates"
+          class="nav-item"
+          :class="{ active: $route.path.startsWith('/plates') }"
+          @click="handleNavClick"
+        >
+          <div class="nav-item-content">
+            <i class="fi fi-rr-plate-utensils nav-icon"></i>
+            <span>Piatti</span>
+          </div>
+        </router-link>
+
+        <router-link 
+          to="/products"
+          class="nav-item"
+          :class="{ active: $route.path.startsWith('/products') }"
+          @click="handleNavClick"
+        >
+          <div class="nav-item-content">
+            <i class="fi fi-rr-box nav-icon"></i>
+            <span>Prodotti</span>
+          </div>
+        </router-link>
+
+        <router-link 
           to="/menu-products"
           class="nav-item"
           :class="{ active: $route.path === '/menu-products' }"
