@@ -55,6 +55,20 @@ const router = Router();
  *             tenantId:
  *               type: integer
  *               example: 1
+ *         plates:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *                 example: 1
+ *               name:
+ *                 type: string
+ *                 example: "Margherita Pizza"
+ *               description:
+ *                 type: string
+ *                 example: "Classic tomato sauce, mozzarella, and basil"
  *     MenuInput:
  *       type: object
  *       required:
@@ -187,6 +201,20 @@ const router = Router();
  *                               tenantId:
  *                                 type: integer
  *                                 example: 1
+ *                           plates:
+ *                             type: array
+ *                             items:
+ *                               type: object
+ *                               properties:
+ *                                 id:
+ *                                   type: integer
+ *                                   example: 1
+ *                                 name:
+ *                                   type: string
+ *                                   example: "Margherita Pizza"
+ *                                 description:
+ *                                   type: string
+ *                                   example: "Classic tomato sauce, mozzarella, and basil"
  *                     pagination:
  *                       type: object
  *                       properties:
@@ -274,6 +302,20 @@ router.get('/', authenticate, getAllMenus);
  *                         tenantId:
  *                           type: integer
  *                           example: 1
+ *                     plates:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "Margherita Pizza"
+ *                           description:
+ *                             type: string
+ *                             example: "Classic tomato sauce, mozzarella, and basil"
  *                     createdAt:
  *                       type: string
  *                       format: date-time
@@ -367,6 +409,32 @@ router.get('/:id', authenticate, getMenuById);
  *                     isActive:
  *                       type: boolean
  *                       example: true
+ *                     restaurant:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 1
+ *                         name:
+ *                           type: string
+ *                           example: "Restaurant Name"
+ *                         tenantId:
+ *                           type: integer
+ *                           example: 1
+ *                     plates:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "Margherita Pizza"
+ *                           description:
+ *                             type: string
+ *                             example: "Classic tomato sauce, mozzarella, and basil"
  *                     createdAt:
  *                       type: string
  *                       format: date-time
@@ -467,6 +535,35 @@ router.post('/', authenticate, authorize(['admin']), createMenu);
  *                     isActive:
  *                       type: boolean
  *                       example: false
+ *                     restaurantId:
+ *                       type: integer
+ *                       example: 1
+ *                     restaurant:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 1
+ *                         name:
+ *                           type: string
+ *                           example: "Restaurant Name"
+ *                         tenantId:
+ *                           type: integer
+ *                           example: 1
+ *                     plates:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "Margherita Pizza"
+ *                           description:
+ *                             type: string
+ *                             example: "Classic tomato sauce, mozzarella, and basil"
  *                     updatedAt:
  *                       type: string
  *                       format: date-time

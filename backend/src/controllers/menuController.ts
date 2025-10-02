@@ -51,7 +51,19 @@ export const createMenu = async (req: Request, res: Response, next: NextFunction
       return menu;
     });
 
-    res.status(201).json(createSuccessResponse(result, 'Menu created successfully'));
+    const menu = await Menu.findByPk(result.id, {
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+        { 
+          model: Plate, 
+          as: 'plates',
+          attributes: ['id', 'name', 'description'],
+          through: { attributes: [] } // Exclude junction table attributes
+        },
+      ],
+    });
+
+    res.status(201).json(createSuccessResponse(menu, 'Menu created successfully'));
   } catch (error) {
     next(error);
   }
@@ -75,6 +87,12 @@ export const getAllMenus = async (req: Request, res: Response, next: NextFunctio
       where: whereClause,
       include: [
         { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+        { 
+          model: Plate, 
+          as: 'plates',
+          attributes: ['id', 'name', 'description'],
+          through: { attributes: [] } // Exclude junction table attributes
+        },
       ],
       offset,
       limit: Number(limit),
@@ -108,6 +126,12 @@ export const getMenuById = async (req: Request, res: Response, next: NextFunctio
     const menu = await Menu.findByPk(id, {
       include: [
         { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+        { 
+          model: Plate, 
+          as: 'plates',
+          attributes: ['id', 'name', 'description'],
+          through: { attributes: [] } // Exclude junction table attributes
+        },
       ],
     });
 
@@ -166,7 +190,7 @@ export const updateMenu = async (req: Request, res: Response, next: NextFunction
       }
     }
 
-    await sequelize.transaction(async (transaction) => {
+    const result = await sequelize.transaction(async (transaction) => {
       await menu.update({
         restaurantId: restaurantId || menu.restaurantId,
         name,
@@ -190,7 +214,19 @@ export const updateMenu = async (req: Request, res: Response, next: NextFunction
       return menu;
     });
 
-    res.json(createSuccessResponse(menu, 'Menu updated successfully'));
+    const updatedMenu = await Menu.findByPk(result.id, {
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+        { 
+          model: Plate, 
+          as: 'plates',
+          attributes: ['id', 'name', 'description'],
+          through: { attributes: [] } // Exclude junction table attributes
+        },
+      ],
+    });
+
+    res.json(createSuccessResponse(updatedMenu, 'Menu updated successfully'));
   } catch (error) {
     next(error);
   }

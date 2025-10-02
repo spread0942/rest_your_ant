@@ -59,6 +59,20 @@ const router = Router();
  *             tenantId:
  *               type: integer
  *               example: 1
+ *         products:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: integer
+ *                 example: 1
+ *               name:
+ *                 type: string
+ *                 example: "Mozzarella Cheese"
+ *               description:
+ *                 type: string
+ *                 example: "Fresh mozzarella cheese from local farm"
  *     PlateInput:
  *       type: object
  *       required:
@@ -148,7 +162,25 @@ const router = Router();
  *                     plates:
  *                       type: array
  *                       items:
- *                         $ref: '#/components/schemas/Plate'
+ *                         type: object
+ *                         allOf:
+ *                           - $ref: '#/components/schemas/Plate'
+ *                           - type: object
+ *                             properties:
+ *                               products:
+ *                                 type: array
+ *                                 items:
+ *                                   type: object
+ *                                   properties:
+ *                                     id:
+ *                                       type: integer
+ *                                       example: 1
+ *                                     name:
+ *                                       type: string
+ *                                       example: "Mozzarella Cheese"
+ *                                     description:
+ *                                       type: string
+ *                                       example: "Fresh mozzarella cheese from local farm"
  *                     pagination:
  *                       type: object
  *                       properties:
@@ -224,7 +256,9 @@ router.get('/', authenticate, getAllPlates);
  *                     isAvailable:
  *                       type: boolean
  *                       example: true
- *                     restaurantId:\n *                       type: integer\n *                       example: 1
+ *                     restaurantId:
+ *                       type: integer
+ *                       example: 1
  *                     createdAt:
  *                       type: string
  *                       format: date-time
@@ -233,6 +267,32 @@ router.get('/', authenticate, getAllPlates);
  *                       type: string
  *                       format: date-time
  *                       example: 2023-01-01T00:00:00.000Z
+ *                     restaurant:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 1
+ *                         name:
+ *                           type: string
+ *                           example: "Restaurant Name"
+ *                         tenantId:
+ *                           type: integer
+ *                           example: 1
+ *                     products:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "Mozzarella Cheese"
+ *                           description:
+ *                             type: string
+ *                             example: "Fresh mozzarella cheese from local farm"
  *                 message:
  *                   type: string
  *                   example: Plate retrieved successfully
@@ -273,7 +333,59 @@ router.get('/:id', authenticate, getPlateById);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/Plate'
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     name:
+ *                       type: string
+ *                       example: "Margherita Pizza"
+ *                     description:
+ *                       type: string
+ *                       example: "Classic pizza with tomato and mozzarella"
+ *                     price:
+ *                       type: number
+ *                       example: 12.99
+ *                     category:
+ *                       type: string
+ *                       example: "Pizza"
+ *                     isAvailable:
+ *                       type: boolean
+ *                       example: true
+ *                     restaurantId:
+ *                       type: integer
+ *                       example: 1
+ *                     restaurant:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 1
+ *                         name:
+ *                           type: string
+ *                           example: "Restaurant Name"
+ *                         tenantId:
+ *                           type: integer
+ *                           example: 1
+ *                     products:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "Mozzarella Cheese"
+ *                           description:
+ *                             type: string
+ *                             example: "Fresh mozzarella cheese from local farm"
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2023-01-01T00:00:00.000Z
  *                 message:
  *                   type: string
  *                   example: Plate created successfully
@@ -365,7 +477,59 @@ router.post('/', authenticate, authorize(['admin']), createPlate);
  *                   type: boolean
  *                   example: true
  *                 data:
- *                   $ref: '#/components/schemas/Plate'
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: integer
+ *                       example: 1
+ *                     name:
+ *                       type: string
+ *                       example: "Updated Margherita Pizza"
+ *                     description:
+ *                       type: string
+ *                       example: "Updated description"
+ *                     price:
+ *                       type: number
+ *                       example: 14.99
+ *                     category:
+ *                       type: string
+ *                       example: "Gourmet Pizza"
+ *                     isAvailable:
+ *                       type: boolean
+ *                       example: false
+ *                     restaurantId:
+ *                       type: integer
+ *                       example: 1
+ *                     restaurant:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: integer
+ *                           example: 1
+ *                         name:
+ *                           type: string
+ *                           example: "Restaurant Name"
+ *                         tenantId:
+ *                           type: integer
+ *                           example: 1
+ *                     products:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           id:
+ *                             type: integer
+ *                             example: 1
+ *                           name:
+ *                             type: string
+ *                             example: "Mozzarella Cheese"
+ *                           description:
+ *                             type: string
+ *                             example: "Fresh mozzarella cheese from local farm"
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       example: 2023-01-01T00:00:00.000Z
  *                 message:
  *                   type: string
  *                   example: Plate updated successfully

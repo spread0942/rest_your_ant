@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Auth, Menu, Plate, PlateProduct, Product, Restaurant } from '../models';
+import { Auth, Plate, PlateProduct, Product, Restaurant } from '../models';
 import { createSuccessResponse, createErrorResponse } from '../utils/response';
 import sequelize from '../config/database';
 
@@ -56,7 +56,19 @@ export const createPlate = async (req: Request, res: Response, next: NextFunctio
       return plate;
     });
 
-    res.status(201).json(createSuccessResponse(result, 'Plate created successfully'));
+    const plate = await Plate.findByPk(result.id, {
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+        {
+          model: Product,
+          as: 'products',
+          attributes: ['id', 'name', 'description'],
+          through: { attributes: [] } // Exclude junction table attributes
+        },
+      ],
+    });
+
+    res.status(201).json(createSuccessResponse(plate, 'Plate created successfully'));
   } catch (error) {
     next(error);
   }
@@ -83,6 +95,12 @@ export const getAllPlates = async (req: Request, res: Response, next: NextFuncti
       where: whereClause,
       include: [
         { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+        {
+          model: Product,
+          as: 'products',
+          attributes: ['id', 'name', 'description'],
+          through: { attributes: [] } // Exclude junction table attributes
+        },
       ],
       limit: Number(limit),
       offset,
@@ -116,7 +134,13 @@ export const getPlateById = async (req: Request, res: Response, next: NextFuncti
     const plate = await Plate.findOne({
       where: { id },
       include: [
-        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+        {
+          model: Product,
+          as: 'products',
+          attributes: ['id', 'name', 'description'],
+          through: { attributes: [] } // Exclude junction table attributes
+        },
       ]
     });
 
@@ -224,7 +248,19 @@ export const updatePlate = async (req: Request, res: Response, next: NextFunctio
       return plate;
     });
 
-    res.json(createSuccessResponse(result, 'Plate updated successfully'));
+    const updatedPlate = await Plate.findByPk(result.id, {
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+        {
+          model: Product,
+          as: 'products',
+          attributes: ['id', 'name', 'description'],
+          through: { attributes: [] } // Exclude junction table attributes
+        },
+      ],
+    });
+
+    res.json(createSuccessResponse(updatedPlate, 'Plate updated successfully'));
   } catch (error) {
     next(error);
   }
