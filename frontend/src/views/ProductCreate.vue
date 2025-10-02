@@ -57,20 +57,11 @@
 
               <div class="form-row">
                 <div class="form-group">
-                  <label for="productCategory">Categoria</label>
-                  <input 
-                    type="text" 
-                    id="productCategory"
-                    v-model="productData.category"
-                    placeholder="Es. Verdure, Carni, Latticini"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="productUnit">Unità di Misura</label>
+                  <label for="productUnit">Unità di Misura *</label>
                   <select 
                     id="productUnit"
                     v-model="productData.unit"
+                    required
                   >
                     <option value="">Seleziona unità</option>
                     <option value="kg">Kg (Chilogrammi)</option>
@@ -84,22 +75,23 @@
                     <option value="sacchetto">Sacchetto</option>
                   </select>
                 </div>
-              </div>
 
-              <div class="form-row">
                 <div class="form-group">
-                  <label for="productCost">Costo Unitario</label>
+                  <label for="productPrice">Prezzo *</label>
                   <input 
                     type="number" 
-                    id="productCost"
-                    v-model="productData.cost"
+                    id="productPrice"
+                    v-model="productData.price"
                     placeholder="0.00"
                     step="0.01"
                     min="0"
+                    required
                   />
-                  <small class="form-help">Costo per unità di misura (opzionale)</small>
+                  <small class="form-help">Prezzo per unità di misura</small>
                 </div>
+              </div>
 
+              <div class="form-row">
                 <div class="form-group">
                   <label for="productStock">Scorta Disponibile</label>
                   <input 
@@ -109,39 +101,44 @@
                     placeholder="0"
                     min="0"
                   />
-                  <small class="form-help">Quantità disponibile in magazzino (opzionale)</small>
+                  <small class="form-help">Quantità disponibile in magazzino</small>
+                </div>
+
+                <div class="form-group">
+                  <label for="productMinStock">Scorta Minima</label>
+                  <input 
+                    type="number" 
+                    id="productMinStock"
+                    v-model="productData.minStock"
+                    placeholder="0"
+                    min="0"
+                  />
+                  <small class="form-help">Quantità minima per avviso riordino</small>
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="productSupplier">Fornitore</label>
-                <input 
-                  type="text" 
-                  id="productSupplier"
-                  v-model="productData.supplier"
-                  placeholder="Nome del fornitore"
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="productNotes">Note</label>
-                <textarea 
-                  id="productNotes"
-                  v-model="productData.notes"
-                  placeholder="Note aggiuntive, allergeni, conservazione..."
-                  rows="2"
-                ></textarea>
-              </div>
-
-              <div class="form-group checkbox-group">
-                <label class="checkbox-label">
-                  <input 
-                    type="checkbox" 
-                    v-model="productData.isActive"
-                  />
-                  <span class="checkmark"></span>
-                  Prodotto attivo
-                </label>
+                <label for="productAllergens">Allergeni</label>
+                <select 
+                  id="productAllergens"
+                  v-model="productData.allergens"
+                >
+                  <option value="">Nessun allergene</option>
+                  <option value="gluten">Glutine</option>
+                  <option value="crustaceans">Crostacei</option>
+                  <option value="eggs">Uova</option>
+                  <option value="fish">Pesce</option>
+                  <option value="peanuts">Arachidi</option>
+                  <option value="soy">Soia</option>
+                  <option value="milk">Latte</option>
+                  <option value="nuts">Frutta a guscio</option>
+                  <option value="celery">Sedano</option>
+                  <option value="mustard">Senape</option>
+                  <option value="sesame">Sesamo</option>
+                  <option value="sulphites">Solfiti</option>
+                  <option value="lupin">Lupini</option>
+                  <option value="molluscs">Molluschi</option>
+                </select>
               </div>
             </form>
           </div>
@@ -156,7 +153,7 @@
         <button 
           type="button" 
           @click="saveProduct" 
-          :disabled="!productData.name || saving" 
+          :disabled="!productData.name || !productData.unit || !productData.price || saving" 
           class="submit-btn"
         >
           <span v-if="saving">{{ isEditMode ? 'Aggiornamento...' : 'Creazione...' }}</span>
@@ -177,13 +174,11 @@ export default {
       productData: {
         name: '',
         description: '',
-        category: '',
         unit: '',
-        cost: '',
-        stock: '',
-        supplier: '',
-        notes: '',
-        isActive: true,
+        price: '',
+        stock: 0,
+        minStock: 0,
+        allergens: '',
       },
       saving: false,
       loading: false,
@@ -225,13 +220,11 @@ export default {
           this.productData = {
             name: product.name || '',
             description: product.description || '',
-            category: product.category || '',
             unit: product.unit || '',
-            cost: product.cost || '',
-            stock: product.stock || '',
-            supplier: product.supplier || '',
-            notes: product.notes || '',
-            isActive: product.isActive !== undefined ? product.isActive : true,
+            price: product.price || '',
+            stock: product.stock || 0,
+            minStock: product.minStock || 0,
+            allergens: product.allergens || '',
           }
         } else {
           throw new Error('Failed to fetch product')
@@ -250,8 +243,10 @@ export default {
 
       const productPayload = {
         ...this.productData,
-        cost: this.productData.cost ? parseFloat(this.productData.cost) : null,
-        stock: this.productData.stock ? parseInt(this.productData.stock) : null,
+        price: parseFloat(this.productData.price),
+        stock: parseInt(this.productData.stock) || 0,
+        minStock: parseInt(this.productData.minStock) || 0,
+        allergens: this.productData.allergens || null,
         restaurantId: selectedRestaurant.id
       }
 
@@ -282,8 +277,10 @@ export default {
 
       const productPayload = {
         ...this.productData,
-        cost: this.productData.cost ? parseFloat(this.productData.cost) : null,
-        stock: this.productData.stock ? parseInt(this.productData.stock) : null,
+        price: parseFloat(this.productData.price),
+        stock: parseInt(this.productData.stock) || 0,
+        minStock: parseInt(this.productData.minStock) || 0,
+        allergens: this.productData.allergens || null,
         restaurantId: selectedRestaurant.id
       }
 
@@ -312,6 +309,16 @@ export default {
     async saveProduct() {
       if (!this.productData.name.trim()) {
         alert('Il nome del prodotto è obbligatorio')
+        return
+      }
+
+      if (!this.productData.unit.trim()) {
+        alert('L\'unità di misura è obbligatoria')
+        return
+      }
+
+      if (!this.productData.price || parseFloat(this.productData.price) < 0) {
+        alert('Il prezzo deve essere maggiore o uguale a 0')
         return
       }
 

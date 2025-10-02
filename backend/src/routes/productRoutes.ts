@@ -55,6 +55,11 @@ const router = Router();
  *                 minimum: 0
  *                 default: 0
  *                 example: 10
+ *               allergens:
+ *                 type: string
+ *                 enum: ["gluten", "crustaceans", "eggs", "fish", "peanuts", "soy", "milk", "nuts", "celery", "mustard", "sesame", "sulphites", "lupin", "molluscs"]
+ *                 example: "milk"
+ *                 description: "Allergen information for the product"
  *               restaurantId:
  *                 type: integer
  *                 example: 1
@@ -94,6 +99,11 @@ const router = Router();
  *                     minStock:
  *                       type: integer
  *                       example: 10
+ *                     allergens:
+ *                       type: string
+ *                       enum: ["gluten", "crustaceans", "eggs", "fish", "peanuts", "soy", "milk", "nuts", "celery", "mustard", "sesame", "sulphites", "lupin", "molluscs"]
+ *                       example: "milk"
+ *                       description: "Allergen information for the product"
  *                     restaurantId:
  *                       type: integer
  *                       example: 1
@@ -194,6 +204,11 @@ router.post('/', authenticate, authorize(['admin']), createProduct);
  *                       minStock:
  *                         type: integer
  *                         example: 10
+ *                       allergens:
+ *                         type: string
+ *                         enum: ["gluten", "crustaceans", "eggs", "fish", "peanuts", "soy", "milk", "nuts", "celery", "mustard", "sesame", "sulphites", "lupin", "molluscs"]
+ *                         example: "milk"
+ *                         description: "Allergen information for the product"
  *                       restaurantId:
  *                         type: integer
  *                         example: 1
@@ -285,6 +300,11 @@ router.get('/', authenticate, authorize(['admin']), getAllProducts);
  *                     minStock:
  *                       type: integer
  *                       example: 10
+ *                     allergens:
+ *                       type: string
+ *                       enum: ["gluten", "crustaceans", "eggs", "fish", "peanuts", "soy", "milk", "nuts", "celery", "mustard", "sesame", "sulphites", "lupin", "molluscs"]
+ *                       example: "milk"
+ *                       description: "Allergen information for the product"
  *                     restaurantId:
  *                       type: integer
  *                       example: 1
@@ -356,6 +376,11 @@ router.get('/:id', authenticate, authorize(['admin']), getProductById);
  *                 type: integer
  *                 minimum: 0
  *                 example: 15
+ *               allergens:
+ *                 type: string
+ *                 enum: ["gluten", "crustaceans", "eggs", "fish", "peanuts", "soy", "milk", "nuts", "celery", "mustard", "sesame", "sulphites", "lupin", "molluscs"]
+ *                 example: "milk"
+ *                 description: "Allergen information for the product"
  *     responses:
  *       200:
  *         description: Product updated successfully
@@ -392,6 +417,11 @@ router.get('/:id', authenticate, authorize(['admin']), getProductById);
  *                     minStock:
  *                       type: integer
  *                       example: 15
+ *                     allergens:
+ *                       type: string
+ *                       enum: ["gluten", "crustaceans", "eggs", "fish", "peanuts", "soy", "milk", "nuts", "celery", "mustard", "sesame", "sulphites", "lupin", "molluscs"]
+ *                       example: "milk"
+ *                       description: "Allergen information for the product"
  *                     restaurantId:
  *                       type: integer
  *                       example: 1

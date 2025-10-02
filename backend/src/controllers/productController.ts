@@ -4,7 +4,7 @@ import { createSuccessResponse, createErrorResponse } from '../utils/response';
 
 export const createProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, description, unit, price, stock, minStock, restaurantId } = req.body;
+    const { name, description, unit, price, stock, minStock, allergens, restaurantId } = req.body;
     const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
@@ -32,6 +32,7 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
       price,
       stock,
       minStock,
+      allergens,
       restaurantId,
     });
 
@@ -131,7 +132,7 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
 export const updateProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, description, unit, price, stock, minStock, restaurantId } = req.body;
+    const { name, description, unit, price, stock, minStock, allergens, restaurantId } = req.body;
     const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
@@ -178,6 +179,7 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
       price,
       stock,
       minStock,
+      allergens,
       restaurantId,
     });
 

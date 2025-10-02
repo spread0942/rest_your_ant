@@ -91,74 +91,15 @@
                 </div>
               </div>
 
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="drinkSize">Formato</label>
-                  <select 
-                    id="drinkSize"
-                    v-model="drinkData.size"
-                  >
-                    <option value="">Seleziona formato</option>
-                    <option value="Piccola">Piccola</option>
-                    <option value="Media">Media</option>
-                    <option value="Grande">Grande</option>
-                    <option value="Bottiglia 33cl">Bottiglia 33cl</option>
-                    <option value="Bottiglia 50cl">Bottiglia 50cl</option>
-                    <option value="Bottiglia 75cl">Bottiglia 75cl</option>
-                    <option value="Lattina">Lattina</option>
-                    <option value="Bicchiere">Bicchiere</option>
-                    <option value="Calice">Calice</option>
-                    <option value="Shot">Shot</option>
-                  </select>
-                </div>
-
-                <div class="form-group">
-                  <label for="drinkAlcoholContent">Gradazione Alcolica (%)</label>
+              <div class="form-group checkbox-group">
+                <label class="checkbox-label">
                   <input 
-                    type="number" 
-                    id="drinkAlcoholContent"
-                    v-model="drinkData.alcoholContent"
-                    placeholder="0.0"
-                    step="0.1"
-                    min="0"
-                    max="100"
+                    type="checkbox" 
+                    v-model="drinkData.isAlcoholic"
                   />
-                  <small class="form-help">Per bevande alcoliche (opzionale)</small>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="drinkSupplier">Fornitore</label>
-                  <input 
-                    type="text" 
-                    id="drinkSupplier"
-                    v-model="drinkData.supplier"
-                    placeholder="Nome del fornitore"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="drinkStock">Scorta Disponibile</label>
-                  <input 
-                    type="number" 
-                    id="drinkStock"
-                    v-model="drinkData.stock"
-                    placeholder="0"
-                    min="0"
-                  />
-                  <small class="form-help">Quantità disponibile (opzionale)</small>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label for="drinkNotes">Note</label>
-                <textarea 
-                  id="drinkNotes"
-                  v-model="drinkData.notes"
-                  placeholder="Note aggiuntive, allergeni, temperatura di servizio..."
-                  rows="2"
-                ></textarea>
+                  <span class="checkmark"></span>
+                  Bevanda alcolica
+                </label>
               </div>
 
               <div class="form-group checkbox-group">
@@ -207,11 +148,7 @@ export default {
         description: '',
         price: '',
         category: '',
-        size: '',
-        alcoholContent: '',
-        supplier: '',
-        stock: '',
-        notes: '',
+        isAlcoholic: false,
         isAvailable: true,
       },
       saving: false,
@@ -256,11 +193,7 @@ export default {
             description: drink.description || '',
             price: drink.price || '',
             category: drink.category || '',
-            size: drink.size || '',
-            alcoholContent: drink.alcoholContent || '',
-            supplier: drink.supplier || '',
-            stock: drink.stock || '',
-            notes: drink.notes || '',
+            isAlcoholic: drink.isAlcoholic !== undefined ? drink.isAlcoholic : false,
             isAvailable: drink.isAvailable !== undefined ? drink.isAvailable : true,
           }
         } else {
@@ -281,8 +214,6 @@ export default {
       const drinkPayload = {
         ...this.drinkData,
         price: parseFloat(this.drinkData.price),
-        alcoholContent: this.drinkData.alcoholContent ? parseFloat(this.drinkData.alcoholContent) : null,
-        stock: this.drinkData.stock ? parseInt(this.drinkData.stock) : null,
         restaurantId: selectedRestaurant.id
       }
 
@@ -320,8 +251,6 @@ export default {
       const drinkPayload = {
         ...this.drinkData,
         price: parseFloat(this.drinkData.price),
-        alcoholContent: this.drinkData.alcoholContent ? parseFloat(this.drinkData.alcoholContent) : null,
-        stock: this.drinkData.stock ? parseInt(this.drinkData.stock) : null,
         restaurantId: selectedRestaurant.id
       }
 
