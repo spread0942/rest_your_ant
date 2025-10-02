@@ -63,7 +63,6 @@ export default {
           // Map the product data for display
           this.products = (data.data.products || []).map(product => ({
             ...product,
-            count: 0, // Products don't have sub-items like menus have plates
             // Add formatted information
             displayInfo: product.unit ? `${product.category || 'N/A'} - ${product.unit}` : (product.category || 'N/A')
           }))

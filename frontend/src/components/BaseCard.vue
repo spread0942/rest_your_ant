@@ -4,7 +4,7 @@
       <div class="card-header">
         <div class="title-section">
           <h3 class="card-title">{{ title }}</h3>
-          <div class="count-badge">
+          <div v-if="count > 0" class="count-badge">
             <span>{{ count }} {{ countLabel }}</span>
           </div>
         </div>
@@ -51,7 +51,7 @@ export default {
     },
     count: {
       type: Number,
-      required: true
+      default: 0
     },
     countLabel: {
       type: String,

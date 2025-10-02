@@ -63,7 +63,6 @@ export default {
           // Map the drink data for display
           this.drinks = (data.data.drinks || []).map(drink => ({
             ...drink,
-            count: 0, // Drinks don't have sub-items like menus have plates
             // Add formatted information
             formattedPrice: `€ ${parseFloat(drink.price || 0).toFixed(2)}`,
             displayInfo: drink.category || 'N/A'
