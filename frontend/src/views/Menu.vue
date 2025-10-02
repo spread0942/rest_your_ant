@@ -43,26 +43,35 @@ export default {
       try {
         this.loading = true
         
-        const response = await fetch(`${apiConfig.apiEndpoint}/menus`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-            }
-          });
+        const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}')
+        const restaurantId = selectedRestaurant.id
+        
+        if (!restaurantId) {
+          throw new Error('No restaurant selected')
+        }
+        
+        const response = await fetch(`${apiConfig.apiEndpoint}/menus?limit=100&restaurantId=${restaurantId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        })
+        
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.json()
           // Map the menu data to include the count of plates for display
           this.menus = (data.data.menus || []).map(menu => ({
             ...menu,
             count: menu.plates ? menu.plates.length : 0
-          }));
+          }))
         } else {
-          throw new Error('Failed to fetch menus');
+          throw new Error('Failed to fetch menus')
         }
       } catch (error) {
         console.error('Error to load menus:', error)
         this.menus = []
+        alert('Errore nel caricamento dei menu. Riprova.')
       } finally {
         this.loading = false
       }

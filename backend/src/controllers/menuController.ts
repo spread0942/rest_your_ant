@@ -81,7 +81,7 @@ export const getAllMenus = async (req: Request, res: Response, next: NextFunctio
     }
 
     // Build where clause based on query parameters
-    const whereClause = restaurantId ? { restaurantId: Number(restaurantId), tenantId: auth.tenantId } : {};
+    const whereClause = restaurantId ? { restaurantId: Number(restaurantId) } : {};
 
     const { count, rows } = await Menu.findAndCountAll({
       where: whereClause,
