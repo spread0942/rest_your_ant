@@ -10,24 +10,30 @@
           Indietro
         </button>
         <div class="header-text">
-          <h1>Crea Nuovo Menu</h1>
-          <p>Configura il menu e seleziona i piatti da includere</p>
+          <h1>{{ isEditMode ? 'Modifica Menu' : 'Crea Nuovo Menu' }}</h1>
+          <p>{{ isEditMode ? 'Aggiorna le informazioni e la selezione dei piatti' : 'Configura il menu e seleziona i piatti da includere' }}</p>
         </div>
       </div>
     </div>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <div v-if="loading" class="loading-container">
+      <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Caricamento menu...</p>
+      </div>
+    </div>
+    <div v-else class="main-content">
       <div class="content-grid">
         <!-- Menu Form -->
         <div class="form-section">
           <div class="section-card">
             <div class="section-header">
               <h2>Informazioni Menu</h2>
-              <p>Inserisci i dettagli del menu</p>
+              <p>{{ isEditMode ? 'Modifica i dettagli del menu' : 'Inserisci i dettagli del menu' }}</p>
             </div>
             
-            <form @submit.prevent="createMenu" class="menu-form">
+            <form @submit.prevent="saveMenu" class="menu-form">
               <div class="form-group">
                 <label for="menuName">Nome Menu *</label>
                 <input 
@@ -167,12 +173,12 @@
         </button>
         <button 
           type="button" 
-          @click="createMenu" 
-          :disabled="!menuData.name || creating" 
+          @click="saveMenu" 
+          :disabled="!menuData.name || saving" 
           class="submit-btn"
         >
-          <span v-if="creating">Creazione...</span>
-          <span v-else>Crea Menu</span>
+          <span v-if="saving">{{ isEditMode ? 'Aggiornamento...' : 'Creazione...' }}</span>
+          <span v-else>{{ isEditMode ? 'Aggiorna Menu' : 'Crea Menu' }}</span>
         </button>
       </div>
     </div>
@@ -195,9 +201,12 @@ export default {
       plates: [],
       selectedPlates: [],
       loadingPlates: false,
-      creating: false,
+      saving: false,
+      loading: false,
       searchTerm: '',
       categoryFilter: '',
+      isEditMode: false,
+      menuId: null,
     }
   },
   computed: {
@@ -226,9 +235,58 @@ export default {
     }
   },
   mounted() {
+    this.checkEditMode()
     this.loadPlates()
+    if (this.isEditMode) {
+      this.loadMenu()
+    }
   },
   methods: {
+    checkEditMode() {
+      this.menuId = this.$route.params.id
+      this.isEditMode = !!this.menuId
+    },
+
+    async loadMenu() {
+      if (!this.menuId) return
+      
+      try {
+        this.loading = true
+        
+        const response = await fetch(`${apiConfig.apiEndpoint}/menus/${this.menuId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+          }
+        })
+
+        if (response.ok) {
+          const data = await response.json()
+          const menu = data.data
+          
+          // Populate form with existing data
+          this.menuData = {
+            name: menu.name || '',
+            description: menu.description || '',
+            category: menu.category || '',
+            isActive: menu.isActive !== undefined ? menu.isActive : true,
+          }
+          
+          // Set selected plates
+          this.selectedPlates = menu.plates ? menu.plates.map(plate => plate.id) : []
+        } else {
+          throw new Error('Failed to fetch menu')
+        }
+      } catch (error) {
+        console.error('Error loading menu:', error)
+        alert('Errore nel caricamento del menu. Riprova.')
+        this.goBack()
+      } finally {
+        this.loading = false
+      }
+    },
+
     async loadPlates() {
       try {
         this.loadingPlates = true
@@ -289,13 +347,75 @@ export default {
     },
 
     async createMenu() {
+      const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}')
+
+      const menuPayload = {
+        ...this.menuData,
+        restaurantId: selectedRestaurant.id,
+        plateIds: this.selectedPlates
+      }
+
+      const response = await fetch(`${apiConfig.apiEndpoint}/menus`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify(menuPayload)
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          this.$router.push('/menu')
+        } else {
+          throw new Error(result.message || 'Failed to create menu')
+        }
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to create menu')
+      }
+    },
+
+    async updateMenu() {
+      const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}')
+
+      const menuPayload = {
+        ...this.menuData,
+        restaurantId: selectedRestaurant.id,
+        plateIds: this.selectedPlates
+      }
+
+      const response = await fetch(`${apiConfig.apiEndpoint}/menus/${this.menuId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify(menuPayload)
+      })
+      
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          this.$router.push('/menu')
+        } else {
+          throw new Error(result.message || 'Failed to update menu')
+        }
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.message || 'Failed to update menu')
+      }
+    },
+
+    async saveMenu() {
       if (!this.menuData.name.trim()) {
         alert('Il nome del menu è obbligatorio')
         return
       }
 
       try {
-        this.creating = true
+        this.saving = true
 
         // Generate slug if not provided
         if (!this.menuData.category) {
@@ -304,41 +424,17 @@ export default {
           this.menuData.category = this.generateSlug(this.menuData.category)
         }
 
-        const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}')
-
-        const menuPayload = {
-          ...this.menuData,
-          restaurantId: selectedRestaurant.id,
-          plateIds: this.selectedPlates
-        }
-
-        const response = await fetch(`${apiConfig.apiEndpoint}/menus`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-          },
-          body: JSON.stringify(menuPayload)
-        })
-        
-        if (response.ok) {
-          const result = await response.json()
-          if (result.success) {
-            // Navigate back to menu list
-            this.$router.push('/menu')
-          } else {
-            throw new Error(result.message || 'Failed to create menu')
-          }
+        if (this.isEditMode) {
+          await this.updateMenu()
         } else {
-          const errorData = await response.json()
-          throw new Error(errorData.message || 'Failed to create menu')
+          await this.createMenu()
         }
 
       } catch (error) {
-        console.error('Error creating menu:', error)
-        alert(`Errore nella creazione del menu: ${error.message}`)
+        console.error(`Error ${this.isEditMode ? 'updating' : 'creating'} menu:`, error)
+        alert(`Errore ${this.isEditMode ? 'nell\'aggiornamento' : 'nella creazione'} del menu: ${error.message}`)
       } finally {
-        this.creating = false
+        this.saving = false
       }
     },
 
@@ -400,6 +496,16 @@ export default {
 .header-text p {
   color: #6b7280;
   margin: 0;
+}
+
+.loading-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
 }
 
 .main-content {
