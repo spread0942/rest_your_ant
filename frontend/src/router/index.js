@@ -133,12 +133,6 @@ const routes = [
     name: 'MenuProducts',
     component: () => import('../views/MenuProducts.vue'),
     meta: { requiresAuth: true, requiresRestaurant: true }
-  },
-  {
-    path: '/menu-management',
-    name: 'MenuManagement',
-    component: () => import('../views/MenuManagement.vue'),
-    meta: { requiresAuth: true, requiresRestaurant: true }
   }
 ]
 
