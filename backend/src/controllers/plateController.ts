@@ -76,7 +76,7 @@ export const createPlate = async (req: Request, res: Response, next: NextFunctio
 
 export const getAllPlates = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { page = 1, limit = 10, category, isAvailable } = req.query;
+    const { page = 1, limit = 10, category, isAvailable, restaurantId } = req.query;
     const offset = (Number(page) - 1) * Number(limit);
     const auth: Auth = (req as any).auth as Auth;
 
@@ -90,6 +90,7 @@ export const getAllPlates = async (req: Request, res: Response, next: NextFuncti
 
     if (category) whereClause.category = category;
     if (isAvailable !== undefined) whereClause.isAvailable = isAvailable === 'true';
+    if (restaurantId) whereClause.restaurantId = Number(restaurantId);
 
     const { count, rows } = await Plate.findAndCountAll({
       where: whereClause,

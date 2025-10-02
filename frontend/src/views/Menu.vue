@@ -8,75 +8,15 @@
     edit-label="Modifica categoria"
     delete-label="Elimina categoria"
     create-button-text="Aggiungi Menù"
-    @create="showCreateModal = true"
+    @create="navigateToCreate"
     @navigate="navigateToMenu"
     @view="viewMenu"
     @edit="editMenu"
     @delete="deleteMenu"
   />
-  <!-- Create Menu Category Modal -->
-  <div v-if="showCreateModal" class="modal-overlay" @click="showCreateModal = false">
-    <div class="modal-content" @click.stop>
-      <div class="modal-header">
-        <h3>Crea Nuova Categoria Menu</h3>
-        <button @click="showCreateModal = false" class="close-btn">&times;</button>
-      </div>
-      
-      <form @submit.prevent="createMenu" class="create-form">
-        <div class="form-group">
-          <label for="categoryName">Nome Menu *</label>
-          <input 
-            type="text" 
-            id="categoryName"
-            v-model="newMenu.name"
-            placeholder="Es. Antipasti, Primi Piatti, Dessert"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="categoryDescription">Descrizione</label>
-          <textarea 
-            id="categoryDescription"
-            v-model="newMenu.description"
-            placeholder="Descrivi brevemente questa categoria di menu..."
-            rows="3"
-          ></textarea>
-        </div>
-
-        <div class="form-group">
-          <label for="categorySlug">Slug (identificativo URL)</label>
-          <input 
-            type="text" 
-            id="categorySlug"
-            v-model="newMenu.category"
-            placeholder="Es. antipasti, primi-piatti, dessert"
-          />
-          <small class="form-help">Verrà generato automaticamente dal nome se lasciato vuoto</small>
-        </div>
-
-        <div class="form-group">
-          <label for="categoryOrder">Attivo</label>
-          <input 
-            type="checkbox" 
-            id="isActive"
-            v-model="newMenu.isActive"
-            checked
-          />
-        </div>
-
-        <div class="form-actions">
-          <button type="button" @click="showCreateModal = false" class="cancel-btn">
-            Annulla
-          </button>
-          <button type="submit" :disabled="!newMenu.name || creating" class="submit-btn">
-            <span v-if="creating">Creazione...</span>
-            <span v-else>Crea Menu</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
+    />
+  
+  <!-- Edit Menu Category Modal -->
   
   <!-- Edit Menu Category Modal -->
   <div v-if="showEditModal" class="modal-overlay" @click="showEditModal = false">
@@ -176,16 +116,8 @@ export default {
           category: 'secondi'
         }
       ],
-      showCreateModal: false,
       showEditModal: false,
-      creating: false,
       updating: false,
-      newMenu: {
-        name: '',
-        description: '',
-        category: '',
-        isActive: true,
-      },
       editingMenu: {
         id: null,
         name: '',
@@ -196,6 +128,10 @@ export default {
     }
   },
   mounted() {
+    this.loadMenus()
+  },
+  activated() {
+    // Reload when component is activated (useful when coming back from create page)
     this.loadMenus()
   },
   methods: {
@@ -224,73 +160,8 @@ export default {
       }
     },
 
-    async createMenu() {
-      if (!this.newMenu.name.trim()) return
-
-      try {
-        this.creating = true
-
-        // Generate slug if not provided
-        if (!this.newMenu.category) {
-          this.newMenu.category = this.generateSlug(this.newMenu.name)
-        } else {
-          this.newMenu.category = this.generateSlug(this.newMenu.category)
-        }
-
-        const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}')
-
-        const categoryData = {
-          ...this.newMenu,
-          restaurantId: selectedRestaurant.id
-        }
-
-        const response = await fetch(`${apiConfig.apiEndpoint}/menus`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-          },
-          body: JSON.stringify(categoryData)
-        })
-        
-        if (response.ok) {
-          const result = await response.json()
-          if (result.success) {
-            // Add the newly created category to the list
-            this.menus.push({
-              id: result.data.id,
-              name: result.data.name,
-              description: result.data.description,
-              category: result.data.category,
-              isActive: result.data.isActive
-            })
-            
-            this.resetForm()
-            this.showCreateModal = false
-          } else {
-            throw new Error(result.message || 'Failed to create category')
-          }
-        } else {
-          const errorData = await response.json()
-          throw new Error(errorData.message || 'Failed to create category')
-        }
-
-      } catch (error) {
-        console.error('Errore nella creazione della categoria:', error)
-        alert(`Errore nella creazione della categoria: ${error.message}`)
-      } finally {
-        this.creating = false
-      }
-    },
-
-    resetForm() {
-      this.newMenu = {
-        name: '',
-        description: '',
-        category: '',
-        order: 1,
-        isActive: true
-      }
+    navigateToCreate() {
+      this.$router.push('/menu/create')
     },
 
     resetEditForm() {
@@ -435,7 +306,7 @@ export default {
 </script>
 
 <style scoped>
-/* Modal Styles */
+/* Edit Modal Styles */
 .modal-overlay {
   position: fixed;
   top: 0;

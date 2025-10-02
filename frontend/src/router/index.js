@@ -33,6 +33,12 @@ const routes = [
     meta: { requiresAuth: true, requiresRestaurant: true }
   },
   {
+    path: '/menu/create',
+    name: 'MenuCreate',
+    component: () => import('../views/MenuCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
     path: '/piatti/:category',
     name: 'Piatti',
     component: () => import('../views/Piatti.vue'),
