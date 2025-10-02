@@ -2,6 +2,7 @@ import Account from './Account';
 import Auth from './Auth';
 import Drink from './Drink';
 import Menu from './Menu';
+import MenuPlate from './MenuPlate';
 import Order from './Order';
 import OrderDetail from './OrderDetail';
 import Plate from './Plate';
@@ -19,10 +20,6 @@ OrderDetail.belongsTo(Drink, { foreignKey: 'drinkId', as: 'drink' });
 Order.hasMany(OrderDetail, { foreignKey: 'orderId', as: 'details' });
 OrderDetail.belongsTo(Order, { foreignKey: 'orderId', as: 'order' });
 
-// Menu associations
-Menu.hasMany(Plate, { foreignKey: 'menuId', as: 'plates' });
-Plate.belongsTo(Menu, { foreignKey: 'menuId', as: 'menu' });
-
 // Plate associations
 Plate.hasMany(OrderDetail, { foreignKey: 'plateId', as: 'orderDetails' });
 OrderDetail.belongsTo(Plate, { foreignKey: 'plateId', as: 'plate' });
@@ -30,6 +27,12 @@ OrderDetail.belongsTo(Plate, { foreignKey: 'plateId', as: 'plate' });
 // Restaurant associations
 Restaurant.hasMany(Menu, { foreignKey: 'restaurantId', as: 'menus' });
 Menu.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
+
+Restaurant.hasMany(Plate, { foreignKey: 'restaurantId', as: 'plates' });
+Plate.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
+
+Restaurant.hasMany(Product, { foreignKey: 'restaurantId', as: 'products' });
+Product.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
 
 Restaurant.hasMany(Table, { foreignKey: 'restaurantId', as: 'tables' });
 Table.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
@@ -41,7 +44,35 @@ Order.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
 Table.hasMany(Order, { foreignKey: 'tableId', as: 'orders' });
 Order.belongsTo(Table, { foreignKey: 'tableId', as: 'table' });
 
-// Many-to-many: Plate <-> Product through PlateProduct
+// Menu <-> Plate through MenuPlate (many-to-many through MenuPlate)
+// Direct associations for junction table
+Menu.hasMany(MenuPlate, { foreignKey: 'menuId', as: 'menuPlates' });
+MenuPlate.belongsTo(Menu, { foreignKey: 'menuId', as: 'menu' });
+Plate.hasMany(MenuPlate, { foreignKey: 'plateId', as: 'menuPlates' });
+MenuPlate.belongsTo(Plate, { foreignKey: 'plateId', as: 'plate' });
+
+// Many-to-many
+Menu.belongsToMany(Plate, { 
+  through: MenuPlate, 
+  foreignKey: 'menuId', 
+  otherKey: 'plateId',
+  as: 'plates' 
+});
+Plate.belongsToMany(Menu, { 
+  through: MenuPlate, 
+  foreignKey: 'plateId', 
+  otherKey: 'menuId',
+  as: 'menus' 
+});
+
+// Plate <-> Product through PlateProduct (many-to-many through PlateProduct)
+// Direct associations for junction table
+Plate.hasMany(PlateProduct, { foreignKey: 'plateId', as: 'plateProducts' });
+PlateProduct.belongsTo(Plate, { foreignKey: 'plateId', as: 'plate' });
+Product.hasMany(PlateProduct, { foreignKey: 'productId', as: 'plateProducts' });
+PlateProduct.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+
+// Many-to-many
 Plate.belongsToMany(Product, { 
   through: PlateProduct, 
   foreignKey: 'plateId', 
@@ -56,14 +87,6 @@ Product.belongsToMany(Plate, {
 });
 
 // Direct associations for junction table
-Plate.hasMany(PlateProduct, { foreignKey: 'plateId', as: 'plateProducts' });
-PlateProduct.belongsTo(Plate, { foreignKey: 'plateId', as: 'plate' });
-Product.hasMany(PlateProduct, { foreignKey: 'productId', as: 'plateProducts' });
-PlateProduct.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
-Restaurant.hasMany(Product, { foreignKey: 'restaurantId', as: 'products' });
-Product.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
-
-// Direct associations for junction table
 Drink.belongsTo(Restaurant, { foreignKey: 'restaurantId', as: 'restaurant' });
 Restaurant.hasMany(Drink, { foreignKey: 'restaurantId', as: 'drinks' });
 
@@ -76,6 +99,7 @@ export {
   Account,
   Restaurant,
   Menu,
+  MenuPlate,
   Plate,
   Product,
   Drink,
@@ -93,6 +117,7 @@ export default {
   Account,
   Restaurant,
   Menu,
+  MenuPlate,
   Plate,
   Product,
   Drink,

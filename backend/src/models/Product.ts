@@ -8,8 +8,9 @@ interface ProductAttributes {
   unit: string;
   price: number;
   stock: number;
-  restaurantId: number;
+  allergens?: 'gluten' | 'crustaceans' | 'eggs' | 'fish' | 'peanuts' | 'soy' | 'milk' | 'nuts' | 'celery' | 'mustard' | 'sesame' | 'sulphites' | 'lupin' | 'molluscs';
   minStock: number;
+  restaurantId: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +25,7 @@ class Product extends Model<ProductAttributes, ProductCreationAttributes> implem
   public price!: number;
   public stock!: number;
   public minStock!: number;
+  public allergens?: 'gluten' | 'crustaceans' | 'eggs' | 'fish' | 'peanuts' | 'soy' | 'milk' | 'nuts' | 'celery' | 'mustard' | 'sesame' | 'sulphites' | 'lupin' | 'molluscs';
   public restaurantId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -70,6 +72,25 @@ Product.init(
       validate: {
         min: 0,
       },
+    },
+    allergens: {
+      type: DataTypes.ENUM(
+        'gluten',
+        'crustaceans',
+        'eggs',
+        'fish',
+        'peanuts',
+        'soy',
+        'milk',
+        'nuts',
+        'celery',
+        'mustard',
+        'sesame',
+        'sulphites',
+        'lupin',
+        'molluscs'
+      ),
+      allowNull: true,
     },
     restaurantId: {
       type: DataTypes.INTEGER,

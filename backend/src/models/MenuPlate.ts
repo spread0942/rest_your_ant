@@ -1,40 +1,40 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/database';
 
-interface PlateProductAttributes {
+interface MenuPlateAttributes {
+  menuId: number;
   plateId: number;
-  productId: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface PlateProductCreationAttributes extends Optional<PlateProductAttributes,  'createdAt' | 'updatedAt'> {}
+interface MenuPlateCreationAttributes extends Optional<MenuPlateAttributes,  'createdAt' | 'updatedAt'> {}
 
-class PlateProduct extends Model<PlateProductAttributes, PlateProductCreationAttributes> implements PlateProductAttributes {
+class MenuPlate extends Model<MenuPlateAttributes, MenuPlateCreationAttributes> implements MenuPlateAttributes {
+  public menuId!: number;
   public plateId!: number;
-  public productId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
 
-PlateProduct.init(
+MenuPlate.init(
   {
+    menuId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'menus',
+        key: 'id',
+      },
+      onDelete: 'CASCADE',
+    },
     plateId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'plates',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-    },
-    productId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'products',
         key: 'id',
       },
       onDelete: 'CASCADE',
@@ -50,9 +50,9 @@ PlateProduct.init(
   },
   {
     sequelize,
-    tableName: 'plates_products',
+    tableName: 'menus_plates',
     timestamps: true,
   }
 );
 
-export default PlateProduct;
+export default MenuPlate;

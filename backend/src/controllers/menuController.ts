@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { Menu, Restaurant, Plate, Drink, Auth } from '../models';
+import { Menu, Restaurant, Plate, Drink, Auth, MenuPlate } from '../models';
 import { createSuccessResponse, createErrorResponse } from '../utils/response';
+import sequelize from '../config/database';
 
 export const createMenu = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { restaurantId, name, description, category, isActive } = req.body;
+    const { restaurantId, name, description, category, isActive, plateIds } = req.body;
     const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
@@ -20,15 +21,37 @@ export const createMenu = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
-    const menu = await Menu.create({
-      restaurantId,
-      name,
-      description,
-      category,
-      isActive,
+    // validate plateIds if provided
+    if (plateIds && Array.isArray(plateIds) && plateIds.length > 0) {
+      const validPlates = await Plate.findAll({
+        where: { id: plateIds, restaurantId }
+      });
+      if (validPlates.length !== plateIds.length) {
+        res.status(400).json(createErrorResponse('One or more plates not found in the specified restaurant'));
+        return;
+      }
+    }
+
+    const result = await sequelize.transaction(async (t) => {
+      const menu = await Menu.create({
+        restaurantId,
+        name,
+        description,
+        category,
+        isActive,
+      }, { transaction: t });
+
+      if (plateIds && Array.isArray(plateIds) && plateIds.length > 0) {
+        const menuPlates = plateIds.map((plateId: number) => ({
+          menuId: menu.id,
+          plateId,
+        }));
+        await MenuPlate.bulkCreate(menuPlates, { transaction: t });
+      }
+      return menu;
     });
 
-    res.status(201).json(createSuccessResponse(menu, 'Menu created successfully'));
+    res.status(201).json(createSuccessResponse(result, 'Menu created successfully'));
   } catch (error) {
     next(error);
   }
@@ -41,17 +64,20 @@ export const getAllMenus = async (req: Request, res: Response, next: NextFunctio
     const auth = (req as any).auth as Auth;
 
     if (!auth?.tenantId) {
-      res.status(400).json(createErrorResponse('User tenant ID is required'));
+      res.status(401).json(createErrorResponse('Unauthorized'));
       return;
     }
 
+    // Build where clause based on query parameters
     const whereClause = restaurantId ? { restaurantId: Number(restaurantId), tenantId: auth.tenantId } : {};
 
     const { count, rows } = await Menu.findAndCountAll({
       where: whereClause,
-      include: [{ model: Restaurant, as: 'restaurant' }],
-      limit: Number(limit),
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
+      ],
       offset,
+      limit: Number(limit),
       order: [['createdAt', 'DESC']],
     });
 
@@ -82,8 +108,6 @@ export const getMenuById = async (req: Request, res: Response, next: NextFunctio
     const menu = await Menu.findByPk(id, {
       include: [
         { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
-        { model: Plate, as: 'plates' },
-        { model: Drink, as: 'drinks' }
       ],
     });
 
@@ -101,7 +125,7 @@ export const getMenuById = async (req: Request, res: Response, next: NextFunctio
 export const updateMenu = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { restaurantId, name, description, isActive } = req.body;
+    const { restaurantId, name, description, isActive, plateIds } = req.body;
     const auth = (req as any).auth as Auth;
     
     if (!auth?.tenantId) {
@@ -109,6 +133,7 @@ export const updateMenu = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
+    // Verify that the menu belongs to the user's tenant via the restaurant
     const menu = await Menu.findOne({
       where: { id },
       include: [{ model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }]
@@ -119,19 +144,50 @@ export const updateMenu = async (req: Request, res: Response, next: NextFunction
       return;
     }
 
+    // validate restaurantId if provided
     if (restaurantId) {
-      const restaurant = await Restaurant.findByPk(restaurantId);
+      const restaurant = await Restaurant.findOne({
+        where: { id: restaurantId, tenantId: auth.tenantId }
+      });
       if (!restaurant) {
         res.status(404).json(createErrorResponse('Restaurant not found'));
         return;
       }
     }
 
-    await menu.update({
-      restaurantId: restaurantId || menu.restaurantId,
-      name,
-      description,
-      isActive,
+    // validate plateIds if provided
+    if (plateIds && Array.isArray(plateIds) && plateIds.length > 0) {
+      const validPlates = await Plate.findAll({
+        where: { id: plateIds, restaurantId: restaurantId || menu.restaurantId }
+      });
+      if (validPlates.length !== plateIds.length) {
+        res.status(400).json(createErrorResponse('One or more plates not found in the specified restaurant'));
+        return;
+      }
+    }
+
+    await sequelize.transaction(async (transaction) => {
+      await menu.update({
+        restaurantId: restaurantId || menu.restaurantId,
+        name,
+        description,
+        isActive,
+      }, { transaction });
+
+      if (plateIds) {
+        // Update plate associations
+        await MenuPlate.destroy({ where: { menuId: id }, transaction });
+        if (Array.isArray(plateIds) && plateIds.length > 0) {
+          const menuPlates = plateIds.map((plateId: number) => ({
+            menuId: parseInt(id),
+            plateId,
+          }));
+          await MenuPlate.bulkCreate(menuPlates, { transaction });
+        }
+      }
+
+      // Update menu details
+      return menu;
     });
 
     res.json(createSuccessResponse(menu, 'Menu updated successfully'));
@@ -152,7 +208,9 @@ export const deleteMenu = async (req: Request, res: Response, next: NextFunction
 
     const menu = await Menu.findOne({
       where: { id },
-      include: [{ model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }]
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }
+      ]
     });
 
     if (!menu) {

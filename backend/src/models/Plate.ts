@@ -8,7 +8,7 @@ interface PlateAttributes {
   price: number;
   category?: string;
   isAvailable: boolean;
-  menuId: number;
+  restaurantId: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,7 +22,7 @@ class Plate extends Model<PlateAttributes, PlateCreationAttributes> implements P
   public price!: number;
   public category?: string;
   public isAvailable!: boolean;
-  public menuId!: number;
+  public restaurantId!: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 }
@@ -58,11 +58,11 @@ Plate.init(
       allowNull: false,
       defaultValue: true,
     },
-    menuId: {
+    restaurantId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'menus',
+        model: 'restaurants',
         key: 'id',
       },
       onDelete: 'CASCADE',

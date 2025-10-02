@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
-import { Auth, Menu, Plate, Restaurant } from '../models';
+import { Auth, Menu, Plate, PlateProduct, Product, Restaurant } from '../models';
 import { createSuccessResponse, createErrorResponse } from '../utils/response';
+import sequelize from '../config/database';
 
 export const createPlate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { name, description, price, category, isAvailable, menuId } = req.body;
+    const { name, description, price, category, isAvailable, restaurantId, productIds } = req.body;
     const auth: Auth = (req as any).auth as Auth;
 
     if (!auth || !auth?.tenantId) {
@@ -12,33 +13,50 @@ export const createPlate = async (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    // Verify that the menu belongs to the user's tenant
-    const menu = await Menu.findOne({
-      where: { 
-        id: menuId,
-      },
-      include: [{
-        model: Restaurant,
-        as: 'restaurant',
-        where: { tenantId: auth.tenantId }
-      }]
+    // Verify that the restaurant belongs to the user's tenant
+    const restaurant = await Restaurant.findOne({
+      where: { id: restaurantId, tenantId: auth.tenantId }
     });
-
-    if (!menu) {
-      res.status(404).json(createErrorResponse('Menu not found'));
+    if (!restaurant) {
+      res.status(404).json(createErrorResponse('Restaurant not found'));
       return;
     }
 
-    const plate = await Plate.create({
-      name,
-      description,
-      price,
-      category,
-      isAvailable,
-      menuId,
+    // validate productIds if provided
+    if (productIds && Array.isArray(productIds) && productIds.length > 0) {
+      const validProducts = await Product.findAll({
+          where: { id: productIds, restaurantId }
+        });
+      if (validProducts.length !== productIds.length) {
+        res.status(400).json(createErrorResponse('One or more product IDs are invalid'));
+        return;
+      }
+    }
+
+    // Create plate within a transaction
+    const result = await sequelize.transaction(async (transaction) => {
+      const plate = await Plate.create({
+        name,
+        description,
+        price,
+        category,
+        isAvailable,
+        restaurantId,
+      },
+      { transaction });
+
+      if (productIds && Array.isArray(productIds) && productIds.length > 0) {
+        const plateProducts = productIds.map((productId: number) => ({
+          plateId: plate.id,
+          productId,
+        }));
+        await PlateProduct.bulkCreate(plateProducts, { transaction });
+      }
+
+      return plate;
     });
 
-    res.status(201).json(createSuccessResponse(plate, 'Plate created successfully'));
+    res.status(201).json(createSuccessResponse(result, 'Plate created successfully'));
   } catch (error) {
     next(error);
   }
@@ -64,15 +82,7 @@ export const getAllPlates = async (req: Request, res: Response, next: NextFuncti
     const { count, rows } = await Plate.findAndCountAll({
       where: whereClause,
       include: [
-        {
-          model: Menu,
-          as: 'menu',
-          include: [{
-            model: Restaurant,
-            as: 'restaurant',
-            where: { tenantId: auth.tenantId }
-          }]
-        }
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } },
       ],
       limit: Number(limit),
       offset,
@@ -105,15 +115,9 @@ export const getPlateById = async (req: Request, res: Response, next: NextFuncti
 
     const plate = await Plate.findOne({
       where: { id },
-      include: [{
-        model: Menu,
-        as: 'menu',
-        include: [{
-          model: Restaurant,
-          as: 'restaurant',
-          where: { tenantId: auth.tenantId }
-        }]
-      }]
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }
+      ]
     });
 
     if (!plate) {
@@ -130,7 +134,7 @@ export const getPlateById = async (req: Request, res: Response, next: NextFuncti
 export const updatePlate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
     const { id } = req.params;
-    const { name, description, price, category, isAvailable } = req.body;
+    const { name, description, price, category, isAvailable, restaurantId, productIds } = req.body;
     const auth: Auth = (req as any).auth as Auth;
 
     if (!auth || !auth?.tenantId) {
@@ -138,17 +142,12 @@ export const updatePlate = async (req: Request, res: Response, next: NextFunctio
       return;
     }
 
+    // Verify that the plate belongs to the user's tenant via the restaurant
     const plate = await Plate.findOne({
       where: { id },
-      include: [{
-        model: Menu,
-        as: 'menu',
-        include: [{
-          model: Restaurant,
-          as: 'restaurant',
-          where: { tenantId: auth.tenantId }
-        }]
-      }]
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }
+      ]
     });
 
     if (!plate) {
@@ -156,15 +155,76 @@ export const updatePlate = async (req: Request, res: Response, next: NextFunctio
       return;
     }
 
-    await plate.update({
-      name,
-      description,
-      price,
-      category,
-      isAvailable,
+    // validate restaurantId if provided
+    if (restaurantId) {
+      const restaurant = await Restaurant.findOne({
+        where: { id: restaurantId, tenantId: auth.tenantId }
+      });
+      if (!restaurant) {
+        res.status(404).json(createErrorResponse('Restaurant not found'));
+        return;
+      }
+    }
+
+    // Validate products if provided
+    if (productIds && Array.isArray(productIds) && productIds.length > 0) {
+      const isValidStructure = productIds.every((productId: any) => 
+        typeof productId === 'number'
+      );
+
+      if (!isValidStructure) {
+        res.status(400).json(createErrorResponse('Invalid products structure. Expected array of {productId: number, quantity: number}'));
+        return;
+      }
+
+      // Validate product IDs exist and belong to the same tenant
+      const products = productIds.map((p: any) => p.productId);
+      const validProducts = await Product.findAll({
+        where: { id: products },
+        include: [
+          { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }
+        ],
+        attributes: ['id']
+      });
+
+      if (validProducts.length !== productIds.length) {
+        res.status(400).json(createErrorResponse('One or more product IDs are invalid or do not belong to your tenant'));
+        return;
+      }
+    }
+
+    // Use transaction for atomic operation
+    const result = await sequelize.transaction(async (transaction) => {
+      await plate.update({
+        name,
+        description,
+        price,
+        category,
+        isAvailable,
+        restaurantId,
+      }, { transaction });
+
+      if (productIds !== undefined) {
+        // Update product associations
+        await PlateProduct.destroy({
+          where: { plateId: id },
+          transaction
+        });
+
+        if (Array.isArray(productIds) && productIds.length > 0) {
+          const plateProducts = productIds.map((productId: number) => ({
+            plateId: parseInt(id),
+            productId,
+          }));
+          
+          await PlateProduct.bulkCreate(plateProducts, { transaction });
+        }
+      }
+
+      return plate;
     });
 
-    res.json(createSuccessResponse(plate, 'Plate updated successfully'));
+    res.json(createSuccessResponse(result, 'Plate updated successfully'));
   } catch (error) {
     next(error);
   }
@@ -183,15 +243,9 @@ export const deletePlate = async (req: Request, res: Response, next: NextFunctio
     // Verify that the plate belongs to the user's tenant via the menu and restaurant
     const plate = await Plate.findOne({
       where: { id },
-      include: [{
-        model: Menu,
-        as: 'menu',
-        include: [{
-          model: Restaurant,
-          as: 'restaurant',
-          where: { tenantId: auth.tenantId }
-        }]
-      }]
+      include: [
+        { model: Restaurant, as: 'restaurant', where: { tenantId: auth.tenantId } }
+      ]
     });
 
     if (!plate) {

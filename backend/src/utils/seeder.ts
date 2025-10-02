@@ -98,21 +98,24 @@ export const seedDatabase = async (): Promise<void> => {
         description: 'Delicious grilled chicken with herbs',
         price: 18.99,
         category: 'main',
-        isAvailable: true
+        isAvailable: true,
+        restaurantId: restaurant.id
       },
       {
         name: 'Caesar Salad',
         description: 'Fresh caesar salad with parmesan',
         price: 12.99,
         category: 'salad',
-        isAvailable: true
+        isAvailable: true,
+        restaurantId: restaurant.id
       },
       {
         name: 'Pasta Marinara',
         description: 'Classic pasta with marinara sauce',
         price: 15.99,
         category: 'main',
-        isAvailable: true
+        isAvailable: true,
+        restaurantId: restaurant.id
       }
     ]);
 
