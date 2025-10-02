@@ -53,7 +53,7 @@
               v-for="column in columns" 
               :key="column.key"
               class="table-cell"
-              :class="column.cellClass"
+              :class="[column.cellClass, column.class]"
             >
               <!-- Actions column -->
               <div v-if="column.key === 'actions'" class="actions">

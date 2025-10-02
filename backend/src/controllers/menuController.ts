@@ -57,7 +57,7 @@ export const createMenu = async (req: Request, res: Response, next: NextFunction
         { 
           model: Plate, 
           as: 'plates',
-          attributes: ['id', 'name', 'description'],
+          attributes: ['id', 'name', 'description', 'price'],
           through: { attributes: [] } // Exclude junction table attributes
         },
       ],
@@ -90,7 +90,7 @@ export const getAllMenus = async (req: Request, res: Response, next: NextFunctio
         { 
           model: Plate, 
           as: 'plates',
-          attributes: ['id', 'name', 'description'],
+          attributes: ['id', 'name', 'description', 'price'],
           through: { attributes: [] } // Exclude junction table attributes
         },
       ],
@@ -129,7 +129,7 @@ export const getMenuById = async (req: Request, res: Response, next: NextFunctio
         { 
           model: Plate, 
           as: 'plates',
-          attributes: ['id', 'name', 'description'],
+          attributes: ['id', 'name', 'description', 'price'],
           through: { attributes: [] } // Exclude junction table attributes
         },
       ],
@@ -220,7 +220,7 @@ export const updateMenu = async (req: Request, res: Response, next: NextFunction
         { 
           model: Plate, 
           as: 'plates',
-          attributes: ['id', 'name', 'description'],
+          attributes: ['id', 'name', 'description', 'price'],
           through: { attributes: [] } // Exclude junction table attributes
         },
       ],

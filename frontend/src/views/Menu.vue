@@ -27,29 +27,8 @@ export default {
   },
   data() {
     return {
-      menus: [
-        {
-          id: 1,
-          name: 'Antipasti',
-          description: 'Stuzzichini e antipasti per iniziare il pasto',
-          isActive: true,
-          category: 'antipasti'
-        },
-        {
-          id: 2,
-          name: 'Primi Piatti',
-          description: 'Pasta, risotti e zuppe della tradizione',
-          isActive: true,
-          category: 'primi'
-        },
-        {
-          id: 3,
-          name: 'Secondi Piatti',
-          description: 'Carne, pesce e piatti vegetariani',
-          isActive: true,
-          category: 'secondi'
-        }
-      ]
+      menus: [],
+      loading: false,
     }
   },
   mounted() {
@@ -73,7 +52,11 @@ export default {
           });
         if (response.ok) {
           const data = await response.json();
-          this.menus = data.data.menus || [];
+          // Map the menu data to include the count of plates for display
+          this.menus = (data.data.menus || []).map(menu => ({
+            ...menu,
+            count: menu.plates ? menu.plates.length : 0
+          }));
         } else {
           throw new Error('Failed to fetch menus');
         }
@@ -105,12 +88,12 @@ export default {
         .replace(/-+/g, '-')
     },
     
-    navigateToMenu(category) {
-      this.$router.push(`/piatti/${category.category || category.name}`)
+    navigateToMenu(menu) {
+      this.$router.push(`/piatti/${menu.category || menu.name}?menuId=${menu.id}`)
     },
     
-    viewMenu(category) {
-      this.$router.push(`/piatti/${category.category || category.name}`)
+    viewMenu(menu) {
+      this.$router.push(`/piatti/${menu.category || menu.name}?menuId=${menu.id}`)
     },
     
     editMenu(menu) {
