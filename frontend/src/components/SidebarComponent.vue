@@ -94,14 +94,14 @@
         </router-link>
 
         <router-link 
-          to="/menu-products"
+          to="/drinks"
           class="nav-item"
-          :class="{ active: $route.path === '/menu-products' }"
+          :class="{ active: $route.path.startsWith('/drinks') }"
           @click="handleNavClick"
         >
           <div class="nav-item-content">
-            <i class="fi fi-rr-glass nav-icon"></i>
-            <span>Bevande & Prodotti</span>
+            <i class="fi fi-rr-cocktail nav-icon"></i>
+            <span>Bevande</span>
           </div>
         </router-link>
 

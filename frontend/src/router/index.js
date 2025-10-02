@@ -87,6 +87,24 @@ const routes = [
     meta: { requiresAuth: true, requiresRestaurant: true }
   },
   {
+    path: '/drinks',
+    name: 'DrinksList',
+    component: () => import('../views/DrinksList.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/drinks/create',
+    name: 'DrinkCreate',
+    component: () => import('../views/DrinkCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/drinks/:id/edit',
+    name: 'DrinkEdit',
+    component: () => import('../views/DrinkCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
     path: '/piatti/:category',
     name: 'Piatti',
     component: () => import('../views/Piatti.vue'),
@@ -128,12 +146,6 @@ const routes = [
     component: () => import('../views/Impostazioni.vue'),
     meta: { requiresAuth: true }
   },
-  {
-    path: '/menu-products',
-    name: 'MenuProducts',
-    component: () => import('../views/MenuProducts.vue'),
-    meta: { requiresAuth: true, requiresRestaurant: true }
-  }
 ]
 
 const router = createRouter({

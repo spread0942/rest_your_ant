@@ -129,13 +129,13 @@
             </div>
           </div>
 
-          <div class="action-card" @click="navigateTo('/menu-products')">
+          <div class="action-card" @click="navigateTo('/drinks')">
             <div class="action-icon">
               <i class="fi fi-rr-glass"></i>
             </div>
             <div class="action-content">
-              <h3 class="action-title">Bevande & Prodotti</h3>
-              <p class="action-description">Gestisci bevande e prodotti</p>
+              <h3 class="action-title">Bevande</h3>
+              <p class="action-description">Gestisci bevande del menu</p>
             </div>
             <div class="action-arrow">
               <i class="fi fi-rr-angle-right"></i>
