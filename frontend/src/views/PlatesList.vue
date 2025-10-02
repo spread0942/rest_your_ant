@@ -13,6 +13,7 @@
     @view="viewPlate"
     @edit="editPlate"
     @delete="deletePlate"
+    @restaurant-changed="handleRestaurantChanged"
   />
 </template>
 
@@ -29,16 +30,30 @@ export default {
     return {
       plates: [],
       loading: false,
+      currentRestaurantId: null,
     }
   },
   mounted() {
-    this.loadPlates()
+    this.initializeAndLoadPlates()
   },
   activated() {
     // Reload when component is activated (useful when coming back from create page)
-    this.loadPlates()
+    this.initializeAndLoadPlates()
   },
   methods: {
+    initializeAndLoadPlates() {
+      const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}')
+      this.currentRestaurantId = selectedRestaurant.id
+      this.loadPlates()
+    },
+    
+    handleRestaurantChanged(restaurant) {
+      // Only reload if the restaurant actually changed
+      if (restaurant.id !== this.currentRestaurantId) {
+        this.currentRestaurantId = restaurant.id
+        this.loadPlates()
+      }
+    },
     async loadPlates() {
       try {
         this.loading = true

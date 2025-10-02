@@ -129,6 +129,18 @@
       <div class="nav-section settings-section">
         <h3 class="section-title">Impostazioni</h3>
         
+        <router-link 
+          to="/restaurants"
+          class="nav-item"
+          :class="{ active: $route.path === '/restaurants' }"
+          @click="handleNavClick"
+        >
+          <div class="nav-item-content">
+            <i class="fi fi-rr-building nav-icon"></i>
+            <span>Ristoranti</span>
+          </div>
+        </router-link>
+        
         <div class="nav-item" @click="navigateTo('/impostazioni')">
           <div class="nav-item-content">
             <i class="fi fi-sr-settings nav-icon"></i>

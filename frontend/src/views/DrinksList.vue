@@ -13,6 +13,7 @@
     @view="viewDrink"
     @edit="editDrink"
     @delete="deleteDrink"
+    @restaurant-changed="handleRestaurantChanged"
   />
 </template>
 
@@ -29,16 +30,30 @@ export default {
     return {
       drinks: [],
       loading: false,
+      currentRestaurantId: null,
     }
   },
   mounted() {
-    this.loadDrinks()
+    this.initializeAndLoadDrinks()
   },
   activated() {
     // Reload when component is activated (useful when coming back from create page)
-    this.loadDrinks()
+    this.initializeAndLoadDrinks()
   },
   methods: {
+    initializeAndLoadDrinks() {
+      const selectedRestaurant = JSON.parse(localStorage.getItem('selectedRestaurant') || '{}')
+      this.currentRestaurantId = selectedRestaurant.id
+      this.loadDrinks()
+    },
+    
+    handleRestaurantChanged(restaurant) {
+      // Only reload if the restaurant actually changed
+      if (restaurant.id !== this.currentRestaurantId) {
+        this.currentRestaurantId = restaurant.id
+        this.loadDrinks()
+      }
+    },
     async loadDrinks() {
       try {
         this.loading = true
