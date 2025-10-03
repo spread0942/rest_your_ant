@@ -105,6 +105,30 @@ const routes = [
     meta: { requiresAuth: true, requiresRestaurant: true }
   },
   {
+    path: '/orders',
+    name: 'OrdersList',
+    component: () => import('../views/OrdersList.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/orders/create',
+    name: 'OrderCreate',
+    component: () => import('../views/OrderCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/orders/:id',
+    name: 'OrderDetail',
+    component: () => import('../views/OrderDetail.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
+    path: '/orders/:id/edit',
+    name: 'OrderEdit',
+    component: () => import('../views/OrderCreate.vue'),
+    meta: { requiresAuth: true, requiresRestaurant: true }
+  },
+  {
     path: '/piatti/:category',
     name: 'Piatti',
     component: () => import('../views/Piatti.vue'),

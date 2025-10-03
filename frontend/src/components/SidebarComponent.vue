@@ -117,12 +117,17 @@
           </div>
         </router-link>
 
-        <div class="nav-item" @click="navigateTo('/orders')">
+        <router-link 
+          to="/orders"
+          class="nav-item"
+          :class="{ active: $route.path.startsWith('/orders') }"
+          @click="handleNavClick"
+        >
           <div class="nav-item-content">
             <i class="fi fi-rr-poll-h nav-icon"></i>
             <span>Ordini</span>
           </div>
-        </div>
+        </router-link>
       </div>
 
       <!-- Impostazioni Section -->

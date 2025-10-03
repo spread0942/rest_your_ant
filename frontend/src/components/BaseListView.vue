@@ -28,6 +28,9 @@
           </button>
         </div>
         
+        <!-- Custom Filters Slot -->
+        <slot name="filters"></slot>
+        
         <!-- Items Grid -->
         <div class="items-grid">
           <BaseCard
