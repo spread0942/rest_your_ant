@@ -1,11 +1,11 @@
 import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../config/database';
 
-interface OrderDetailAttributes {
+interface OrderDrinksAttributes {
   id: number;
   orderId: number;
-  plateId?: number;
-  drinkId?: number;
+  lineId: number;
+  drinkId: number;
   quantity: number;
   unitPrice: number;
   subtotal: number;
@@ -14,13 +14,13 @@ interface OrderDetailAttributes {
   updatedAt: Date;
 }
 
-interface OrderDetailCreationAttributes extends Optional<OrderDetailAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+interface OrderDrinksCreationAttributes extends Optional<OrderDrinksAttributes, 'id' | 'lineId' | 'createdAt' | 'updatedAt'> {}
 
-class OrderDetail extends Model<OrderDetailAttributes, OrderDetailCreationAttributes> implements OrderDetailAttributes {
+class OrderDrinks extends Model<OrderDrinksAttributes, OrderDrinksCreationAttributes> implements OrderDrinksAttributes {
   public id!: number;
   public orderId!: number;
-  public plateId?: number;
-  public drinkId?: number;
+  public lineId!: number;
+  public drinkId!: number;
   public quantity!: number;
   public unitPrice!: number;
   public subtotal!: number;
@@ -29,7 +29,7 @@ class OrderDetail extends Model<OrderDetailAttributes, OrderDetailCreationAttrib
   public readonly updatedAt!: Date;
 }
 
-OrderDetail.init(
+OrderDrinks.init(
   {
     id: {
       type: DataTypes.INTEGER,
@@ -43,14 +43,11 @@ OrderDetail.init(
         model: 'orders',
         key: 'id',
       },
+      onDelete: 'CASCADE',
     },
-    plateId: {
+    lineId: {
       type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'plates',
-        key: 'id',
-      },
+      allowNull: false,
     },
     drinkId: {
       type: DataTypes.INTEGER,
@@ -96,19 +93,26 @@ OrderDetail.init(
   },
   {
     sequelize,
-    tableName: 'orders_details',
+    tableName: 'orders_drinks',
     timestamps: true,
-    validate: {
-      eitherPlateOrDrink() {
-        if (!this.plateId && !this.drinkId) {
-          throw new Error('Either plateId or drinkId must be provided');
-        }
-        if (this.plateId && this.drinkId) {
-          throw new Error('Cannot have both plateId and drinkId');
+    indexes: [
+      {
+        unique: true,
+        fields: ['orderId', 'lineId'],
+      },
+    ],
+    hooks: {
+      beforeValidate: async (orderPlates: OrderDrinks) => {
+        if (!orderPlates.lineId) {
+          // Get the next lineId for this orderId
+          const maxLineId = await OrderDrinks.max('lineId', {
+            where: { orderId: orderPlates.orderId }
+          }) as number;
+          orderPlates.lineId = (maxLineId || 0) + 1;
         }
       },
     },
   }
 );
 
-export default OrderDetail;
+export default OrderDrinks;

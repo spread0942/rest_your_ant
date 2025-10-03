@@ -3,9 +3,10 @@ import sequelize from '../config/database';
 
 interface OrderAttributes {
   id: number;
+  nOrder: number;
+  year: number;
   restaurantId: number;
   tableId?: number;
-  accountId?: number;
   status: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
   totalAmount: number;
   notes?: string;
@@ -14,13 +15,14 @@ interface OrderAttributes {
   updatedAt: Date;
 }
 
-interface OrderCreationAttributes extends Optional<OrderAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
+interface OrderCreationAttributes extends Optional<OrderAttributes, 'id' | 'nOrder' | 'year' | 'orderDate' | 'createdAt' | 'updatedAt'> {}
 
 class Order extends Model<OrderAttributes, OrderCreationAttributes> implements OrderAttributes {
   public id!: number;
+  public nOrder!: number;
+  public year!: number;
   public restaurantId!: number;
   public tableId?: number;
-  public accountId?: number;
   public status!: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
   public totalAmount!: number;
   public notes?: string;
@@ -36,6 +38,22 @@ Order.init(
       autoIncrement: true,
       primaryKey: true,
     },
+    nOrder: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        isInt: true,
+        min: 1,
+      },
+    },
+    year: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        isInt: true,
+        min: 2000,
+      },
+    },
     restaurantId: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -49,14 +67,6 @@ Order.init(
       allowNull: true,
       references: {
         model: 'tables',
-        key: 'id',
-      },
-    },
-    accountId: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'accounts',
         key: 'id',
       },
     },
@@ -94,6 +104,33 @@ Order.init(
     sequelize,
     tableName: 'orders',
     timestamps: true,
+    indexes: [
+      {
+        unique: true,
+        fields: ['nOrder', 'year', 'restaurantId'],
+      },
+    ],
+    hooks: {
+      beforeValidate: async (order) => {
+        // Set year if not provided
+        if (!order.year) {
+          order.year = new Date().getFullYear();
+        }
+        
+        // Set nOrder if not provided
+        if (!order.nOrder) {
+          const maxOrder = await Order.findOne({
+            where: { 
+              year: order.year, 
+              restaurantId: order.restaurantId 
+            },
+            order: [['nOrder', 'DESC']],
+            attributes: ['nOrder'],
+          });
+          order.nOrder = maxOrder ? maxOrder.nOrder + 1 : 1;
+        }
+      },
+    },
   }
 );
 
