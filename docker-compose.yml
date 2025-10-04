@@ -49,7 +49,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: production
-    image: perfect_menu_api:${APP_VERSION:-latest}
+    image: ghcr.io/spread0942/rest_your_ant/perfect-menu-api:${APP_VERSION:-latest}
     container_name: perfect_menu_api
     env_file:
       - .env
@@ -95,7 +95,7 @@ services:
       target: production
       args:
         VUE_APP_API_ENDPOINT: https://api.perfectmenu.com/api
-    image: perfect_menu_frontend:${APP_VERSION:-latest}
+    image: ghcr.io/spread0942/rest_your_ant/perfect-menu-frontend:${APP_VERSION:-latest}
     container_name: perfect_menu_frontend
     restart: unless-stopped
     environment:
